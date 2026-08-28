@@ -1,0 +1,901 @@
+{
+  "schema": 1,
+  "note": "Echo 静态物料清单。校验用 scripts/assets-check.sh。用户上传物（runtime/）不入清单——含个人信息，不可分发。",
+  "categories": {
+    "seed-covers": "运营种子封面（共鸣厅瀑布流）",
+    "design-ref": "设计参考稿（不参与运行时）",
+    "docs": "文档配图原图（仓库内为压缩缩略图）"
+  },
+  "totalFiles": 111,
+  "totalBytes": 32598036,
+  "files": [
+    {
+      "path": "design-ref/echo-social-window-detail.png",
+      "category": "design-ref",
+      "bytes": 2039714,
+      "sha256": "f97e94734e7b06a2",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，仅供设计对齐"
+    },
+    {
+      "path": "design-ref/echo-social-window-mine.png",
+      "category": "design-ref",
+      "bytes": 1956512,
+      "sha256": "68a594c0c2c60505",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，仅供设计对齐"
+    },
+    {
+      "path": "design-ref/echo-social-window-plaza.png",
+      "category": "design-ref",
+      "bytes": 2104282,
+      "sha256": "4773ac3f93049158",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，仅供设计对齐"
+    },
+    {
+      "path": "design-ref/spectrum-01-nebula.png",
+      "category": "design-ref",
+      "bytes": 936871,
+      "sha256": "d554540671d9e030",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，仅供设计对齐"
+    },
+    {
+      "path": "design-ref/spectrum-02-integrate.png",
+      "category": "design-ref",
+      "bytes": 605437,
+      "sha256": "de61902fd7c027ef",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，仅供设计对齐"
+    },
+    {
+      "path": "design-ref/spectrum-03-integrated.png",
+      "category": "design-ref",
+      "bytes": 930960,
+      "sha256": "52f51181d790160c",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，仅供设计对齐"
+    },
+    {
+      "path": "design-ref/spectrum-04-anchor.png",
+      "category": "design-ref",
+      "bytes": 927576,
+      "sha256": "6b2b9af2d1e3ce6e",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，仅供设计对齐"
+    },
+    {
+      "path": "docs/echo-avatar-sheet.png",
+      "category": "docs",
+      "bytes": 1898556,
+      "sha256": "8ed9bfaa1c6592f9",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，仅供文档说明"
+    },
+    {
+      "path": "docs/echo-keyart-blend.png",
+      "category": "docs",
+      "bytes": 2288789,
+      "sha256": "e57cb4fb19276f3e",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，仅供文档说明"
+    },
+    {
+      "path": "docs/echo-pet-ui-01-onboarding.png",
+      "category": "docs",
+      "bytes": 1593533,
+      "sha256": "faca3b4c16e93a75",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，仅供文档说明"
+    },
+    {
+      "path": "docs/echo-pet-ui-02-identity.png",
+      "category": "docs",
+      "bytes": 1671306,
+      "sha256": "4977a7bcc732e63a",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，仅供文档说明"
+    },
+    {
+      "path": "docs/echo-pet-ui-03-feed.png",
+      "category": "docs",
+      "bytes": 1773030,
+      "sha256": "ffdc170b0ae63830",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，仅供文档说明"
+    },
+    {
+      "path": "docs/echo-pet-ui-04-echocard.png",
+      "category": "docs",
+      "bytes": 1904864,
+      "sha256": "8b525f27585fd9b1",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，仅供文档说明"
+    },
+    {
+      "path": "docs/echo-ui-mockup-onboarding.png",
+      "category": "docs",
+      "bytes": 1360246,
+      "sha256": "b42c357bd7793064",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，仅供文档说明"
+    },
+    {
+      "path": "docs/echo-ui-mockup-space.png",
+      "category": "docs",
+      "bytes": 2398400,
+      "sha256": "731340c52c5a8fcc",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，仅供文档说明"
+    },
+    {
+      "path": "seed-covers/basketball-v1.jpg",
+      "category": "seed-covers",
+      "bytes": 138190,
+      "sha256": "726a07b4ed0d2021",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/cassette-v1.jpg",
+      "category": "seed-covers",
+      "bytes": 129536,
+      "sha256": "2dac1197ef376ae1",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/classroom-fan-v1.jpg",
+      "category": "seed-covers",
+      "bytes": 124310,
+      "sha256": "a1419aa8348368c2",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/cover-bond-cassette.jpg",
+      "category": "seed-covers",
+      "bytes": 113521,
+      "sha256": "e1f9c3dffe38b1ff",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/cover-bond-letter.jpg",
+      "category": "seed-covers",
+      "bytes": 140589,
+      "sha256": "980cde2fb049aa8d",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/cover-bond-mugs.jpg",
+      "category": "seed-covers",
+      "bytes": 142872,
+      "sha256": "234fafd4265946cd",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/cover-daily-camera.jpg",
+      "category": "seed-covers",
+      "bytes": 129660,
+      "sha256": "9e41d6c2cf46289f",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/cover-daily-mug.jpg",
+      "category": "seed-covers",
+      "bytes": 106703,
+      "sha256": "6c2d6c34ab45285b",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/cover-daily-shirt.jpg",
+      "category": "seed-covers",
+      "bytes": 116172,
+      "sha256": "883cfdea665d9cf7",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/cover-family-heightmarks.jpg",
+      "category": "seed-covers",
+      "bytes": 90796,
+      "sha256": "859b26d74dc146d4",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/cover-family-sewing.jpg",
+      "category": "seed-covers",
+      "bytes": 131203,
+      "sha256": "de68eb0f96ef9d8d",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/cover-family-wardrobe.jpg",
+      "category": "seed-covers",
+      "bytes": 128059,
+      "sha256": "e94aa8be484b089e",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/cover-family-wok.jpg",
+      "category": "seed-covers",
+      "bytes": 117400,
+      "sha256": "821cf9c40ab818bb",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/cover-pet-ball.jpg",
+      "category": "seed-covers",
+      "bytes": 243959,
+      "sha256": "ee3ab31577e5329d",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/cover-pet-blanket.jpg",
+      "category": "seed-covers",
+      "bytes": 109630,
+      "sha256": "6bc1cd8e17842146",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/cover-pet-bowl.jpg",
+      "category": "seed-covers",
+      "bytes": 104201,
+      "sha256": "c090b78240cbb2cf",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/cover-pet-butterfly.jpg",
+      "category": "seed-covers",
+      "bytes": 224120,
+      "sha256": "27a199c118801fdb",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/cover-pet-collar.jpg",
+      "category": "seed-covers",
+      "bytes": 136632,
+      "sha256": "3b740b6128c34872",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/cover-pet-leash.jpg",
+      "category": "seed-covers",
+      "bytes": 114902,
+      "sha256": "1346d2e3d612deab",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/cover-pet-nap.jpg",
+      "category": "seed-covers",
+      "bytes": 112546,
+      "sha256": "81f43a890ef52935",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/cover-pet-seaside.jpg",
+      "category": "seed-covers",
+      "bytes": 97991,
+      "sha256": "bcb0d0386ed0083d",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/cover-pet-slippers.jpg",
+      "category": "seed-covers",
+      "bytes": 117810,
+      "sha256": "322170c13d48b304",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/cover-pet-snowday.jpg",
+      "category": "seed-covers",
+      "bytes": 154424,
+      "sha256": "64ba4962204db25f",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/cover-pet-sunset.jpg",
+      "category": "seed-covers",
+      "bytes": 126394,
+      "sha256": "c938002bb594814a",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/cover-place-alley.jpg",
+      "category": "seed-covers",
+      "bytes": 169563,
+      "sha256": "1b78229f6abd74c7",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/cover-place-busstop.jpg",
+      "category": "seed-covers",
+      "bytes": 139060,
+      "sha256": "3c57c1119e26186a",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/cover-place-noodle.jpg",
+      "category": "seed-covers",
+      "bytes": 107681,
+      "sha256": "0962e02eb5e8f55b",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/cover-place-stairlight.jpg",
+      "category": "seed-covers",
+      "bytes": 144283,
+      "sha256": "06085ca3d27a625c",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/cover-youth-bike.jpg",
+      "category": "seed-covers",
+      "bytes": 246143,
+      "sha256": "3d2fb8cf64ec1b47",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/cover-youth-controller.jpg",
+      "category": "seed-covers",
+      "bytes": 126749,
+      "sha256": "cd13ad4614a24aa8",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/cover-youth-desk.jpg",
+      "category": "seed-covers",
+      "bytes": 126322,
+      "sha256": "52574d60f40f8876",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/cover-youth-drawer.jpg",
+      "category": "seed-covers",
+      "bytes": 118039,
+      "sha256": "1309b06d35a8eda1",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/cover-youth-hoop.jpg",
+      "category": "seed-covers",
+      "bytes": 161519,
+      "sha256": "45a447336a45da0a",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/last-bus-v1.jpg",
+      "category": "seed-covers",
+      "bytes": 161135,
+      "sha256": "30300eab66e31a43",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/noodle-shop-v1.jpg",
+      "category": "seed-covers",
+      "bytes": 167475,
+      "sha256": "7da451f9baebf939",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/red-suitcase-v1.jpg",
+      "category": "seed-covers",
+      "bytes": 117862,
+      "sha256": "6a7543e443a34ff8",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/thumb/basketball-v1.jpg",
+      "category": "seed-covers",
+      "bytes": 37842,
+      "sha256": "fd091735b7a68ac1",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/thumb/cassette-v1.jpg",
+      "category": "seed-covers",
+      "bytes": 30748,
+      "sha256": "bd407b5ffdbd17d6",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/thumb/classroom-fan-v1.jpg",
+      "category": "seed-covers",
+      "bytes": 30865,
+      "sha256": "babe1a715687e5a2",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/thumb/cover-bond-cassette.jpg",
+      "category": "seed-covers",
+      "bytes": 28876,
+      "sha256": "9ce2dbd0081874de",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/thumb/cover-bond-letter.jpg",
+      "category": "seed-covers",
+      "bytes": 36132,
+      "sha256": "d5a479d4057bc680",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/thumb/cover-bond-mugs.jpg",
+      "category": "seed-covers",
+      "bytes": 36170,
+      "sha256": "3e83b62f47a766f3",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/thumb/cover-daily-camera.jpg",
+      "category": "seed-covers",
+      "bytes": 33017,
+      "sha256": "0c717efc1d543aff",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/thumb/cover-daily-mug.jpg",
+      "category": "seed-covers",
+      "bytes": 28008,
+      "sha256": "40d42bff7cadef77",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/thumb/cover-daily-shirt.jpg",
+      "category": "seed-covers",
+      "bytes": 28631,
+      "sha256": "37f973713c06ffa9",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/thumb/cover-family-heightmarks.jpg",
+      "category": "seed-covers",
+      "bytes": 23450,
+      "sha256": "44c70d0658d2ab6f",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/thumb/cover-family-sewing.jpg",
+      "category": "seed-covers",
+      "bytes": 32346,
+      "sha256": "804e969cbb9129fc",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/thumb/cover-family-wardrobe.jpg",
+      "category": "seed-covers",
+      "bytes": 30735,
+      "sha256": "87d70de496162dd1",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/thumb/cover-family-wok.jpg",
+      "category": "seed-covers",
+      "bytes": 30998,
+      "sha256": "15b31551728f8cde",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/thumb/cover-pet-ball.jpg",
+      "category": "seed-covers",
+      "bytes": 63084,
+      "sha256": "89dc5b51f86086b5",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/thumb/cover-pet-blanket.jpg",
+      "category": "seed-covers",
+      "bytes": 29112,
+      "sha256": "f22b0a9323817a91",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/thumb/cover-pet-bowl.jpg",
+      "category": "seed-covers",
+      "bytes": 27009,
+      "sha256": "81196da714ad4f2a",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/thumb/cover-pet-butterfly.jpg",
+      "category": "seed-covers",
+      "bytes": 57956,
+      "sha256": "e65f321871c1ad7a",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/thumb/cover-pet-collar.jpg",
+      "category": "seed-covers",
+      "bytes": 35264,
+      "sha256": "79e6d65c4fb0a5f3",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/thumb/cover-pet-leash.jpg",
+      "category": "seed-covers",
+      "bytes": 29662,
+      "sha256": "bc91c2e8c3227d96",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/thumb/cover-pet-nap.jpg",
+      "category": "seed-covers",
+      "bytes": 28653,
+      "sha256": "8aae8a419a578bad",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/thumb/cover-pet-seaside.jpg",
+      "category": "seed-covers",
+      "bytes": 23970,
+      "sha256": "5c69bab08fe934c0",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/thumb/cover-pet-slippers.jpg",
+      "category": "seed-covers",
+      "bytes": 32250,
+      "sha256": "2e180cfabd6dda6d",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/thumb/cover-pet-snowday.jpg",
+      "category": "seed-covers",
+      "bytes": 43309,
+      "sha256": "ee32952f15ac7d35",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/thumb/cover-pet-sunset.jpg",
+      "category": "seed-covers",
+      "bytes": 31916,
+      "sha256": "c36a8213123af7ec",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/thumb/cover-place-alley.jpg",
+      "category": "seed-covers",
+      "bytes": 41100,
+      "sha256": "42fa8e3546b0977c",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/thumb/cover-place-busstop.jpg",
+      "category": "seed-covers",
+      "bytes": 38326,
+      "sha256": "24ec0663f606832c",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/thumb/cover-place-noodle.jpg",
+      "category": "seed-covers",
+      "bytes": 28506,
+      "sha256": "93bd00d932da4cae",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/thumb/cover-place-stairlight.jpg",
+      "category": "seed-covers",
+      "bytes": 31797,
+      "sha256": "c892d11249e3c23f",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/thumb/cover-youth-bike.jpg",
+      "category": "seed-covers",
+      "bytes": 61778,
+      "sha256": "bf3c3353b0d1bd4d",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/thumb/cover-youth-controller.jpg",
+      "category": "seed-covers",
+      "bytes": 32248,
+      "sha256": "2370aeef950b23d2",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/thumb/cover-youth-desk.jpg",
+      "category": "seed-covers",
+      "bytes": 34260,
+      "sha256": "f4e522940e904c9e",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/thumb/cover-youth-drawer.jpg",
+      "category": "seed-covers",
+      "bytes": 31332,
+      "sha256": "ac20d36e65337033",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/thumb/cover-youth-hoop.jpg",
+      "category": "seed-covers",
+      "bytes": 41748,
+      "sha256": "fbee8c32a45cc895",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/thumb/last-bus-v1.jpg",
+      "category": "seed-covers",
+      "bytes": 37740,
+      "sha256": "e360087a911bc17c",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/thumb/noodle-shop-v1.jpg",
+      "category": "seed-covers",
+      "bytes": 40455,
+      "sha256": "15f2e4edc92bd286",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/thumb/red-suitcase-v1.jpg",
+      "category": "seed-covers",
+      "bytes": 28374,
+      "sha256": "bff5b52a3e18d079",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/thumb/user-basketball-v1.jpg",
+      "category": "seed-covers",
+      "bytes": 28015,
+      "sha256": "03ce3b30fb44d7df",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/thumb/user-basketball-v2.jpg",
+      "category": "seed-covers",
+      "bytes": 36944,
+      "sha256": "3baadaaa97a13c76",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/thumb/user-basketball-v3.jpg",
+      "category": "seed-covers",
+      "bytes": 27564,
+      "sha256": "6550393cf332e697",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/thumb/user-classroom-v1.jpg",
+      "category": "seed-covers",
+      "bytes": 39393,
+      "sha256": "b846b2eadf711cab",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/thumb/user-classroom-v2.jpg",
+      "category": "seed-covers",
+      "bytes": 35074,
+      "sha256": "8255d259108e9945",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/thumb/user-classroom-v3.jpg",
+      "category": "seed-covers",
+      "bytes": 34462,
+      "sha256": "cd448fe29fb7e742",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/thumb/user-last-bus-v1.jpg",
+      "category": "seed-covers",
+      "bytes": 29398,
+      "sha256": "e4346cae8589acc1",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/thumb/user-last-bus-v2.jpg",
+      "category": "seed-covers",
+      "bytes": 28234,
+      "sha256": "a80aad3d07ec7478",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/thumb/user-last-bus-v3.jpg",
+      "category": "seed-covers",
+      "bytes": 37092,
+      "sha256": "486d07fc0bd724d9",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/thumb/user-noodle-shop-v1.jpg",
+      "category": "seed-covers",
+      "bytes": 31811,
+      "sha256": "79a54d2b9fa84b39",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/thumb/user-noodle-shop-v2.jpg",
+      "category": "seed-covers",
+      "bytes": 33257,
+      "sha256": "35e0e2b8a8d005f6",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/thumb/user-noodle-shop-v3.jpg",
+      "category": "seed-covers",
+      "bytes": 41102,
+      "sha256": "659ea3c7ffa89aa1",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/user-basketball-v1.jpg",
+      "category": "seed-covers",
+      "bytes": 117876,
+      "sha256": "f9fe5e8869c4baf5",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/user-basketball-v2.jpg",
+      "category": "seed-covers",
+      "bytes": 140006,
+      "sha256": "c539f8fa04287b44",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/user-basketball-v3.jpg",
+      "category": "seed-covers",
+      "bytes": 109952,
+      "sha256": "9a6b46bab926f50c",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/user-classroom-v1.jpg",
+      "category": "seed-covers",
+      "bytes": 163255,
+      "sha256": "72d46e1085660041",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/user-classroom-v2.jpg",
+      "category": "seed-covers",
+      "bytes": 131900,
+      "sha256": "f5e099a6b759979a",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/user-classroom-v3.jpg",
+      "category": "seed-covers",
+      "bytes": 132004,
+      "sha256": "be27232e65ce5bf9",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/user-last-bus-v1.jpg",
+      "category": "seed-covers",
+      "bytes": 112730,
+      "sha256": "e43877998bb204c8",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/user-last-bus-v2.jpg",
+      "category": "seed-covers",
+      "bytes": 128791,
+      "sha256": "2653ee90606ca1f3",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/user-last-bus-v3.jpg",
+      "category": "seed-covers",
+      "bytes": 140288,
+      "sha256": "5d515e9d4fa1718e",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/user-noodle-shop-v1.jpg",
+      "category": "seed-covers",
+      "bytes": 130076,
+      "sha256": "959abe3bac6380ce",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/user-noodle-shop-v2.jpg",
+      "category": "seed-covers",
+      "bytes": 132174,
+      "sha256": "e224de4f4f65baa4",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    },
+    {
+      "path": "seed-covers/user-noodle-shop-v3.jpg",
+      "category": "seed-covers",
+      "bytes": 171444,
+      "sha256": "8af38cccd78745f2",
+      "source": "ai-generated",
+      "licenseNote": "内部生成，无肖像/无文字/无商标；正式上线前若换真实内容须逐条取得授权"
+    }
+  ]
+}

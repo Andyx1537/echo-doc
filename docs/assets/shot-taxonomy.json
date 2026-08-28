@@ -1,0 +1,525 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "meta": {
+    "name": "echo-seed-cover-shot-taxonomy",
+    "version": "1.0.0",
+    "updatedAt": "2026-08-24",
+    "spec": "Echo/docs/SPEC-visual-shot-taxonomy.md",
+    "plan": "Echo/docs/assets/seed-cover-shot-plan.md",
+    "scope": "共鸣厅种子封面（Echo-assets/static/seed-covers/）的出图规划枚举",
+    "baselineCount": 43,
+    "aspectRatio": "2:3",
+    "purpose": "供脚本做组合生成、配额校验与去重；不含任何图片本身",
+    "formatRationale": "选 JSON 而非 TypeScript 常量：出图侧是 Python/Shell 脚本，前端与文档亦需读取；JSON 语言中立、可直接被 jq/校验器消费，且不会被误当成运行时业务代码打进前端包"
+  },
+
+  "dimensions": {
+    "focal": {
+      "label": "焦距",
+      "unit": "mm",
+      "rule": "主力 44/50；38-40 用于交代地点；28/35 为受限广角档；85 已废除",
+      "values": [
+        {
+          "code": "F28",
+          "mm": 28,
+          "label": "28mm 广角",
+          "effect": "纵深强、边缘有畸变、容易把主体推远",
+          "allowedThemeLines": ["campus", "transit", "factory", "leisure", "season"],
+          "guardrails": [
+            "画面近处必须有可辨识前景锚点（栏杆/课桌角/车把/雪堆/板凳）",
+            "主体高度不小于画面高度的 1/5",
+            "人脸不得靠近画框边缘（畸变会拉脸）"
+          ],
+          "quota": { "min": 1, "max": 3 }
+        },
+        {
+          "code": "F35",
+          "mm": 35,
+          "label": "35mm 环境广角",
+          "effect": "交代地点的同时主体仍在中景，畸变可控",
+          "allowedThemeLines": ["campus", "home", "street", "transit", "factory", "leisure", "season", "pet"],
+          "guardrails": ["主体与镜头距离 ≥1.5m，避免近大远小失真"],
+          "quota": { "min": 5, "max": 8 }
+        },
+        {
+          "code": "F38",
+          "mm": 38,
+          "label": "38mm 交代档",
+          "effect": "接近人眼但带出环境关系",
+          "allowedThemeLines": ["*"],
+          "guardrails": [],
+          "quota": { "min": 3, "max": 5 }
+        },
+        {
+          "code": "F40",
+          "mm": 40,
+          "label": "40mm 交代档",
+          "effect": "环境与主体权重接近 1:1",
+          "allowedThemeLines": ["*"],
+          "guardrails": [],
+          "quota": { "min": 5, "max": 7 }
+        },
+        {
+          "code": "F44",
+          "mm": 44,
+          "label": "44mm 主力",
+          "effect": "人眼视角，主体确定、环境仍完整",
+          "allowedThemeLines": ["*"],
+          "guardrails": [],
+          "quota": { "min": 10, "max": 12 }
+        },
+        {
+          "code": "F50",
+          "mm": 50,
+          "label": "50mm 主力",
+          "effect": "轻微压缩，主体更实、背景更整齐",
+          "allowedThemeLines": ["*"],
+          "guardrails": [],
+          "quota": { "min": 9, "max": 12 }
+        },
+        {
+          "code": "F60",
+          "mm": 60,
+          "label": "60mm 收束档",
+          "effect": "压掉杂乱背景，但极易滑向特写",
+          "allowedThemeLines": ["*"],
+          "guardrails": ["景别不得超过中近景；禁止用于单件物体"],
+          "quota": { "min": 0, "max": 4 }
+        }
+      ],
+      "retired": [
+        { "code": "F85", "mm": 85, "reason": "特写压缩感与产品图观感，已废除" },
+        { "code": "F24", "mm": 24, "reason": "超广作为默认值已废除；广角需求由 F28/F35 受限承接" }
+      ],
+      "groupQuota": {
+        "wideAngle": { "codes": ["F28", "F35"], "min": 8, "max": 10, "note": "回应『广角也要带点』，但不回到无约束状态" },
+        "core": { "codes": ["F44", "F50"], "min": 20, "max": 24 }
+      }
+    },
+
+    "aperture": {
+      "label": "光圈",
+      "rule": "与硬约束『背景要可读』直接挂钩：背景中至少一个次级信息（黑板/晾衣绳/店招轮廓/远处人影/窗格）保持可辨形状",
+      "values": [
+        {
+          "code": "A20",
+          "fstop": "f/2.0",
+          "backgroundLegibility": "弱",
+          "allowedWhen": [
+            "夜晚或室内弱光，且背景本身是点光源散景、不承载叙事信息",
+            "主体与背景距离 ≤3m，虚化不足以抹掉形状"
+          ],
+          "quota": { "min": 0, "max": 3 }
+        },
+        {
+          "code": "A28",
+          "fstop": "f/2.8",
+          "backgroundLegibility": "中",
+          "allowedWhen": ["室内人像主力；背景须保留可辨轮廓（门框/柜面/窗格）"],
+          "quota": { "min": 6, "max": 10 }
+        },
+        {
+          "code": "A40",
+          "fstop": "f/4",
+          "backgroundLegibility": "好",
+          "allowedWhen": ["通用主力，任何题材"],
+          "quota": { "min": 12, "max": 16 }
+        },
+        {
+          "code": "A56",
+          "fstop": "f/5.6",
+          "backgroundLegibility": "很好",
+          "allowedWhen": ["多人叙事、环境关系需要同时清楚"],
+          "quota": { "min": 10, "max": 14 }
+        },
+        {
+          "code": "A80",
+          "fstop": "f/8",
+          "backgroundLegibility": "全清",
+          "allowedWhen": ["大场面、纵深空景、群像"],
+          "quota": { "min": 2, "max": 6 }
+        }
+      ]
+    },
+
+    "daypart": {
+      "label": "时间·时段",
+      "rule": "矫正『全是昏黄』：明亮时段必须占多数",
+      "values": [
+        { "code": "T_DAWN", "label": "清晨", "light": "低色温、薄雾、长影、空气感", "quota": { "min": 3, "max": 5 } },
+        { "code": "T_MORN", "label": "上午", "light": "斜射硬光但不刺眼，阴影有方向", "quota": { "min": 5, "max": 8 } },
+        { "code": "T_NOON", "label": "正午", "light": "顶光、短影、对比高，需柔化", "quota": { "min": 1, "max": 3 } },
+        { "code": "T_AFT", "label": "午后", "light": "暖白、窗光成块、尘埃可见", "quota": { "min": 7, "max": 10 } },
+        { "code": "T_DUSK", "label": "黄昏", "light": "低角度金色、剪影倾向", "quota": { "min": 5, "max": 7 } },
+        { "code": "T_BLUE", "label": "蓝调", "light": "天空冷蓝 + 室内暖灯的双色温", "quota": { "min": 4, "max": 6 } },
+        { "code": "T_NIGHT", "label": "夜晚", "light": "点光源为主，需保留暗部层次", "quota": { "min": 4, "max": 6 } },
+        { "code": "T_INDOOR", "label": "室内人工光", "light": "白炽/日光灯，色温单一", "quota": { "min": 3, "max": 5 }, "note": "可与上列叠加，作为补充轴" }
+      ],
+      "groupQuota": {
+        "bright": { "codes": ["T_DAWN", "T_MORN", "T_NOON", "T_AFT"], "min": 18, "note": "≥42%，直接对冲当前图库的昏黄同质化" },
+        "dim": { "codes": ["T_DUSK", "T_BLUE", "T_NIGHT"], "max": 18 }
+      }
+    },
+
+    "era": {
+      "label": "时间·年代",
+      "rule": "主力落 90s–00s（集体记忆峰值），但当代必须有，否则整个图库像博物馆",
+      "alignsWith": "ART.md §3.1 年代轴 E1–E5",
+      "values": [
+        {
+          "code": "E1",
+          "label": "80s",
+          "props": ["搪瓷盆/搪瓷缸", "竹壳暖水瓶", "二八自行车", "绿漆墙裙", "白炽灯泡", "水泥地", "木格窗", "铝饭盒"],
+          "palette": "偏黄绿、低对比、颗粒明显",
+          "quota": { "min": 4, "max": 6 }
+        },
+        {
+          "code": "E2",
+          "label": "90s",
+          "props": ["CRT 电视/显示器", "脚踏缝纫机", "蜂窝煤炉", "彩条塑料布", "卷闸门", "马赛克瓷砖", "折叠木椅", "台式风扇"],
+          "palette": "暖黄 + 青绿，中低饱和",
+          "quota": { "min": 10, "max": 12 }
+        },
+        {
+          "code": "E3",
+          "label": "00s",
+          "props": ["网吧机箱", "复读机", "铝合金推拉窗", "马赛克外墙小楼", "面包车", "塑料凉椅", "挂历", "热水器"],
+          "palette": "偏冷的日光 + 荧光灯白",
+          "quota": { "min": 10, "max": 12 }
+        },
+        {
+          "code": "E4",
+          "label": "10s",
+          "props": ["贴膜手机", "快递纸箱", "LED 灯带", "不锈钢晾衣架", "电动车", "塑钢窗"],
+          "palette": "干净中性、轻微冷调",
+          "quota": { "min": 6, "max": 8 }
+        },
+        {
+          "code": "E5",
+          "label": "当代",
+          "props": ["滚筒洗衣机", "扫地机器人", "外卖保温箱", "玻璃幕墙倒影", "共享单车"],
+          "palette": "明亮、低对比、接近直出",
+          "quota": { "min": 6, "max": 8 }
+        }
+      ],
+      "antiPattern": "年代含混——同画面混入跨代器物（如 90s 场景里出现智能手机、E1 场景出现塑钢窗）。含混即判不合格，须在负向词里显式排除"
+    },
+
+    "framing": {
+      "label": "视野·景别",
+      "values": [
+        { "code": "FR1", "label": "大远景", "desc": "城市/雪原/操场全貌，人物为剪影尺度", "quota": { "min": 0, "max": 3 } },
+        { "code": "FR2", "label": "远景", "desc": "完整场景 + 小尺度但可辨的人物", "quota": { "min": 4, "max": 7 } },
+        { "code": "FR3", "label": "全景", "desc": "主体全身 + 完整环境（主力）", "quota": { "min": 12, "max": 16 } },
+        { "code": "FR4", "label": "中景", "desc": "腰以上，环境仍可读（主力）", "quota": { "min": 10, "max": 14 } },
+        { "code": "FR5", "label": "中近景", "desc": "胸以上或侧背影，背景须保留形状", "quota": { "min": 0, "max": 6 } }
+      ],
+      "forbidden": [
+        { "code": "FR6", "label": "特写", "reason": "构图红线：不要物体大特写、不要人物特写" },
+        { "code": "FR7", "label": "微距", "reason": "构图红线：不要微距" }
+      ],
+      "guardrails": [
+        "FR1/FR2 下主体不得退化为『远处的小点』：主体像素高度 ≥ 画面高度 1/5",
+        "前景人物不得被画框裁切，全身须在框内（FR4/FR5 的坐姿半身除外，须在计划表显式标注例外）",
+        "不要『特别远的局部』——既远又只拍局部，两个红线同时踩"
+      ]
+    },
+
+    "subject": {
+      "label": "主体内容",
+      "rule": "活物 7 成、空景 3 成",
+      "values": [
+        { "code": "SB1", "label": "人", "quota": { "min": 16, "max": 20 } },
+        { "code": "SB2", "label": "动物", "quota": { "min": 5, "max": 8 } },
+        { "code": "SB3", "label": "人+动物", "quota": { "min": 4, "max": 7 } },
+        {
+          "code": "SB4",
+          "label": "纯环境",
+          "quota": { "min": 12, "max": 14 },
+          "requires": "absenceAnchor",
+          "note": "必须传达『缺席感』而非单纯空荡"
+        }
+      ],
+      "groupQuota": {
+        "living": { "codes": ["SB1", "SB2", "SB3"], "target": 30, "ratio": 0.7 },
+        "empty": { "codes": ["SB4"], "target": 13, "ratio": 0.3 }
+      },
+      "facePolicy": {
+        "tier": "B",
+        "rule": "侧脸 / 低头 / 发丝遮挡，柔化到不可辨识；全身在框内不被裁切",
+        "forbidden": ["可辨识的真实人脸", "正面直视镜头", "证件照式头像"]
+      },
+      "absenceAnchors": [
+        "还在轻晃的秋千 / 门帘",
+        "没收的碗筷、还剩半碗的面",
+        "门开着一条缝，光从里面漏出来",
+        "拖鞋摆歪、一只朝里一只朝外",
+        "灯还亮着但椅子空着",
+        "水盆里刚落下的涟漪",
+        "刚被压过的草地 / 雪上单排脚印",
+        "晾着的一件小号衣服"
+      ]
+    },
+
+    "region": {
+      "label": "地域",
+      "values": [
+        {
+          "code": "R_NORTH",
+          "label": "北方",
+          "architecture": "灰砖/红砖平房与家属楼、门墩、平顶、暖气片",
+          "vegetation": "白杨、槐树、冬季落叶",
+          "climate": "干燥，冬季煤烟与呵气",
+          "light": "硬光、影子边缘清晰",
+          "palette": "暖灰、土黄、砖红",
+          "quota": { "min": 8, "max": 10 }
+        },
+        {
+          "code": "R_JIANGNAN",
+          "label": "江南",
+          "architecture": "白墙黛瓦、石库门、青石板、天井",
+          "vegetation": "香樟、爬山虎、盆栽",
+          "climate": "梅雨、潮湿、苔痕",
+          "light": "漫射柔光，少硬阴影",
+          "palette": "青灰、米白、墨绿",
+          "quota": { "min": 7, "max": 9 }
+        },
+        {
+          "code": "R_LINGNAN",
+          "label": "岭南",
+          "architecture": "骑楼廊柱、趟栊门、防盗网、卷闸",
+          "vegetation": "榕树气根、芭蕉、三角梅",
+          "climate": "湿热、雨后蒸腾",
+          "light": "顶光强、廊下大片阴影",
+          "palette": "偏绿的暖调、灰米色",
+          "quota": { "min": 5, "max": 6 }
+        },
+        {
+          "code": "R_SOUTHWEST",
+          "label": "西南",
+          "architecture": "山城台阶、吊脚楼、坡道、挡土墙",
+          "vegetation": "黄葛树、湿生蕨类",
+          "climate": "多雾、少直射",
+          "light": "低对比、空气透视强",
+          "palette": "青蓝、灰绿",
+          "quota": { "min": 4, "max": 5 }
+        },
+        {
+          "code": "R_COASTAL",
+          "label": "沿海",
+          "architecture": "海堤、渔村矮房、盐蚀铁件",
+          "vegetation": "木麻黄、耐盐草",
+          "climate": "海风、盐雾",
+          "light": "明亮泛白、反差被水汽压低",
+          "palette": "冷蓝、褪白",
+          "quota": { "min": 3, "max": 4 }
+        },
+        {
+          "code": "R_COUNTY",
+          "label": "县城",
+          "architecture": "贴白瓷砖小楼、卷闸门、杂乱电线、水泥街",
+          "vegetation": "行道树修剪粗糙",
+          "climate": "四季分明但无特征",
+          "light": "平淡自然光",
+          "palette": "中性、略脏的白",
+          "quota": { "min": 6, "max": 8 }
+        },
+        {
+          "code": "R_METRO",
+          "label": "大城市",
+          "architecture": "新旧夹杂、玻璃幕墙倒影、高架、老小区",
+          "vegetation": "绿化带、行道树成排",
+          "climate": "无特征",
+          "light": "混合色温（路灯 + 霓虹 + 幕墙反光）",
+          "palette": "冷暖混杂、层次多",
+          "quota": { "min": 5, "max": 7 }
+        }
+      ]
+    }
+  },
+
+  "themeLines": [
+    {
+      "code": "campus",
+      "label": "校园线",
+      "quota": { "max": 8 },
+      "themes": [
+        { "code": "campus-classroom", "label": "教室", "props": ["吊扇", "木课桌", "绿黑板", "布窗帘", "挂钟"], "era": ["E2", "E3", "E4"], "region": ["R_NORTH", "R_JIANGNAN", "R_COUNTY"], "focal": ["F44", "F50"], "aperture": ["A40", "A56"], "daypart": ["T_MORN", "T_AFT"], "wideAngle": false, "absenceCapable": true },
+        { "code": "campus-playground", "label": "操场", "props": ["煤渣/塑胶跑道", "单杠", "旗杆", "水泥看台", "篮球架"], "era": ["E2", "E3", "E4"], "region": ["R_NORTH", "R_COUNTY"], "focal": ["F28", "F35"], "aperture": ["A56", "A80"], "daypart": ["T_AFT", "T_DUSK"], "wideAngle": true, "absenceCapable": true },
+        { "code": "campus-dorm", "label": "宿舍", "props": ["上下铺", "蚊帐", "暖水瓶", "室内晾衣绳", "台灯"], "era": ["E3", "E4"], "region": ["R_JIANGNAN", "R_COUNTY", "R_METRO"], "focal": ["F35", "F40"], "aperture": ["A28"], "daypart": ["T_NIGHT", "T_INDOOR"], "wideAngle": true, "absenceCapable": true },
+        { "code": "campus-shop", "label": "小卖部", "props": ["冰柜", "铁皮货架", "玻璃罐", "卷闸门", "塑料帘"], "era": ["E2", "E3"], "region": ["R_COUNTY", "R_NORTH"], "focal": ["F40", "F44"], "aperture": ["A40"], "daypart": ["T_AFT"], "wideAngle": false, "absenceCapable": false },
+        { "code": "campus-wayhome", "label": "放学路", "props": ["行道树", "自行车", "书包", "路缘石", "长影"], "era": ["E2", "E3"], "region": ["R_NORTH", "R_JIANGNAN"], "focal": ["F44", "F50"], "aperture": ["A40"], "daypart": ["T_DUSK"], "wideAngle": false, "absenceCapable": true },
+        { "code": "campus-blackboard", "label": "黑板报", "props": ["粉笔灰", "彩色粉笔", "板凳", "后墙报栏"], "era": ["E2", "E3"], "region": ["R_NORTH", "R_COUNTY"], "focal": ["F50"], "aperture": ["A40"], "daypart": ["T_AFT"], "wideAngle": false, "absenceCapable": true, "complianceNote": "黑板报天然带字——必须处理为纯色块/擦花的粉笔痕/背对角度，不得出现可读文字" }
+      ]
+    },
+    {
+      "code": "home",
+      "label": "家庭线",
+      "quota": { "max": 8 },
+      "themes": [
+        { "code": "home-tongzilou", "label": "筒子楼走廊", "props": ["公用灶台", "煤炉", "走廊晾衣绳", "吊灯泡", "杂物堆"], "era": ["E1", "E2"], "region": ["R_NORTH", "R_JIANGNAN"], "focal": ["F28", "F35"], "aperture": ["A40"], "daypart": ["T_DUSK", "T_NIGHT"], "wideAngle": true, "absenceCapable": true },
+        { "code": "home-compound", "label": "家属院·大院", "props": ["红砖楼", "自行车棚", "石桌石凳", "晾晒被褥"], "era": ["E1", "E2", "E3"], "region": ["R_NORTH"], "focal": ["F35", "F40"], "aperture": ["A56"], "daypart": ["T_AFT", "T_MORN"], "wideAngle": true, "absenceCapable": false },
+        { "code": "home-kitchen", "label": "厨房", "props": ["铁锅", "瓷砖墙", "抽油烟机", "蒸汽", "菜篮"], "era": ["E2", "E3", "E4"], "region": ["R_JIANGNAN", "R_LINGNAN", "R_COUNTY"], "focal": ["F44", "F50"], "aperture": ["A28"], "daypart": ["T_DUSK", "T_INDOOR"], "wideAngle": false, "absenceCapable": true },
+        { "code": "home-balcony", "label": "阳台", "props": ["晾衣架", "花盆", "洗衣机", "纱窗", "小板凳"], "era": ["E4", "E5"], "region": ["R_METRO", "R_COUNTY"], "focal": ["F38", "F44"], "aperture": ["A40"], "daypart": ["T_MORN", "T_AFT"], "wideAngle": false, "absenceCapable": true },
+        { "code": "home-livingroom", "label": "客厅电视机", "props": ["CRT 电视", "沙发罩", "茶几", "蒲扇", "毛线垫"], "era": ["E1", "E2", "E3"], "region": ["R_NORTH", "R_JIANGNAN"], "focal": ["F40", "F44"], "aperture": ["A28"], "daypart": ["T_NIGHT", "T_INDOOR"], "wideAngle": false, "absenceCapable": true },
+        { "code": "home-sewing", "label": "缝纫机·针线", "props": ["脚踏缝纫机", "线轴盘", "软尺", "台灯", "布料叠"], "era": ["E1", "E2"], "region": ["R_NORTH", "R_JIANGNAN"], "focal": ["F50"], "aperture": ["A28"], "daypart": ["T_BLUE", "T_INDOOR"], "wideAngle": false, "absenceCapable": true },
+        { "code": "home-washcorner", "label": "搪瓷盆与盥洗角", "props": ["搪瓷盆", "毛巾架", "水泥台", "旧镜子", "肥皂盒"], "era": ["E1", "E2"], "region": ["R_NORTH", "R_COUNTY"], "focal": ["F44", "F50"], "aperture": ["A40"], "daypart": ["T_DAWN"], "wideAngle": false, "absenceCapable": true, "riskNote": "极易滑向静物特写——必须拍成『盥洗角落 + 人在旁或刚离开』，景别不得窄于 FR3" }
+      ]
+    },
+    {
+      "code": "street",
+      "label": "街巷线",
+      "quota": { "max": 8 },
+      "themes": [
+        { "code": "street-hutong", "label": "北方胡同", "props": ["灰砖墙", "门墩", "老槐树", "自行车", "鸽笼"], "era": ["E2", "E3", "E4"], "region": ["R_NORTH"], "focal": ["F35", "F40"], "aperture": ["A56"], "daypart": ["T_MORN"], "wideAngle": true, "absenceCapable": true },
+        { "code": "street-longtang", "label": "江南弄堂", "props": ["石库门", "竹晾竿", "青石板", "煤球炉", "老虎窗"], "era": ["E2", "E3"], "region": ["R_JIANGNAN"], "focal": ["F35", "F44"], "aperture": ["A40"], "daypart": ["T_DAWN", "T_MORN"], "wideAngle": true, "absenceCapable": true },
+        { "code": "street-qilou", "label": "岭南骑楼", "props": ["廊柱", "卷帘", "榕树气根", "趟栊门", "防盗网"], "era": ["E2", "E3", "E4"], "region": ["R_LINGNAN"], "focal": ["F35", "F40"], "aperture": ["A56"], "daypart": ["T_AFT", "T_NOON"], "wideAngle": true, "absenceCapable": false },
+        { "code": "street-nightmarket", "label": "夜市·大排档", "props": ["塑料凳", "串灯", "炒锅火焰", "折叠桌", "遮阳棚"], "era": ["E3", "E4", "E5"], "region": ["R_LINGNAN", "R_COUNTY", "R_METRO"], "focal": ["F35", "F44"], "aperture": ["A28"], "daypart": ["T_NIGHT"], "wideAngle": true, "absenceCapable": false, "complianceNote": "摊位招牌必须无字：用纯色布幔、背面角度或深度虚化处理" },
+        { "code": "street-barber", "label": "理发店", "props": ["转筒灯", "皮转椅", "镜墙", "白围布", "喷壶"], "era": ["E2", "E3"], "region": ["R_COUNTY", "R_NORTH"], "focal": ["F40", "F44"], "aperture": ["A40"], "daypart": ["T_AFT"], "wideAngle": false, "absenceCapable": true },
+        { "code": "street-repair", "label": "修车摊", "props": ["补胎水盆", "扳手", "旧自行车", "小马扎", "油污布"], "era": ["E2", "E3", "E4"], "region": ["R_COUNTY", "R_NORTH"], "focal": ["F44", "F50"], "aperture": ["A40"], "daypart": ["T_MORN"], "wideAngle": false, "absenceCapable": false },
+        { "code": "street-payphone", "label": "公用电话亭", "props": ["绿色话亭", "磁卡机", "雨棚", "电线", "路缘"], "era": ["E2", "E3"], "region": ["R_METRO", "R_COUNTY"], "focal": ["F44", "F50"], "aperture": ["A28"], "daypart": ["T_NIGHT", "T_BLUE"], "wideAngle": false, "absenceCapable": true }
+      ]
+    },
+    {
+      "code": "transit",
+      "label": "交通线",
+      "quota": { "max": 7 },
+      "themes": [
+        { "code": "transit-greentrain", "label": "绿皮火车", "props": ["硬座", "小桌板", "搪瓷缸", "行李架", "车窗"], "era": ["E1", "E2", "E3"], "region": ["R_NORTH", "R_COUNTY"], "focal": ["F35", "F44"], "aperture": ["A40"], "daypart": ["T_AFT"], "wideAngle": true, "absenceCapable": true },
+        { "code": "transit-bus", "label": "公交车", "props": ["吊环把手", "售票员座", "车窗雾气", "投币箱", "扶杆"], "era": ["E2", "E3", "E4"], "region": ["R_METRO", "R_COUNTY"], "focal": ["F35", "F44"], "aperture": ["A28"], "daypart": ["T_DUSK", "T_NIGHT"], "wideAngle": true, "absenceCapable": true },
+        { "code": "transit-bikeflow", "label": "自行车流", "props": ["二八自行车", "车铃", "路口", "岗亭", "人潮"], "era": ["E1", "E2"], "region": ["R_NORTH", "R_METRO"], "focal": ["F40", "F50"], "aperture": ["A56"], "daypart": ["T_DAWN", "T_MORN"], "wideAngle": false, "absenceCapable": false },
+        { "code": "transit-chunyun", "label": "春运候车", "props": ["编织袋", "候车厅长椅", "地铺报纸", "搪瓷盆", "棉衣"], "era": ["E2", "E3"], "region": ["R_NORTH", "R_METRO"], "focal": ["F28", "F35"], "aperture": ["A80"], "daypart": ["T_MORN", "T_NIGHT"], "wideAngle": true, "absenceCapable": false },
+        { "code": "transit-ferry", "label": "轮渡", "props": ["白漆栏杆", "救生圈", "江面", "缆绳", "汽笛管"], "era": ["E2", "E3", "E4"], "region": ["R_COASTAL", "R_SOUTHWEST", "R_METRO"], "focal": ["F35", "F44"], "aperture": ["A56"], "daypart": ["T_DAWN", "T_DUSK"], "wideAngle": true, "absenceCapable": true },
+        { "code": "transit-motor", "label": "摩的·三轮", "props": ["雨棚", "坐垫补丁", "县城路口", "塑料筐"], "era": ["E3", "E4"], "region": ["R_COUNTY", "R_SOUTHWEST"], "focal": ["F40", "F44"], "aperture": ["A40"], "daypart": ["T_AFT"], "wideAngle": false, "absenceCapable": false }
+      ]
+    },
+    {
+      "code": "factory",
+      "label": "工厂线",
+      "quota": { "max": 6 },
+      "themes": [
+        { "code": "factory-workshop", "label": "国营厂车间", "props": ["机床", "天窗光柱", "蓝工装", "油污地面", "行车"], "era": ["E1", "E2"], "region": ["R_NORTH"], "focal": ["F35", "F44"], "aperture": ["A40"], "daypart": ["T_MORN"], "wideAngle": true, "absenceCapable": true },
+        { "code": "factory-village", "label": "工人新村", "props": ["红砖排楼", "统一窗框", "晾晒竿", "车棚", "石阶"], "era": ["E1", "E2", "E3"], "region": ["R_NORTH", "R_JIANGNAN"], "focal": ["F35", "F40"], "aperture": ["A56"], "daypart": ["T_AFT"], "wideAngle": true, "absenceCapable": true },
+        { "code": "factory-hall", "label": "大礼堂", "props": ["木折椅", "舞台幕布", "吊灯", "石膏线", "红绒"], "era": ["E1", "E2"], "region": ["R_NORTH"], "focal": ["F28", "F35"], "aperture": ["A56"], "daypart": ["T_AFT"], "wideAngle": true, "absenceCapable": true },
+        { "code": "factory-loudspeaker", "label": "广播喇叭", "props": ["水泥电线杆", "白瓷喇叭", "电线", "天空", "屋脊"], "era": ["E1", "E2"], "region": ["R_NORTH", "R_COUNTY"], "focal": ["F50", "F60"], "aperture": ["A40"], "daypart": ["T_DAWN"], "wideAngle": false, "absenceCapable": true, "riskNote": "极易滑向物体特写——必须保留电线杆全高与周边屋顶/天空环境" },
+        { "code": "factory-canteen", "label": "食堂", "props": ["不锈钢餐盘", "长条桌", "打饭窗口", "搪瓷碗", "白瓷砖"], "era": ["E1", "E2", "E3"], "region": ["R_NORTH"], "focal": ["F35", "F44"], "aperture": ["A40"], "daypart": ["T_NOON"], "wideAngle": true, "absenceCapable": false }
+      ]
+    },
+    {
+      "code": "leisure",
+      "label": "娱乐线",
+      "quota": { "max": 7 },
+      "themes": [
+        { "code": "leisure-videohall", "label": "录像厅", "props": ["CRT 大电视", "折叠椅", "厚门帘", "烟雾", "地面瓜子壳"], "era": ["E2"], "region": ["R_COUNTY", "R_METRO"], "focal": ["F40", "F44"], "aperture": ["A28"], "daypart": ["T_NIGHT"], "wideAngle": false, "absenceCapable": true },
+        { "code": "leisure-arcade", "label": "游戏厅", "props": ["街机柜", "摇杆按键", "屏幕冷光", "塑料凳", "兑币窗"], "era": ["E2", "E3"], "region": ["R_METRO", "R_COUNTY"], "focal": ["F44", "F50"], "aperture": ["A28"], "daypart": ["T_NIGHT"], "wideAngle": false, "absenceCapable": false, "complianceNote": "街机屏幕不得出现可读画面文字，用抽象光斑/像素色块处理" },
+        { "code": "leisure-rink", "label": "溜冰场", "props": ["旱冰鞋", "镜球", "木地板", "彩灯", "护栏"], "era": ["E2", "E3"], "region": ["R_COUNTY", "R_METRO"], "focal": ["F35", "F40"], "aperture": ["A40"], "daypart": ["T_NIGHT"], "wideAngle": true, "absenceCapable": true },
+        { "code": "leisure-ballroom", "label": "歌舞厅", "props": ["沙发卡座", "彩灯", "话筒架", "地毯", "吧台"], "era": ["E2", "E3"], "region": ["R_METRO"], "focal": ["F40", "F44"], "aperture": ["A28"], "daypart": ["T_NIGHT"], "wideAngle": false, "absenceCapable": true },
+        { "code": "leisure-openair", "label": "露天电影", "props": ["白幕布", "长板凳", "投影光柱", "星空", "土场地"], "era": ["E1", "E2"], "region": ["R_COUNTY", "R_NORTH"], "focal": ["F28", "F35"], "aperture": ["A28", "A40"], "daypart": ["T_NIGHT"], "wideAngle": true, "absenceCapable": true, "complianceNote": "幕布画面必须为无内容的光斑或纯白过曝，不得出现可辨影像与字幕" },
+        { "code": "leisure-poolhall", "label": "台球厅·棋摊", "props": ["球杆架", "台呢", "小马扎", "树荫", "搪瓷缸"], "era": ["E3", "E4"], "region": ["R_COUNTY", "R_SOUTHWEST"], "focal": ["F44", "F50"], "aperture": ["A40"], "daypart": ["T_AFT"], "wideAngle": false, "absenceCapable": false }
+      ]
+    },
+    {
+      "code": "season",
+      "label": "自然与节令线",
+      "quota": { "max": 7 },
+      "themes": [
+        { "code": "season-summernight", "label": "夏夜纳凉", "props": ["竹床", "蒲扇", "路灯", "西瓜", "凉席"], "era": ["E1", "E2", "E3"], "region": ["R_JIANGNAN", "R_COUNTY"], "focal": ["F40", "F44"], "aperture": ["A28"], "daypart": ["T_NIGHT"], "wideAngle": true, "absenceCapable": true },
+        { "code": "season-snow", "label": "雪天", "props": ["屋檐冰凌", "煤堆", "脚印", "棉门帘", "扫帚"], "era": ["E1", "E2", "E3", "E4"], "region": ["R_NORTH"], "focal": ["F35", "F44"], "aperture": ["A56"], "daypart": ["T_MORN"], "wideAngle": true, "absenceCapable": true },
+        { "code": "season-plumrain", "label": "梅雨", "props": ["湿伞", "青苔", "雨棚滴水", "水洼", "潮痕"], "era": ["E2", "E3", "E4"], "region": ["R_JIANGNAN"], "focal": ["F44", "F50"], "aperture": ["A40"], "daypart": ["T_AFT"], "wideAngle": false, "absenceCapable": true, "riskNote": "潮湿反光题材当前已严重超配，本线最多再占 1 张" },
+        { "code": "season-harvest", "label": "秋收·晒谷场", "props": ["稻草垛", "竹匾", "木耙", "土狗", "谷堆"], "era": ["E1", "E2", "E3"], "region": ["R_JIANGNAN", "R_COUNTY"], "focal": ["F28", "F35"], "aperture": ["A80"], "daypart": ["T_AFT"], "wideAngle": true, "absenceCapable": false },
+        { "code": "season-newyear", "label": "年节", "props": ["蒸笼", "红灯笼", "鞭炮纸屑", "年画色块", "圆桌"], "era": ["E1", "E2", "E3", "E4"], "region": ["R_NORTH", "R_JIANGNAN"], "focal": ["F40", "F44"], "aperture": ["A40"], "daypart": ["T_DUSK"], "wideAngle": true, "absenceCapable": true, "complianceNote": "春联/年画天然带字——只用纯红纸、背面、或远景深度虚化，禁止任何可读笔画" },
+        { "code": "season-riverbank", "label": "河堤·江边", "props": ["长椅", "芦苇", "堤坝台阶", "风筝", "石栏"], "era": ["E2", "E3", "E4", "E5"], "region": ["R_SOUTHWEST", "R_COASTAL", "R_METRO"], "focal": ["F35", "F44"], "aperture": ["A56"], "daypart": ["T_DUSK"], "wideAngle": true, "absenceCapable": true }
+      ]
+    },
+    {
+      "code": "pet",
+      "label": "宠物线",
+      "quota": { "max": 8 },
+      "crossCutting": true,
+      "principle": "宠物必须长在上述生活场景里，禁止孤立的宠物特写与摄影棚感",
+      "themes": [
+        { "code": "pet-courtyard", "label": "院里的狗", "props": ["石阶", "水盆", "藤椅", "树影", "扫帚"], "era": ["E1", "E2", "E3"], "region": ["R_JIANGNAN", "R_COUNTY"], "focal": ["F44", "F50"], "aperture": ["A40"], "daypart": ["T_AFT"], "wideAngle": false, "absenceCapable": true },
+        { "code": "pet-balcony", "label": "阳台上的猫", "props": ["纸箱", "晾衣杆", "玻璃反光", "花盆", "纱窗"], "era": ["E4", "E5"], "region": ["R_METRO", "R_COUNTY"], "focal": ["F44", "F50"], "aperture": ["A28"], "daypart": ["T_MORN"], "wideAngle": false, "absenceCapable": true },
+        { "code": "pet-walk", "label": "傍晚遛狗", "props": ["路缘石", "长影", "牵引绳", "行道树", "行人"], "era": ["E3", "E4", "E5"], "region": ["R_METRO", "R_COUNTY"], "focal": ["F40", "F44"], "aperture": ["A40"], "daypart": ["T_DUSK"], "wideAngle": true, "absenceCapable": true },
+        { "code": "pet-shopcat", "label": "店里的猫", "props": ["柜台", "货架", "卷帘门缝光", "纸箱", "算盘"], "era": ["E3", "E4", "E5"], "region": ["R_LINGNAN", "R_COUNTY"], "focal": ["F44", "F50"], "aperture": ["A28"], "daypart": ["T_AFT"], "wideAngle": false, "absenceCapable": false },
+        { "code": "pet-snow", "label": "雪地里的动物", "props": ["单排脚印", "雪堆", "棉门帘", "冰凌"], "era": ["E2", "E3", "E4", "E5"], "region": ["R_NORTH"], "focal": ["F44", "F50"], "aperture": ["A40"], "daypart": ["T_MORN"], "wideAngle": false, "absenceCapable": true },
+        { "code": "pet-doorway", "label": "门口·空着的窝", "props": ["拖鞋", "门槛", "光斑", "空窝", "水碗"], "era": ["E2", "E3", "E4", "E5"], "region": ["R_COUNTY", "R_METRO"], "focal": ["F40", "F44"], "aperture": ["A40"], "daypart": ["T_AFT"], "wideAngle": false, "absenceCapable": true, "note": "本枚举中『缺席』表达的代表题材，但必须是环境全景而非拖鞋特写" }
+      ]
+    }
+  ],
+
+  "textureQuota": {
+    "note": "打散规则的核心——直接针对当前图库『斑驳老墙 + 旧木 + 昏黄室内』三件套的过度集中",
+    "values": [
+      { "code": "TX_MOTTLED", "label": "斑驳/剥落/做旧墙面为主导", "max": 11, "ratio": 0.25 },
+      { "code": "TX_OLDWOOD", "label": "旧木家具为视觉主体", "max": 8, "ratio": 0.19 },
+      { "code": "TX_DIMINDOOR", "label": "昏黄室内为主调", "max": 9, "ratio": 0.21 },
+      { "code": "TX_WETREFLECT", "label": "潮湿反光/雨夜", "max": 6, "ratio": 0.14 },
+      { "code": "TX_CLEANBRIGHT", "label": "明亮/干净/当代质感", "min": 13, "ratio": 0.3 },
+      { "code": "TX_OUTDOOR", "label": "户外自然光为主", "min": 17, "ratio": 0.4 }
+    ]
+  },
+
+  "dispersionRules": [
+    { "id": "DR-1", "rule": "单条题材线在 43 张里 ≤8 张（≤19%）" },
+    { "id": "DR-2", "rule": "单条具体题材（theme code）≤2 张" },
+    { "id": "DR-3", "rule": "同一『题材线 × 年代 × 时段』三元组 ≤2 张" },
+    { "id": "DR-4", "rule": "同一分类封面池内，相邻序号两张不得同题材线（池按 index 轮转，相邻会同屏出现）" },
+    { "id": "DR-5", "rule": "TX_MOTTLED + TX_OLDWOOD + TX_DIMINDOOR 三者去重后合计 ≤18 张（≤42%）" },
+    { "id": "DR-6", "rule": "每个分类（pet/youth/family/place/relationship/daily）的封面池内，至少 1 张为 TX_CLEANBRIGHT" },
+    { "id": "DR-7", "rule": "广角（F28+F35）8–10 张，其中 F28 ≤3 张，且必须满足 F28 的三条 guardrails" },
+    { "id": "DR-8", "rule": "活物 30 张 / 空景 13 张；每张空景必须在计划表填写一个 absenceAnchor" }
+  ],
+
+  "prompt": {
+    "styleBase": "photorealistic documentary photograph, muted low-saturation film color, soft natural contrast, fine grain, gentle highlight rolloff, natural skin and material tones; vertical 2:3 framing; background stays legible with at least one discernible secondary element; no readable text of any kind, no signage lettering, no brand, no logo, no watermark; any person shown from behind or in profile or head lowered, face softened and unidentifiable, whole body inside the frame and never cut by the frame edge",
+    "template": "{THEME_SCENE}, {REGION_LOOK}, {ERA_PROPS}, shot on {FOCAL}mm lens at {APERTURE}, {FRAMING_EN}, {DAYPART_LIGHT}, {SUBJECT_CLAUSE}{ABSENCE_CLAUSE}. {STYLE_BASE}",
+    "slots": {
+      "THEME_SCENE": "themeLines[].themes[].label 对应的英文场景描述",
+      "REGION_LOOK": "dimensions.region 的 architecture + vegetation + palette 组合",
+      "ERA_PROPS": "dimensions.era 的 props 中挑 3–4 件",
+      "FOCAL": "dimensions.focal 的 mm 值",
+      "APERTURE": "dimensions.aperture 的 fstop",
+      "FRAMING_EN": "extreme wide shot / wide shot / full shot / medium shot / medium close shot",
+      "DAYPART_LIGHT": "dimensions.daypart 的 light 描述",
+      "SUBJECT_CLAUSE": "按 subject 取：a person / a cat / a dog / a person with a dog / no living being present",
+      "ABSENCE_CLAUSE": "subject=SB4 时必填，取自 subject.absenceAnchors",
+      "STYLE_BASE": "固定不变"
+    },
+    "negativeBase": "text, letters, chinese characters, handwriting, signage, shop sign, logo, brand, watermark, subtitles, captions; close-up, extreme close-up, macro, product shot, hero still life object, isolated object on table; HDR, oversaturated, vivid colors, neon oversaturation, heavy clarity, crushed blacks, teal and orange grading; identifiable face, frontal portrait, direct eye contact, headshot; person cropped by frame edge, subject reduced to a tiny distant dot, distant fragment of a scene; fully blurred unreadable background, bokeh wash-out; era mismatch props; mottled peeling damp wall as default backdrop, generic aged wood tabletop, dim yellow tungsten interior as default",
+    "examples": [
+      {
+        "id": "EX-1",
+        "slots": { "theme": "campus-playground", "focal": "F28", "aperture": "A56", "daypart": "T_AFT", "era": "E3", "region": "R_NORTH", "framing": "FR2", "subject": "SB4", "absenceAnchor": "刚被压过的草地 / 单排脚印" },
+        "positive": "an empty school playground with a cinder running track, a rusted horizontal bar and a concrete spectator step, northern Chinese campus with grey brick walls and tall poplar trees, early-2000s props: aluminium-framed windows, a chipped basketball backboard, a green painted fence, shot on 28mm lens at f/5.6, wide shot, mid-afternoon light with long directional shadows, no living being present, a single set of fresh footprints crosses the track and the tetherball still swings slightly. photorealistic documentary photograph, muted low-saturation film color, soft natural contrast, fine grain, gentle highlight rolloff, natural skin and material tones; vertical 2:3 framing; background stays legible with at least one discernible secondary element; no readable text of any kind, no signage lettering, no brand, no logo, no watermark",
+        "negativeRef": "negativeBase"
+      },
+      {
+        "id": "EX-2",
+        "slots": { "theme": "street-nightmarket", "focal": "F35", "aperture": "A28", "daypart": "T_NIGHT", "era": "E4", "region": "R_LINGNAN", "framing": "FR3", "subject": "SB1" },
+        "positive": "a street food stall at night with plastic stools, folding tables and a string of bare bulbs, Lingnan arcade street with banyan aerial roots, tiled columns and roll-down shutters, 2010s props: a taped-up phone on the table, a steel thermos, a plastic crate, shot on 35mm lens at f/2.8, full shot, night light from bare bulbs and wok flame with legible background shapes, one person seen from behind at the table, whole body inside the frame. photorealistic documentary photograph, muted low-saturation film color, soft natural contrast, fine grain; vertical 2:3 framing; stall canopies are plain unlettered cloth; no readable text of any kind, no signage lettering, no brand, no logo, no watermark",
+        "negativeRef": "negativeBase"
+      },
+      {
+        "id": "EX-3",
+        "slots": { "theme": "pet-doorway", "focal": "F44", "aperture": "A40", "daypart": "T_AFT", "era": "E5", "region": "R_COUNTY", "framing": "FR3", "subject": "SB4", "absenceAnchor": "拖鞋摆歪、一只朝里一只朝外" },
+        "positive": "the doorway of a small county-town home seen from inside the room, a low threshold, a woven pet bed pushed against the wall and a shallow water bowl, county-town look with white tiled facade visible outside, tangled overhead wires and a rolling shutter across the lane, contemporary props: a delivery carton, an aluminium screen door, an LED strip, shot on 44mm lens at f/4, full shot, mid-afternoon light falling in one soft patch across the floor, no living being present, a pair of slippers left askew with one toe pointing out and one pointing in. photorealistic documentary photograph, muted low-saturation film color, soft natural contrast, fine grain; vertical 2:3 framing; background stays legible; no readable text of any kind, no brand, no logo, no watermark",
+        "negativeRef": "negativeBase"
+      }
+    ]
+  },
+
+  "compliance": {
+    "hardLines": [
+      "画面内不得出现可读文字、招牌字样、品牌、logo、水印",
+      "不得出现可辨识的真实人脸（统一 B 档：侧脸/低头/发丝遮挡，柔化不可辨识）",
+      "禁止 HDR 与过饱和",
+      "禁止微距、物体大特写、人物特写",
+      "前景人物全身在框内，不被画框裁切",
+      "背景须可读，不得糊成一片"
+    ],
+    "aiLabel": "AI 标识由前端卡片左下角角标承担（显式标识），不烧进图片；隐式标识（元数据水印）按 SPEC-trust-and-compliance §CM-G2 / S-8 在入库管线写入，缩略图与呈现图派生后须重新写入",
+    "textRiskThemes": ["campus-blackboard", "street-nightmarket", "leisure-arcade", "leisure-openair", "season-newyear"],
+    "textRiskHandling": "上述题材天然带文字载体，必须用『纯色块 / 背面角度 / 深度虚化 / 过曝白』四种手法之一处理，入库前逐张确认"
+  }
+}

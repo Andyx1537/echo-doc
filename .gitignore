@@ -1,0 +1,35 @@
+# ===== 机密：绝不入库 =====
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+
+# ===== 🔴 用户上传：受 PIPL 约束，不得入库 =====
+# Echo-assets/ 的 static/ 随本仓分发，runtime/ 不行——那里是用户上传的照片/音视频。
+# 这条不是习惯问题，是合规红线，见 Echo-assets/README.md 与 docs/SPEC-trust-and-compliance。
+Echo-assets/runtime/
+uploads/
+
+# ===== 设计原文件 =====
+# 源文件体积大且不可 diff，走团队资源存储，不进 git。
+*.psd
+*.ai
+*.sketch
+*.fig
+
+# ===== 日志与临时文件 =====
+*.log
+logs/
+tmp/
+temp/
+*.tmp
+
+# ===== 编辑器 / 系统 =====
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
