@@ -52,19 +52,47 @@ Echo 的文档、规格、裁定、比稿图、前后端协议真源与美术资
 `scripts/assets-check.sh` 的缺省已经跟着改了；🔴 **前端 `vite.config.ts` 那个没有**，
 见下面的欠账。
 
-## 🔴 拆分留下的三条欠账
+## 🔴 拆分留下的欠账
 
-1. **前端资源根缺省失效且不报错。** `echo-client` 仓 `echo-h5-proto/vite.config.ts:64`
-   仍回落到 `../../Echo-assets`，那是单仓时代的相对位置。拆仓后这个路径不存在，
-   而 vite 只 warn 不 fail，表现是**封面图全部裂开但构建成功**。
-   在 `echo-client` 仓设 `ECHO_ASSETS_DIR` 可绕过，但缺省值本身该改。
-2. **`docs/ASSETS.md` 与 `Echo-assets/README.md` 还写着「资源根刻意放在代码仓库之外」。**
+1. ~~前端资源根缺省失效~~ **已修**（2026-08-29，`echo-client` 仓 `855b464` 之前那个提交）：
+   缺省从 `../../Echo-assets` 改成 `../../echo-doc/Echo-assets`。
+   原缺省的危险不在于失效，而在于**工作区里那份遗留副本多半还在**——
+   旧路径能读到东西，只是过期物料，不裂开、不报错，比直接失败难发现得多。
+2. **文档正文里还有约 140 处旧路径前缀。** 分两类，处理方式不同：
+
+   | 前缀 | 处数 | 该怎么办 |
+   | --- | --- | --- |
+   | `Echo/docs/` | 75 | 指路用的引用，应改成 `docs/` |
+   | `Echo/echo-server` | 19 | 应改成「`echo` 仓的 `echo-server/`」 |
+   | `Echo/echo-h5-proto` | 7 | 应改成「`echo-client` 仓的 `echo-h5-proto/`」 |
+   | `workSpace/Echo/…` 绝对路径 | 39 | 🔴 **多数不该改**——它们在 WORKLOG、QA 报告一类历史记录里，记的是当时的事实 |
+
+   🔴 分界线是：**指路的改，记事的不改。** 无差别 sed 会把历史记录改成一段
+   从没发生过的事，那比路径失效更糟。
+3. **`docs/ASSETS.md` 与 `Echo-assets/README.md` 还写着「资源根刻意放在代码仓库之外」。**
    那条前提在本次拆分中被推翻了（`static/` 进了本仓），两份文档需要跟着改口径，
    并按项目规矩保留原文、标注推翻时间与原因。
-3. **`docs/PLAN-repo-split.md` 已经过期。** 它记的是 2026-08-27 的勘察（172 个提交、
+4. **`docs/PLAN-repo-split.md` 已经过期。** 它记的是 2026-08-27 的勘察（172 个提交、
    计划用 `filter-repo` 保留历史），而实际执行是 8-28、334 个提交、快照重开。
    §3（命名撞车）与 §5（数量校验必须钉 SHA）两节仍然成立且有价值，其余已不作数。
 
-## 拆分来源
+## 拆分来源与工作区布局
 
 从单仓 `Echo` 于 2026-08-28 按快照拆出，基准 `67a62ae1702322cc051eb240375359e06f6614f8`。
+2026-08-29 起**新仓为权威**，原单仓改名 `Echo-legacy/` 只读归档，不再在里面干活。
+
+四个仓建议并排克隆——`echo-client` 的资源根缺省与 `proto-check.sh` 的仓定位都按这个布局算：
+
+```
+workSpace/
+├── echo/            服务端
+├── echo-client/     前端（echo-h5-proto/ 活跃，unity-legacy/ 冻结）
+├── echo-doc/        本仓
+├── agent-supervision/   监控 skill（远端是 monitor.git）
+├── Echo-assets/     🔴 遗留副本：static 已随本仓入库，这里只有 runtime/uploads 还有用
+└── Echo-legacy/     单仓归档，只读
+```
+
+🔴 `Echo-assets/static/` 现在是本仓 `Echo-assets/static/` 的过期重复品，
+留着是因为同目录下的 `runtime/uploads/` 仍是后端 `ECHO_STORAGE_DIR` 的落点，不能整个删。
+清理时**只删 `static/` 与 `.backup/`，不要动 `runtime/`**。
