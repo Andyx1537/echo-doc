@@ -5,7 +5,8 @@ set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 # 2026-08-28 拆仓后资源根搬进本仓（原先在仓库外的同级目录），故缺省是 $REPO_ROOT/Echo-assets。
-# 注意 runtime/uploads 仍在仓外：那是用户上传，受 PIPL 约束不得入库，见 Echo-assets/README.md。
+# runtime/uploads 是目录在仓内、内容被 .gitignore 硬封（不是"在仓外"）：那是用户上传，
+# 受 PIPL 约束不得入库。所以别人的 clone 里根本没有这个目录，下面只报数不校验。
 ASSETS_DIR="${ECHO_ASSETS_DIR:-$REPO_ROOT/Echo-assets}"
 
 echo "资源根: $ASSETS_DIR"

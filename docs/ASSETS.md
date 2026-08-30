@@ -1,32 +1,57 @@
 # 资源管理规范
 
 **约束对象**：一切二进制物料——运营封面、设计稿、文档配图、用户上传的照片/音视频。
-**核心规则**：**物料不进代码库**。仓库里只留代码、文档、配置；物料存在仓库之外的
-**资源根**，由环境变量定位，构建期由 CDN 供给。
 
-## 1. 为什么
+**核心规则（两条，强度不同）**：
+
+1. **用户上传物永不进任何仓库。** 这是合规红线，无例外。
+2. **可分发物料随 `echo-doc` 仓分发。** 这是权衡后的选择，不是红线。
+
+## 0. 2026-08-30 更正：旧前提已被拆仓推翻
+
+本文原先写的是"**物料不进代码库**，资源根刻意放在仓库之外"。**该前提在 2026-08-28
+拆仓时被推翻**：产品侧仓 `echo-doc` 被定义为承载美术源文件，`Echo-assets/static/`
+（31MB、133 个文件）因此**已经入库**。
+
+推翻的原因不是原判断错了，而是取舍变了——原判断只算了 git 体积这一笔账，
+拆仓后要算的是另一笔：物料散在仓外时，克隆下来的仓跑不起来，新人得额外拿一次资源包，
+而这件事没有任何机制保证会发生。**用 31MB 的仓体积换"clone 完就能跑"**，是明知代价的选择。
+
+两条规则里只有第 1 条是红线：`runtime/` 至今被 `echo-doc/.gitignore` 硬封，一步没让。
+
+## 1. 为什么当初要挡
 
 首次提交把 33 张 PNG（多数单张 2MB 以上）灌进了版本库，`.git` 因此撑到 65MB，
 而代码本身只有几 MB。图片改一次就在历史里多存一份完整副本，git 的增量压缩对二进制基本无效。
-再叠加用户上传物一旦误入版本库，删除请求就没法真正兑现——这是合规问题，不只是体积问题。
+
+这条顾虑今天**仍然成立**，只是被上面那笔取舍接受了。**它没有失效，是被付掉了**——
+所以加物料前照样得压到 200KB 以内（§5），别把付掉的额度当成没有额度。
+
+用户上传物那一条是另一回事：一旦误入版本库，删除请求就没法真正兑现。
+那是合规问题，不是体积问题，**不参与任何取舍**。
 
 ## 2. 资源根
 
-默认位置：与代码仓库同级的 `Echo-assets/`。
+资源根就是 **`echo-doc/Echo-assets/`**，跟着 `echo-doc` 仓走。
 
 ```
 workSpace/
-├── Echo/            ← 代码仓库（git）
-└── Echo-assets/     ← 资源根（不受 git 管理）
-    ├── MANIFEST.json
-    ├── static/      ← 可分发
-    │   ├── seed-covers/
-    │   │   └── thumb/    ← 同名缩略档
-    │   ├── design-ref/
-    │   └── docs/
-    └── runtime/     ← 不可分发
-        └── uploads/
+├── echo/            ← 服务端仓
+├── echo-client/     ← 前端仓（echo-h5-proto + unity-legacy）
+└── echo-doc/        ← 产品仓
+    └── Echo-assets/     ← 资源根
+        ├── MANIFEST.json
+        ├── static/      ← 可分发，已随本仓入库
+        │   ├── seed-covers/
+        │   │   └── thumb/    ← 同名缩略档
+        │   ├── design-ref/
+        │   └── docs/
+        └── runtime/     ← 不可分发，被 .gitignore 硬封，本地才有
+            └── uploads/
 ```
+
+`runtime/` 这一层在仓里是**看不到的**——它只在跑过后端的机器上存在。
+在别人的 clone 里没有这个目录，属于正常，不要以为是漏拉了。
 
 ### static 与 runtime 必须分开
 
@@ -44,11 +69,18 @@ workSpace/
 
 | 端 | 变量 | 指向 | 缺省 |
 | --- | --- | --- | --- |
-| 前端 开发/预览 | `ECHO_ASSETS_DIR` | 资源根绝对路径 | 同级 `../../Echo-assets` |
+| 前端 开发/预览 | `ECHO_ASSETS_DIR` | 资源根绝对路径 | `../../echo-doc/Echo-assets` |
 | 前端 生产构建 | `VITE_ASSET_BASE_URL` | CDN/OSS 上对应 `static/` 的目录 | 空 |
-| 后端 | `ECHO_STORAGE_DIR` | `<资源根>/runtime/uploads` | `<cwd>/data/uploads` |
+| 后端 | `ECHO_STORAGE_DIR` | 持久卷上的上传落点 | `<cwd>/data/uploads` |
 
-缺省值已对准同级目录，按上面的并排结构放，不配任何变量即可跑通。
+前端缺省值已对准 `echo-client` 与 `echo-doc` 并排克隆的布局，不配变量即可跑通。
+
+🔴 **后端那一格与前端不是同一个东西，别顺手对齐。** `ECHO_STORAGE_DIR` 是用户上传的落点，
+它**不该**指进任何 git 仓——包括 `echo-doc/Echo-assets/runtime/`。生产环境指持久卷
+（见 `DEPLOY.md`），本地开发用缺省的 `<cwd>/data/uploads` 就行。
+
+指进仓内目录不会立刻报错，`.gitignore` 也会挡住入库，**所以这个错误是静默的**：
+它只在有人 `git clean -xdf` 或换机器时才暴露成"用户照片没了"。
 
 ## 4. 前端怎么取址
 
@@ -107,12 +139,19 @@ sips -s format jpeg -s formatOptions 58 --resampleHeight 560  in.png --out seed-
 
 ## 7. 兜底
 
-`.gitignore` 已封掉 `echo-h5-proto/public/assets/`、`public/design-ref/`、
-`echo-server/data/`、`uploads/` 以及 `*.psd/*.ai/*.sketch/*.fig`。
-即使有人手滑把物料放回仓库内，也不会入库。
+拆仓后三个仓各有一份 `.gitignore`，分工不同：
 
-**唯一例外**：`docs/assets/` 保留压缩过的文档配图缩略图（每张 <200KB，合计约 1MB），
-让 markdown 脱离资源根也能读。原图在 `<资源根>/static/docs/`。
+| 仓 | 封掉什么 | 为什么 |
+| --- | --- | --- |
+| `echo-doc` | `Echo-assets/runtime/`、`uploads/` | 🔴 合规红线，用户上传 |
+| `echo-doc` | `*.psd/*.ai/*.sketch/*.fig` | 源文件大且不可 diff |
+| `echo` | `echo-server/data/`、`uploads/` | 🔴 同上，后端本地落点 |
+| `echo-client` | `public/assets/`、`public/design-ref/` | 物料本该在资源根，这是手滑兜底 |
+
+注意 `echo-doc` **没有**封 `Echo-assets/static/`——那是本仓要分发的东西，封了就白拆了。
+
+**例外**：`docs/assets/` 保留压缩过的文档配图缩略图（每张 <200KB，合计约 1MB），
+让 markdown 不依赖 `Echo-assets/` 也能读。原图在 `Echo-assets/static/docs/`。
 
 ## 8. 上线时
 
