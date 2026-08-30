@@ -36,7 +36,15 @@
 - **视频首帧谁来抽** —— 库约束（`t_work_ck_video_poster`）已经强制视频必须有 `posterKey`，
   但客户端目前没有抽帧实现，前端暂时拿素材本身顶替。定它需要选客户端抽帧还是服务端转码。
 - **媒体下发的鉴权与吊销** —— `GET /api/v1/files/{key}` 无鉴权无吊销，作品下架后 URL 仍可开，
-  与 `CM-G4` 冲突。归属安全线（L1）。
+  与 `CM-G4` 冲突。归属安全线（L1 `E1`/`E5`）。⚠️ 同线的 `E4`（素材归属）已于 2026-08-30
+  修完（`echo@c97da41`，见 `SPEC-security §4.14 E4`），顺带补出 `t_resource`——
+  它是吊销的前置：`IStorage` 没有 delete 方法，要清字节得先知道有哪些 key。
+- 🔴 **`t_work.status` 没有「生成中」这一态** —— 现有六态（`draft`/`pending`/`public`/
+  `rejected`/`takendown`/`appealing`）默认媒体在发布那一刻已经存在。而 AI 生成是异步的
+  （`ILlmClient.complete` 是 20 秒同步调用，连异步任务模型都还没有），生成期间这条作品
+  处在哪一态、`mediaKey` 填什么，现在无解。**定它必须和异步任务模型一起定**，
+  单独给枚举加一个值只会造出一批 `mediaKey` 为空却又不是草稿的行。
+  来源：`TECH-AI-PLATFORM` 视频作品九项缺口盘点。
 
 ## 1. 数据模型
 
