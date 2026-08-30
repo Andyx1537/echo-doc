@@ -318,11 +318,12 @@ ENTRYPOINT ["sh","-c","java -cp 'classes:libs/*' -Decho.http.port=8080 com.echo.
 
 **静态物料（运营封面、设计稿）**
 
-物料不随代码库分发，存在仓库外的资源根，规范见 `ASSETS.md`。
+资源根是 `echo-doc` 仓的 `Echo-assets/`，`static/` 随该仓分发，规范见 `ASSETS.md`。
+（2026-08-28 拆仓前是"存在仓库外"，该前提已推翻，见 `ASSETS.md §0`。）
 
 | 变量 | 作用 | 默认 |
 |---|---|---|
-| `ECHO_ASSETS_DIR` | 资源根绝对路径；开发/预览期 Vite 中间件把 `/assets/**` 映射到 `<资源根>/static/**` | 仓库同级 `../../Echo-assets` |
+| `ECHO_ASSETS_DIR` | 资源根绝对路径；开发/预览期 Vite 中间件把 `/assets/**` 映射到 `<资源根>/static/**` | `../../echo-doc/Echo-assets` |
 | `VITE_ASSET_BASE_URL` | 生产物料前缀，指向 CDN/OSS 上对应 `static/` 的目录（构建期注入） | 空（走开发中间件） |
 
 > 上线步骤：把资源根的 `static/` 整体同步到 OSS/COS，构建时设 `VITE_ASSET_BASE_URL` 指过去。
