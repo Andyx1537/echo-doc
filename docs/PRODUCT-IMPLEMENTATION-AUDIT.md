@@ -57,6 +57,56 @@ GET    /cards/:cardId/messages/pending
 🔴 **本节只陈述"代码里有没有"，不判断该不该做、该怎么做。** 后者要对着
 `SPEC-publish-and-ops.md` 与 `DECISIONS.md OM3`（生成/发布/过审三个时刻不得合并）走一遍。
 
+⚠️ 上表第一行的「65 条」**是错的口径，已在 `PLAN-worklines-20260830.md` 修正为 68**。
+按 `r.add` 枚举漏掉了 `HttpGateway` 直接注册的三个出入口（`POST /upload`、
+`GET /files/{key}`、`GET /healthz`）。**对本节结论无影响**——那三个里没有创建卡的口——
+但凡是「列全部出入口」的活都不能只数 `r.add`。
+
+## 0b. 2026-08-30 代码核实：广场页前后端契约对不上，且是静默的
+
+§0 说的是「主线第 10 步没有入口」。这一节说的是**第 11 步的下发面本身就是坏的**，
+而它比 §0 更隐蔽：不报错、不白屏，只是内容悄悄少一半。
+
+### 结论
+
+**服务端 `GET /plaza` 下发的是回忆卡（`CardView`），前端 `PlazaScreen` 按「窗」（`Window`）解析。**
+两边字段只在 `id / petId / title / cover` 四项上重合，**广场卡片真正渲染的那几项一个都没有**：
+
+| 前端渲染用到的字段 | 服务端 `CardView` 有没有 | 渲染后果 |
+|---|---|---|
+| `recent`（近况文案） | ❌ | 卡片正文空白 |
+| `span`（`cover-tall`/`cover-short`） | ❌ | 瀑布流失去高低错落，退化成等高网格 |
+| `ownerName` / `ownerAvatar` | ❌ | 没有作者，卡片不知道是谁发的 |
+| `ownerAccountType`（`'ops'` → 官方角标） | ❌ | 🔴 官方号与真人号在广场上**无法区分** |
+
+服务端另有 `excerpt`、`hasCover`、`sourceType`、`topicIds`、`publishedAt` 五个字段
+**前端完全没接**。
+
+### 为什么至今没暴露
+
+前端默认跑在 mock 模式（`VITE_API_BASE` 留空即启用，见 `echo-h5-proto/src/api/client.ts`），
+mock 自己造 `Window` 形状的数据，**两边各自自洽**。契约不一致只在配了真后端那一刻才成立，
+而那一刻**不会有任何报错**——JS 读不存在的字段拿到 `undefined`，卡片照常渲染，只是空的。
+
+🔴 **这正是最坏的一类失败：它看起来是"广场没什么内容"，而不是"广场坏了"。**
+第一个看到的人多半会去查数据够不够、推荐算法对不对，而不是去查契约。
+
+### 位置
+
+| 侧 | 文件 | 说明 |
+|---|---|---|
+| 服务端 | `echo/echo-server/.../http/EchoApi.java:876 plaza()` | 返回 `CardView.of(...)` 列表 |
+| 服务端 | `echo/echo-server/.../http/card/CardView.java:84-98` | 字段清单 |
+| 前端 | `echo-client/echo-h5-proto/src/api/http.ts:190` | `get<Paged<Window>>('/plaza')` |
+| 前端 | `echo-client/echo-h5-proto/src/types.ts:94-154` | `Window` 类型 |
+| 前端 | `echo-client/echo-h5-proto/src/components/PlazaScreen.tsx:120-144` | 内联 `w-card` |
+
+### 尚未处理
+
+本节只登记，**不在本次改动范围内**。要修得先拍板广场到底是「窗的瀑布」还是「卡/作品的瀑布」——
+这是产品决定，不是对齐字段就完事的。🔴 **新增的作品瀑布不要复用这条链路**，
+否则等于把同一个错误抄第二遍。
+
 本文使用四种状态：
 
 - **已定**：已有制作人裁定或现行规格真源，可进入产品基线。
