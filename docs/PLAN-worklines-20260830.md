@@ -57,33 +57,57 @@
 
 **现状（2026-08-30 实测）**：
 
-- 服务端有 **65 条路由**（`EchoApi` / `ModerationApi` / `GovernanceApi` / `LeaveWordsApi`）。
+- Router 里有 **65 条路由**（`EchoApi` / `ModerationApi` / `GovernanceApi` / `LeaveWordsApi`）。
+- 🔴 **另有 3 个出入口不在 Router 里**，共 **68 个**。它们由 `HttpGateway` 直接
+  `createContext` 或在 dispatch 前拦截，**按路由表做的审查一个都扫不到**——
+  而这 3 个恰好是风险最高的：
+
+  | 出入口 | 鉴权 | 说明 |
+  |---|---|---|
+  | `POST /api/v1/upload` | 有（登录 + 绑定） | 唯一上传口，25MB 上限。`HttpGateway:146 handleUpload`，**不在 Router**（要原始字节 + multipart）。🔴 代码注释自己写着「不会被任何按路由表做的审查扫到」 |
+  | `GET /api/v1/files/{key}` | 🔴 **无** | 用户上传的照片/音视频**公开按 key 下发**，`HttpGateway:189 serveFile`。靠 resourceId 不可猜（随机 63 位）挡人，**没有鉴权、没有吊销**——卡被下架或删除后这个 URL 照样能开 |
+  | `GET /healthz` | 无 | 探活 |
+
 - `SPEC-security §4「逐页面 / 逐出入口」`分 **12 个小节**（4.1 建档 … 4.12 分享落地页），
   🔴 **按页面场景组织，不按端点**——整章只点名了 4 条 HTTP 路径
   （`DELETE /pet/:id`、`DELETE /pet/me`、`GET /w/{windowId}`、`POST /share/og-image`）。
+  §4.10 有 `/files/{key}` 一节，但**没有登记 `/upload`**。
 - **所以覆盖率现在无法判定**：不是"没覆盖"，是**映射不存在，判不了**。
+
+🔴 **给本线的方法论警告（这条比数字重要）**：
+**不要只从 `r.add` 枚举出入口。** 我第一次就是这么数的，得到 65，漏掉了唯一的上传口
+和唯一的公开文件下发口——**而安全审计最该看的就是这两个**。
+枚举必须同时覆盖 `HttpGateway` 的 `createContext` 与 dispatch 前的路径拦截。
 
 **要产出的**：
 
-1. 一张 **65 行的映射表**（端点 → §4 哪个小节 → 该节对它提了哪几条要求）。
+1. 一张 **68 行的映射表**（端点 → §4 哪个小节 → 该节对它提了哪几条要求）。
    放进 `SPEC-security` 新开一节，编号接在 §4 之后。
 2. 🔴 **挑出「挂不上任何小节」的端点**，逐条说清为什么挂不上：
    是场景漏了（要补小节），还是端点本身不该存在（要下线）。
-3. 对新出现的高风险面单独点名。至少这几类要有说法：
-   - `/admin/**` 六条（`AdminRoles` 是怎么判的？§4 完全没有后台这一节）
-   - `/auth/guest` 是唯一的 `addPublic`（无鉴权），它能拿到什么
+3. 对高风险面单独点名。至少这几类要有说法：
+   - 🔴 `GET /api/v1/files/{key}` **无鉴权、无吊销**：卡下架/删除后 URL 仍可开。
+     这与 `CM-G4`（签名 URL + 水印 + 缩略图派生，原图最小暴露）是正面冲突，
+     §4.10 现有内容需要按这个事实重写
+   - 🔴 `POST /api/v1/upload` **§4 完全没登记**，而 `S1′` 点名的「上传素材」就在这儿
+   - `/admin/**` 六条（`AdminRoles` 怎么判？§4 没有后台这一节）
+   - `/auth/guest` 是 Router 里唯一的 `addPublic`，它能拿到什么
    - `/plaza`、`/users/:id/cards`、`/windows/:petId` 三条陌生人可达的读接口的下发面
 
 **边界**：🔴 **只改 `SPEC-security.md` 与 `docs/security/`。不改代码，不改其他规格。**
 需要改别处的写进「待并入清单」。
 
-**验收**：65 条一条不落地出现在映射表里；挂不上的那些有单独清单和理由。
+**验收**：68 个一个不落地出现在映射表里；挂不上的那些有单独清单和理由。
 
-**怎么取那 65 条**（可复核）：
+**怎么取那 68 个**（可复核，🔴 两条都要跑，只跑第一条会漏掉上传与文件下发）：
 
 ```bash
+# ① Router 里的 65 条
 cd echo/echo-server/src/main/java/com/echo/http
 rg -o 'r\.add(Public)?\("(GET|POST|PUT|PATCH|DELETE)", "[^"]+"' *.java
+
+# ② Router 之外的 3 个
+rg -n 'createContext|equals\("/upload"\)' HttpGateway.java
 ```
 
 ---
