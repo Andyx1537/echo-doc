@@ -29,7 +29,7 @@
 | 12 | `redesign-author-card-visibility-capped-by-window.png` | 🔴 卡不得宽于窗 | ✅ 必须有 |
 | 13 | `fix-minescreen-hero-contrast-before-after.png` | `MineScreen` 主卡对比度修复 前/后 | ✅ **已改进代码** |
 
-绝对路径统一是 `/Users/andy/Documents/workSpace/Echo/docs/visual/<文件名>`。
+绝对路径统一是 `<文件名>`。
 
 ---
 
@@ -197,9 +197,9 @@ UI 上的处理（图 `..-capped-by-window.png`）：超出窗可见性的档位
 >
 > | 位置 | 处置 | 现状 |
 > |---|---|---|
-> | 广场瀑布卡（封面覆盖层 + 圆点 + 文案） | 🔴 整个去掉 | ![广场](/Users/andy/Documents/workSpace/Echo/docs/visual/warmth-removed-plaza.png) |
-> | 搜索结果行（圆点 + 文案） | 🔴 整个去掉 | ![搜索](/Users/andy/Documents/workSpace/Echo/docs/visual/warmth-removed-search.png) |
-> | 窗口详情面孔墙光晕 | 保留，一格未动 | ![窗口详情](/Users/andy/Documents/workSpace/Echo/docs/visual/warmth-kept-window-detail.png) |
+> | 广场瀑布卡（封面覆盖层 + 圆点 + 文案） | 🔴 整个去掉 | ![广场](warmth-removed-plaza.png) |
+> | 搜索结果行（圆点 + 文案） | 🔴 整个去掉 | ![搜索](warmth-removed-search.png) |
+> | 窗口详情面孔墙光晕 | 保留，一格未动 | ![窗口详情](warmth-kept-window-detail.png) |
 > | 陌生人窗口页 hero | 保留（仍只在 `src/dev/` 的设计稿里，未上生产） | 见 §1.2 |
 >
 > **仍然成立的部分：** §4.5「暖光对作者本人出不出」🔴 **仍然挂起**，`W2` 的可见性判定一格未动。

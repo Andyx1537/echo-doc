@@ -3,8 +3,8 @@
 | 项 | 内容 |
 |---|---|
 | 角色 | 出图规划台账 + 复盘表 + 热度追踪表；**v1.0 · 2026-08-24** |
-| 规格依据 | `Echo/docs/SPEC-visual-shot-taxonomy.md`（六维模型 · 题材枚举 · 配额） |
-| 机器可读枚举 | `Echo/docs/assets/shot-taxonomy.json` |
+| 规格依据 | `docs/SPEC-visual-shot-taxonomy.md`（六维模型 · 题材枚举 · 配额） |
+| 机器可读枚举 | `docs/assets/shot-taxonomy.json` |
 | 数据范围 | `Echo-assets/static/seed-covers/` 全部 **43 张**（`mock.ts` 的 12 张 hero 封面 + 6 个栏目封面池，去重后 43） |
 | 参数来源 | **43 张全部由本次逐张读图判定**，非生成侧记录。生成参数与实际观感常有偏差，本表一律以**实际观感**为准 |
 | 快照时点 | **2026-08-24 20:00**。同期有并行的出图与入库工作在进行，若 `seed-covers/` 已有新文件或重出版本，本表对应行需重新看图回填 |

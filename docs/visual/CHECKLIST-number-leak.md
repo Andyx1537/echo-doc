@@ -85,7 +85,7 @@
 
 **`echo-h5-proto/src/api/mock.ts:266` —— 成立，但措辞要改。**
 
-```266:277:Echo/echo-h5-proto/src/api/mock.ts
+```266:277:echo-client/echo-h5-proto/src/api/mock.ts
 /** 暖光浓度 → 面孔墙（有上限，不返回精确总数；§0.7 #4 红线） */
 function facesFor(windowId: string, warmth: number, meRemembered: boolean, myAvatar: string): Face[] {
   const count = Math.min(11, Math.max(2, Math.round(warmth * 11)))
@@ -152,7 +152,7 @@ function facesFor(windowId: string, warmth: number, meRemembered: boolean, myAva
 
 **核实结论：成立。而且比报上来的更坏一层。**
 
-```272:290:Echo/echo-server/src/test/java/com/echo/http/EchoApiTest.java
+```272:290:echo/echo-server/src/test/java/com/echo/http/EchoApiTest.java
     void rememberWallHasNoExactCount() throws Exception {
         // ...
         Map<String, Object> wall = invoke("GET", "/windows/" + windowId + "/remember", visitor, null);

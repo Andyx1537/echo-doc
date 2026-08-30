@@ -74,9 +74,9 @@ npm run build
 上传示例（OSS，`ossutil`）：
 
 ```bash
-ossutil cp -r Echo/echo-h5-proto/dist/ oss://echo-h5/ --update
+ossutil cp -r echo-client/echo-h5-proto/dist/ oss://echo-h5/ --update
 # index.html 覆盖为不缓存
-ossutil cp Echo/echo-h5-proto/dist/index.html oss://echo-h5/index.html \
+ossutil cp echo-client/echo-h5-proto/dist/index.html oss://echo-h5/index.html \
   --meta "Cache-Control:no-cache" --update
 ```
 

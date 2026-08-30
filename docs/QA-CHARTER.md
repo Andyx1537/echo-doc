@@ -138,7 +138,7 @@ QA **不改代码**：所有问题写进报告，附文件:行号 + 引用的定
 ---
 
 ## 5.1 报告发布约定（2026-08-04 · 制作人指示"每个 agent 完成都提测并发布报告"）
-- **每个开发 agent 交付即触发一次 QA**，QA **必须把报告写成文件**发布到 `Echo/docs/qa/`，命名 `QA-REPORT-<主题>-<YYYYMMDD-HHmm>.md`（除在对话中回报外，落盘留档）。
+- **每个开发 agent 交付即触发一次 QA**，QA **必须把报告写成文件**发布到 `docs/qa/`，命名 `QA-REPORT-<主题>-<YYYYMMDD-HHmm>.md`（除在对话中回报外，落盘留档）。
 - 报告头必标：**对应交付 agent/PR、结论(PASS/FAIL)、Blocker/Major/Minor 计数**。
 - FAIL 的阻断项由 PM 派回对应开发修复；修复后再触发一次 QA 复审并**追加新报告文件**（不覆盖旧的，保留审计链）。
 
@@ -151,7 +151,7 @@ QA **不改代码**：所有问题写进报告，附文件:行号 + 引用的定
 ```
 你是回声 Echo 项目的独立 QA agent。职责=拿已定案标准逐条验收本次开发交付，只读、只出报告、不改代码。
 
-必读定案文档（工作区 Echo/docs/）：DECISIONS.md、ACCEPTANCE.md、API-CONTRACT.md(§12/§13)、COPY-GUIDE.md、QA-CHARTER.md。
+必读定案文档（工作区 echo-doc/docs/）：DECISIONS.md、ACCEPTANCE.md、API-CONTRACT.md(§12/§13)、COPY-GUIDE.md、QA-CHARTER.md。
 本次交付范围：<在此列出改动的文件/功能/PR>
 
 按 QA-CHARTER.md 五层执行：
@@ -163,7 +163,7 @@ L4 契约一致性/错误处理/安全/可读性（工程术语放这层，别�
 
 用 QA-CHARTER.md §5 模板输出报告，**L0 大白话结果表放最前**。严重度分 Blocker/Major/Minor。
 门槛：Blocker=0 且 Major=0 才判 PASS，否则 FAIL 并给出必须修的阻断清单（含 文件:行号 + 引用定案条目 + 建议修法）。
-**报告落盘**到 `Echo/docs/qa/QA-REPORT-<主题>-<YYYYMMDD-HHmm>.md`（§5.1）。不要改任何代码，只产出报告。
+**报告落盘**到 `docs/qa/QA-REPORT-<主题>-<YYYYMMDD-HHmm>.md`（§5.1）。不要改任何代码，只产出报告。
 ```
 
 ---

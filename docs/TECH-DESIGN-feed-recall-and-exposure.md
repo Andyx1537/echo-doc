@@ -66,7 +66,7 @@
 
 ### 1.1 `queryResonance` 的写副作用到底是什么
 
-```45:72:Echo/echo-server/src/main/java/com/echo/module/resonance/ResonanceService.java
+```45:72:echo/echo-server/src/main/java/com/echo/module/resonance/ResonanceService.java
     public List<ScoredId> queryResonance(long accountId, int topN, double threshold) {
         float[] myVector = vectorStore.get(accountId);
         // ... topN 检索 + 过滤自己/黑名单 ...
@@ -75,7 +75,7 @@
     }
 ```
 
-```74:86:Echo/echo-server/src/main/java/com/echo/module/resonance/ResonanceService.java
+```74:86:echo/echo-server/src/main/java/com/echo/module/resonance/ResonanceService.java
     /** 落共鸣记录（可选；便于后续召回/统计）。 */
     private void persistRecords(long accountId, List<ScoredId> candidates) {
         long now = System.currentTimeMillis();
@@ -111,7 +111,7 @@
 
 `persistRecords` 的每一行都走 `CachedPgRepository.add(T)`：
 
-```36:41:Echo/echo-server/src/main/java/com/echo/infra/persistence/CachedPgRepository.java
+```36:41:echo/echo-server/src/main/java/com/echo/infra/persistence/CachedPgRepository.java
     @Override
     public void add(T entity) {
         super.add(entity);
@@ -122,7 +122,7 @@
 
 `super.add(T)` 是**单行 INSERT**，且 `PgDb.update` 每次调用**独立获取一次连接**：
 
-```392:415:Echo/echo-server/src/main/java/com/echo/infra/persistence/PgRepository.java
+```392:415:echo/echo-server/src/main/java/com/echo/infra/persistence/PgRepository.java
     @Override
     public void add(T entity) {
         String sql = buildInsertSQL();
@@ -138,7 +138,7 @@
     }
 ```
 
-```113:127:Echo/echo-server/src/main/java/com/echo/infra/persistence/PgDb.java
+```113:127:echo/echo-server/src/main/java/com/echo/infra/persistence/PgDb.java
     public int update(String sql, PgStatementBinder binder) throws SQLException {
         // ...
         try (Connection connection = dataSource.getConnection();
@@ -218,7 +218,7 @@
 
 ### 1.6 调度设施现状
 
-```185:188:Echo/echo-server/src/main/java/com/echo/bootstrap/EchoServer.java
+```185:188:echo/echo-server/src/main/java/com/echo/bootstrap/EchoServer.java
         // 过期回声清理：Scheduler + Cron
         Scheduler.init("echo-scheduler", 1);
         Scheduler.getInstance().schedule(new EchoExpiryJob(echoService));
@@ -693,7 +693,7 @@ ORDER BY "approvedAt" DESC LIMIT 500;
 
 `PgRepository.buildCreateIndexSQL` 拼列时只输出 `"列名"`，**没有排序方向**（`PgRepository.java:150-156`）：
 
-```150:156:Echo/echo-server/src/main/java/com/echo/infra/persistence/PgRepository.java
+```150:156:echo/echo-server/src/main/java/com/echo/infra/persistence/PgRepository.java
         List<String> cols = index.getColumns();
         for (int i = 0; i < cols.size(); i++) {
             sb.append('"').append(cols.get(i)).append('"');   // ← 只有列名，无 ASC/DESC

@@ -989,13 +989,13 @@ n += 1  ⟺  ① 曝光上报通过 TECH §3.10.4 的五道校验
 
 | 目标文件 | 需要做的改动 |
 |---|---|
-| `Echo/docs/DECISIONS.md` | 补登 `R1`–`R7` 七条裁定（建议编号接 `D` 系列顺延，或新开 `SF` 系列）；🔴 并注明 `R1` 对 `TECH §8.4.1` 的收窄 |
-| `Echo/docs/SPEC-recommendation-ranking.md` | `§10.1` 补 `surface` props + 三个新事件 + `feed_end` 扩枚举（`C7`）；`§3.2` 第 4 条排除集措辞校准（`C8`）；`§4.7` 保证 2 的拦截清单追加 `t_card_grid_stats`；`§10.2` 「欠投托底占比」阈值重标定（`C6`） |
-| `Echo/docs/TECH-DESIGN-feed-recall-and-exposure.md` | `§8.4.1` 计入清单按 `R1` 收窄（`C4`）；`§3.10.3` 前端不传字段清单追加 `surface`（`C6` 相关）；`§8.4.3` `D_min` 影响评估 |
+| `docs/DECISIONS.md` | 补登 `R1`–`R7` 七条裁定（建议编号接 `D` 系列顺延，或新开 `SF` 系列）；🔴 并注明 `R1` 对 `TECH §8.4.1` 的收窄 |
+| `docs/SPEC-recommendation-ranking.md` | `§10.1` 补 `surface` props + 三个新事件 + `feed_end` 扩枚举（`C7`）；`§3.2` 第 4 条排除集措辞校准（`C8`）；`§4.7` 保证 2 的拦截清单追加 `t_card_grid_stats`；`§10.2` 「欠投托底占比」阈值重标定（`C6`） |
+| `docs/TECH-DESIGN-feed-recall-and-exposure.md` | `§8.4.1` 计入清单按 `R1` 收窄（`C4`）；`§3.10.3` 前端不传字段清单追加 `surface`（`C6` 相关）；`§8.4.3` `D_min` 影响评估 |
 | `echo-server/docs/BRAKE-CALIBRATION.md` | 🔴 三档 `n` 阈值重标定（`C6`） |
-| `Echo/docs/SPEC-admin-console.md` | `§2.6` 并入 §5.5 的四项指标；`M7` 容纳 §7 的配置项 |
-| `Echo/docs/SPEC-interaction-flow.md` | 🔴 **仅在 `B1` 裁定为「以本规格为准」时**才需改 `§4.1`/`§4.2`。🔴 **本规格不碰这个文件**，改由持有该文件的工作线执行 |
-| `Echo/docs/PRODUCT-MINDMAP.md` | 「共鸣厅 → 信息流」分支下新增两层结构与成分配比节点 |
+| `docs/SPEC-admin-console.md` | `§2.6` 并入 §5.5 的四项指标；`M7` 容纳 §7 的配置项 |
+| `docs/SPEC-interaction-flow.md` | 🔴 **仅在 `B1` 裁定为「以本规格为准」时**才需改 `§4.1`/`§4.2`。🔴 **本规格不碰这个文件**，改由持有该文件的工作线执行 |
+| `docs/PRODUCT-MINDMAP.md` | 「共鸣厅 → 信息流」分支下新增两层结构与成分配比节点 |
 
 ### 11.2 完整度自检
 

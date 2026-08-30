@@ -129,11 +129,11 @@ MeScreen.tsx:98-119   「🤍 被记得的回响」
 
 同一份 `STRANGER_PET`、同一个位置，三版只差档位这一项。
 
-![三档在真实版面里](/Users/andy/Documents/workSpace/Echo/docs/visual/home-warmth-three-tiers-in-page.png)
+![三档在真实版面里](home-warmth-three-tiers-in-page.png)
 
 近看那一块：
 
-![三档近看](/Users/andy/Documents/workSpace/Echo/docs/visual/home-warmth-three-tiers-closeup.png)
+![三档近看](home-warmth-three-tiers-closeup.png)
 
 **形态规则：档位 = 有几层晕，不是同一个图形调透明度。**
 
@@ -154,7 +154,7 @@ MeScreen.tsx:98-119   「🤍 被记得的回响」
 🔴 **绝大多数窗长期都在最低档，那才是常态。** 这一档做不好，就是每天提醒主人「没人记得它」，
 在这个产品里是实伤害。
 
-![最低档 · 主人每天看到的样子（推荐）](/Users/andy/Documents/workSpace/Echo/docs/visual/home-warmth-lowest-tier-RECOMMEND.png)
+![最低档 · 主人每天看到的样子（推荐）](home-warmth-lowest-tier-RECOMMEND.png)
 
 处理方式**不是把「少」说得好听**——那是粉饰，用户读得出来。是四件事：
 
@@ -169,7 +169,7 @@ MeScreen.tsx:98-119   「🤍 被记得的回响」
 
 ## 五、`H-3`：三档文案
 
-![旧 → 新](/Users/andy/Documents/workSpace/Echo/docs/visual/home-warmth-copy-old-vs-new.png)
+![旧 → 新](home-warmth-copy-old-vs-new.png)
 
 旧的 high 档「被很多人记挂着」**本身就是一句数量陈述**，它把三档排成了「少 → 多」这根轴，
 正是 `D5` 要防的。光晕再克制也救不回来，因为用户读的是字。
@@ -235,9 +235,9 @@ MeScreen.tsx:98-119   「🤍 被记得的回响」
 | 主人看自己账号 | `MeScreen` | §六 |
 | **陌生人看别人的窗** | 窗口页 hero | 下图 |
 
-![同一套文案 · 陌生人侧三档](/Users/andy/Documents/workSpace/Echo/docs/visual/warmth-visitor-three-tiers-VERIFY.png)
+![同一套文案 · 陌生人侧三档](warmth-visitor-three-tiers-VERIFY.png)
 
-`/Users/andy/Documents/workSpace/Echo/docs/visual/warmth-visitor-three-tiers-VERIFY.png`
+`warmth-visitor-three-tiers-VERIFY.png`
 
 🔴 **这张图是「一套」这个前提的证据，不是装饰。** 最难的是低档：
 「这扇窗为它留着」如果在陌生人页读不通，一套就不成立，得回去重写。
@@ -255,13 +255,13 @@ MeScreen.tsx:98-119   「🤍 被记得的回响」
 
 | 档 | 图 |
 | --- | --- |
-| low | `/Users/andy/Documents/workSpace/Echo/docs/visual/warmth-mine-low.png` |
-| mid | `/Users/andy/Documents/workSpace/Echo/docs/visual/warmth-mine-mid.png` |
-| high | `/Users/andy/Documents/workSpace/Echo/docs/visual/warmth-mine-high.png` |
+| low | `warmth-mine-low.png` |
+| mid | `warmth-mine-mid.png` |
+| high | `warmth-mine-high.png` |
 
-![MineScreen · 最低档](/Users/andy/Documents/workSpace/Echo/docs/visual/warmth-mine-low.png)
+![MineScreen · 最低档](warmth-mine-low.png)
 
-![MineScreen · 最高档](/Users/andy/Documents/workSpace/Echo/docs/visual/warmth-mine-high.png)
+![MineScreen · 最高档](warmth-mine-high.png)
 
 **位置定在紧贴 hero、回访之前（`H-6`）**，两条理由：
 
@@ -278,11 +278,11 @@ MeScreen.tsx:98-119   「🤍 被记得的回响」
 
 | 档 | 图 |
 | --- | --- |
-| low | `/Users/andy/Documents/workSpace/Echo/docs/visual/warmth-me-low.png` |
-| mid | `/Users/andy/Documents/workSpace/Echo/docs/visual/warmth-me-mid.png` |
-| high | `/Users/andy/Documents/workSpace/Echo/docs/visual/warmth-me-high.png` |
+| low | `warmth-me-low.png` |
+| mid | `warmth-me-mid.png` |
+| high | `warmth-me-high.png` |
 
-![MeScreen · 最低档](/Users/andy/Documents/workSpace/Echo/docs/visual/warmth-me-low.png)
+![MeScreen · 最低档](warmth-me-low.png)
 
 🔴 **这张图自己说明了 `H-7`。** 暖光刚说完「不给数」，紧接着下面两格就是两个 22px 的琥珀色大数字。
 一格换掉之后，剩下那两格反而更扎眼了——这不是我改坏了，是原本就存在、只是被第一格盖住了。
@@ -320,7 +320,7 @@ MeScreen.tsx:98-119   「🤍 被记得的回响」
 
 产品问「改生产代码时有没有撞见和 `MeScreen` 同类的第三处」。有，而且它两轮都躲过了检查。
 
-```359:376:Echo/echo-h5-proto/src/components/DetailScreen.tsx
+```359:376:echo-client/echo-h5-proto/src/components/DetailScreen.tsx
           {/* —— 记得：暖光浓度 + 面孔墙（不显数字、不排名） —— */}
                 <div className="warm-faces">
                   {wall.faces.map((f, i) => (
@@ -333,7 +333,7 @@ MeScreen.tsx:98-119   「🤍 被记得的回响」
 
 🔴 **而且数脸等于反解暖光浓度。** mock 的实现是：
 
-```266:275:Echo/echo-h5-proto/src/api/mock.ts
+```266:275:echo-client/echo-h5-proto/src/api/mock.ts
 function facesFor(windowId: string, warmth: number, ...): Face[] {
   const count = Math.min(11, Math.max(2, Math.round(warmth * 11)))
 ```
@@ -405,9 +405,9 @@ lsof -ti:5173 | xargs -r kill -9 && rm -rf node_modules/.vite && npm run dev
 
 阈值不靠推理，靠图。两组取样，**同一位置、同一份数据、光晕锁定 0.55，只有脸数不同**：
 
-![面孔墙 · 2/3/5/8/11](/Users/andy/Documents/workSpace/Echo/docs/visual/facewall-threshold-2to11.png)
+![面孔墙 · 2/3/5/8/11](facewall-threshold-2to11.png)
 
-![面孔墙 · 分界处 4–8 加密](/Users/andy/Documents/workSpace/Echo/docs/visual/facewall-threshold-4to8.png)
+![面孔墙 · 分界处 4–8 加密](facewall-threshold-4to8.png)
 
 ### 我从哪一张开始觉得它变成了分数
 
@@ -422,9 +422,9 @@ lsof -ti:5173 | xargs -r kill -9 && rm -rf node_modules/.vite && npm run dev
 
 ### 落地后两态实拍
 
-![≤5：照常出面孔（4 张）](/Users/andy/Documents/workSpace/Echo/docs/visual/facewall-applied-under-4faces.png)
+![≤5：照常出面孔（4 张）](facewall-applied-under-4faces.png)
 
-![>5：只留光晕（数据是 8 张）](/Users/andy/Documents/workSpace/Echo/docs/visual/facewall-applied-over-halo-only.png)
+![>5：只留光晕（数据是 8 张）](facewall-applied-over-halo-only.png)
 
 超过阈值的那一版不需要新文案：caption 原本就是「记得它的人，聚成了一片暖光」——
 **那句话本来就是为「一片光」写的**，之前反而是被下面那排脸给拆穿了。
@@ -460,9 +460,9 @@ lsof -ti:5173 | xargs -r kill -9 && rm -rf node_modules/.vite && npm run dev
 
 同一位置、同一份数据（`warmthLevel = 0.65`，中档）：
 
-![改前](/Users/andy/Documents/workSpace/Echo/docs/visual/me-card-two-layers-BEFORE.png)
+![改前](me-card-two-layers-BEFORE.png)
 
-![改后](/Users/andy/Documents/workSpace/Echo/docs/visual/me-card-two-layers-AFTER.png)
+![改后](me-card-two-layers-AFTER.png)
 
 **两层在视觉上必须能被一眼分开**，所以居中/左对齐、暖色/灰、大/小 **三项一起变**。
 只改其中一项（比如只把字号调小）在 390px 宽的屏上分不出层级，读者仍会读成并列的两项。
@@ -494,7 +494,7 @@ lsof -ti:5173 | xargs -r kill -9 && rm -rf node_modules/.vite && npm run dev
 
 **① 「N 朵花」有 / 无：**
 
-![朵花 · 有 / 无](/Users/andy/Documents/workSpace/Echo/docs/visual/me-card-flowers-with-without.png)
+![朵花 · 有 / 无](me-card-flowers-with-without.png)
 
 我的判断：**留 A（保留、去朵数）**。留着的那句是别人为它做过的事，撤掉之后对象层只剩暖光一句，
 低档窗会显得更空——而低档才是常态。~~⚠️ 但这条我仍然没有十足把握，图给到这里，产品判。~~
@@ -503,7 +503,7 @@ lsof -ti:5173 | xargs -r kill -9 && rm -rf node_modules/.vite && npm run dev
 **② 卡层的点阵留 / 不留** —— ⚠️ 🔴 **产品未选，现状是「暂定，未经裁定」**，
 按本线推荐留着，代码里已标。**不要把它当成已拍板的结论去引用或加固。**
 
-![卡层 · 点阵有 / 无](/Users/andy/Documents/workSpace/Echo/docs/visual/me-card-cardlayer-dots-vs-line.png)
+![卡层 · 点阵有 / 无](me-card-cardlayer-dots-vs-line.png)
 
 我的判断：**留 A（点阵 + 一句）**。点确实可数——但数出来的是**自己有几张卡**，
 分母是自己、本来就知道，它不是别人给的量。而点阵让「哪几张还空着」变成一个**具体的、可指的东西**，
@@ -516,7 +516,7 @@ lsof -ti:5173 | xargs -r kill -9 && rm -rf node_modules/.vite && npm run dev
 产品问「有没有第四处——前三处的共性是『不是数字、但能反解出数字』」。有，
 🔴 **而且它不在屏幕上，它在网线上，它是前三处的根。**
 
-```2394:2397:Echo/echo-server/src/main/java/com/echo/http/EchoApi.java
+```2394:2397:echo/echo-server/src/main/java/com/echo/http/EchoApi.java
     private double warmthLevel(int faces) {
         // 记得人数 → 暖光浓度（0..1），饱和函数，绝不对外暴露精确数字
         return Math.min(1.0, faces / 20.0);

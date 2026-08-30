@@ -29,7 +29,7 @@
 
 ## 一、四种卡型，同一份数据、同一个位置
 
-![四种卡型并排](/Users/andy/Documents/workSpace/Echo/docs/visual/cards-4types-side-by-side.png)
+![四种卡型并排](cards-4types-side-by-side.png)
 
 | | 图 | 版式 | 代价 |
 | --- | --- | --- | --- |
@@ -58,13 +58,13 @@
 
 ## 三、边界
 
-![四种卡型的边界表现](/Users/andy/Documents/workSpace/Echo/docs/visual/cards-4types-edge-cases.png)
+![四种卡型的边界表现](cards-4types-edge-cases.png)
 
 推荐卡型下逐条看：
 
-![超长标题](/Users/andy/Documents/workSpace/Echo/docs/visual/cards-edge-longtitle-recommended.png)
+![超长标题](cards-edge-longtitle-recommended.png)
 
-![无标题与无图](/Users/andy/Documents/workSpace/Echo/docs/visual/cards-edge-notitle-noimage-recommended.png)
+![无标题与无图](cards-edge-notitle-noimage-recommended.png)
 
 - **超长标题**（`title` 上限 30 字，样本顶格）：「那年冬天特别冷，它在窗台上守…」+ 日期。日期不被顶走。
   ⚠️ 实现上的坑：`.ct-line-text` 必须写 `min-width: 0`。flex 子项默认 `min-width: auto`，不改的话超长文字会把日期整个顶出容器而不是自己收省略号。
@@ -73,20 +73,20 @@
 
 ## 四、密度
 
-![只有一张卡](/Users/andy/Documents/workSpace/Echo/docs/visual/cards-density-1card-recommended.png)
+![只有一张卡](cards-density-1card-recommended.png)
 
-![十二张卡](/Users/andy/Documents/workSpace/Echo/docs/visual/cards-density-12cards-top-recommended.png)
+![十二张卡](cards-density-12cards-top-recommended.png)
 
-![十二张卡 · 往下刷](/Users/andy/Documents/workSpace/Echo/docs/visual/cards-density-12cards-scrolled-recommended.png)
+![十二张卡 · 往下刷](cards-density-12cards-scrolled-recommended.png)
 
 - **1 张**：不折叠、不出「看全部」。这一屏下面还有明信片和动作条接着，所以不会真的空（见 §五的完整一屏）。
 - **12 张**：默认只出前 3 张 + 「还有 N 张 · 看全部」。上面两张密度图是**放开折叠后**的样子，用来看连续刷的节奏 —— 每张 282px，一屏两张半，读起来是相册而不是瀑布流。
 
 ## 五、推荐卡型的完整一屏
 
-![完整一屏 · 上](/Users/andy/Documents/workSpace/Echo/docs/visual/stranger-v2-recommended-cards-screen1.png)
+![完整一屏 · 上](stranger-v2-recommended-cards-screen1.png)
 
-![完整一屏 · 下](/Users/andy/Documents/workSpace/Echo/docs/visual/stranger-v2-recommended-cards-screen2.png)
+![完整一屏 · 下](stranger-v2-recommended-cards-screen2.png)
 
 顺序：封面 hero → 一句引言 → **「它的一生」一行** → **公开回忆卡（主体）** → 明信片 → 动作条。
 
@@ -94,7 +94,7 @@
 
 ## 六、「它的一生」收成一个点
 
-![收起态与展开态](/Users/andy/Documents/workSpace/Echo/docs/visual/lifebook-dot-collapsed-vs-expanded.png)
+![收起态与展开态](lifebook-dot-collapsed-vs-expanded.png)
 
 单张：`lifebook-dot-collapsed.png` · `lifebook-dot-expanded.png`
 
@@ -103,7 +103,9 @@
 - **展开也不给图。** 上一版三张抽象封面是为了撑横滑片凑出来的；里程碑本来就常常没有照片（「相遇那天」谁也没来得及拍）。纯文字时间线反而更像一份年表。
 - 竖线只连节点之间，不从头拉到尾 —— 拉满会被读成进度条。
 
-对照上一版（`stranger-v2-full.png`）：横滑片带走 120px 且**带图**，在视觉上和下面的回忆卡是同一个量级，等于给它保留了一块和主内容抢注意力的位置。收成一行之后，这一屏只剩一个主体。
+对照上一版（`stranger-v2-full.png`，🔴 **这张图没有留存**，2026-08-30 全工作区检索无果，
+下面的对比只能读文字）：横滑片带走 120px 且**带图**，在视觉上和下面的回忆卡是同一个量级，
+等于给它保留了一块和主内容抢注意力的位置。收成一行之后，这一屏只剩一个主体。
 
 ## 七、主题标签 chip 出不出
 
@@ -111,11 +113,11 @@
 
 **一屏之内（真实 390 视口，一次三张）——** 看不出问题，两版都干净：
 
-![chip 有无 · 手机一屏](/Users/andy/Documents/workSpace/Echo/docs/visual/topic-chip-on-vs-off-phone.png)
+![chip 有无 · 手机一屏](topic-chip-on-vs-off-phone.png)
 
 **连着看六张（版面仍按 390 排，整体缩着显示）——** 差别才出来：
 
-![chip 有无 · 多卡密度](/Users/andy/Documents/workSpace/Echo/docs/visual/topic-chip-on-vs-off-density-RECOMMEND-OFF.png)
+![chip 有无 · 多卡密度](topic-chip-on-vs-off-density-RECOMMEND-OFF.png)
 
 **我的建议：不上封面。** 三条理由，都能在第二张图上直接看到：
 

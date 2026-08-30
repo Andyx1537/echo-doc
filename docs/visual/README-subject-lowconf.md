@@ -174,7 +174,7 @@ mock 也照形状给了值（0.5 / 0.62 / 0.55）。⚠️ **但 `OnboardingScre
 
 `src/dev/subject/` 与 `subject.html` 已随本轮落地一并删除。撤除前确认：`src/main.tsx` / `index.html` / `app.css` / `vite.config.ts` **自始至终一字未动**（入口是独立的 `subject.html`，同期另有设计线在改 `main.tsx` 的 `?visual=` / `?design=` 分支，刻意分开以避免撞车），因此删除**不留任何残留引用**，全量单测与类型检查在删除后复跑通过。
 
-🔴 **图留在 `Echo/docs/visual/` 不删** —— 它们是决策依据。
+🔴 **图留在 `docs/visual/` 不删** —— 它们是决策依据。
 
 ### 🆕 6.1 🔴 落地时新增的一处设施，<u>不要</u>跟着删
 

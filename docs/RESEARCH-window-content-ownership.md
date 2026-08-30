@@ -33,7 +33,7 @@
 
 `GET /windows/:id` 的真实实现（`EchoApi.java:693-710`）：
 
-```693:710:Echo/echo-server/src/main/java/com/echo/http/EchoApi.java
+```693:710:echo/echo-server/src/main/java/com/echo/http/EchoApi.java
     private Object windowDetail(RequestContext ctx) {
         long viewer = ctx.accountId();
         PetProfile pet = requireWindow(ctx.path("petId"));
@@ -90,7 +90,7 @@
 
 🔴 **这一块是整件事的关键，也是最容易判错的一块。** 先把它下发的东西摊开：
 
-```616:633:Echo/echo-server/src/main/java/com/echo/http/EchoApi.java
+```616:633:echo/echo-server/src/main/java/com/echo/http/EchoApi.java
     private Map<String, Object> rememberWallView(String petId, long viewer) {
         List<Long> faces = store.rememberFaces(petId);
         List<Object> faceViews = new ArrayList<>();
@@ -141,7 +141,7 @@
 
 #### 🔴 顺带核实出的一处：`warmthLevel` 会把精确数原样吐出来
 
-```1824:1827:Echo/echo-server/src/main/java/com/echo/http/EchoApi.java
+```1824:1827:echo/echo-server/src/main/java/com/echo/http/EchoApi.java
     private double warmthLevel(int faces) {
         // 记得人数 → 暖光浓度（0..1），饱和函数，绝不对外暴露精确数字
         return Math.min(1.0, faces / 20.0);
@@ -527,7 +527,7 @@ W2 判「公开」的前提是它**只是一个质性信号**。而 §1.2 已核
 
 **核实**
 
-```230:245:Echo/echo-h5-proto/src/components/DetailScreen.tsx
+```230:245:echo-client/echo-h5-proto/src/components/DetailScreen.tsx
   async function toggleRemember() {
     if (busy || !wall) return
     const next = !wall.meRemembered
