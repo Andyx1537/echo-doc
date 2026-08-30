@@ -1,8 +1,61 @@
 # 回声 Echo · 产品实现脉络摸底
 
-> 状态：工作稿 v0.1 · 2026-08-29  
+> 状态：工作稿 v0.2 · 2026-08-30  
 > 范围：仅依据当前产品文档核实产品设计；实现状态引用 `PRODUCT-SKELETON.md` / `PRODUCT-MINDMAP.md` 已完成的代码核实结论，不在本文重新推断。  
+> **例外**：§0 是 2026-08-30 直接读 `echo` 仓源码得出的，不引用任何文档的状态描述。  
 > 事实优先级：`DECISIONS.md` → 专项 SPEC / PRD → `PRODUCT-MAINLINE.md` → 导览、研究与运营建议。被推翻的原文只作历史记录，不算当前方案。
+
+## 0. 2026-08-30 代码核实：承重点「发布卡」在服务端没有入口
+
+§1 判定"发布卡是全局承重点"。这一节回代码验它的实现状态，**结论是这个动作不存在**。
+
+### 结论
+
+**服务端没有任何一条能创建卡的路径。** 全部 65 条 HTTP 路由里，回忆卡相关的有 11 条
+（另有 3 条 `postcard` 是明信片，不是卡）：
+
+```
+GET    /pet/me/cards              作者看自己的
+GET    /users/:id/cards           看别人的
+PATCH  /cards/:id/visibility      改可见性
+PUT    /cards/:id/pin             置顶
+DELETE /cards/:id/pin             取消置顶
+GET    /cards/:id/moderation      审核状态
+POST   /cards/:id/appeal          申诉
+GET    /cards/:id/interaction     互动开关
+PATCH  /cards/:id/interaction     改互动开关
+POST   /cards/:cardId/messages    留言
+GET    /cards/:cardId/messages/pending
+```
+
+读的、改的、审的、申诉的、留言的都齐了，**唯独没有一条是"造一张卡出来"**。
+前端同样没有任何发布调用。
+
+卡进入系统的唯一入口是 `ModerationStore.putCard()`，而它在接口里被归在
+「**造数（开发环境）**」一节，注释写明是「**发布路径的最小替身**」。
+它的全部 4 个调用点都在 `src/test/`，生产代码零调用。
+
+### 这意味着什么
+
+下游全部建好了，上游没有。审核状态机、双流水事务、申诉一生一次的并发保护、
+可见性取交集、置顶上限的事务内校验、广场分发——这些都实现得相当细，
+其中好几处的注释在讨论并发竞态该怎么防。**但它们处理的卡，目前只能由测试代码塞进去。**
+
+所以现状不是"发布做了一半"，而是**十四步主线在第 10 步断开**：
+1—9 步（安顿、相处、生成内容）与 11 步之后（审核、分发、互动、回流）各自成立，
+中间那个把私域内容变成公开卡的动作是空的。
+
+### 核实方式（可复核）
+
+| 查什么 | 怎么查 | 结果 |
+|---|---|---|
+| 有无创建卡的路由 | 列 `EchoApi`/`ModerationApi`/`GovernanceApi`/`LeaveWordsApi` 全部 `r.add` | 65 条，无 `POST /cards` |
+| 有无创建卡的写入 | 全仓搜 `insertCard\|createCard\|saveCard\|INSERT INTO card\|publishCard` | 0 命中 |
+| `putCard` 谁在调 | 全仓搜调用点 | 4 处，全在 `src/test/` |
+| 前端有无发布调用 | 搜 `echo-h5-proto/src` 的 cards 请求 | 0 |
+
+🔴 **本节只陈述"代码里有没有"，不判断该不该做、该怎么做。** 后者要对着
+`SPEC-publish-and-ops.md` 与 `DECISIONS.md OM3`（生成/发布/过审三个时刻不得合并）走一遍。
 
 本文使用四种状态：
 
