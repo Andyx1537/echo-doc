@@ -86,20 +86,96 @@
 
 ## 1. 现状盘点（基于真实代码）
 
-**已就位：**
-- **LLM 抽象** `com.echo.infra.llm.ILlmClient`：`enrich(rawPrefs)`（原始偏好→结构化偏好）+ `complete(prompt)`（通用补全，默认兜底 `"{}"`）。实现 `MockLlmClient`（外部服务一律 mock）。真实 HTTP 供应商实现待选型。
-- **向量抽象** `com.echo.infra.vector.IVectorStore`：`encode`（占位=确定性哈希，待真实嵌入模型替换）/`upsert`/`get`/`topN(query,k,threshold)`（余弦距离，共鸣检索）；`DIM=768`（对齐 `t_self_vector.embedding vector(768)`）。实现 `InMemoryVectorStore`（默认/单测）↔ `PgVectorStore`（pgvector, BE-4）。
-- **持久化 "B'"**：`PgRepository` + `CachedPgRepository`（复用 Aengine 缓存）+ PostgreSQL/pgvector。各模块 repo：`account`/`avatar`/`echo`/`space(MindSpace)`/`mind(SelfVector, MindProfile)`/`social(Friendship, Stall)`/`resonance(ResonanceRecord)`。
-- **引擎底座** Aengine（JDK 26；network/Netty、scheduler、cache、template、event、class table）。
-- **验证闭环** `com.echo.harness`：体验 bot（含 §7 LLM 定性层，用 `complete`）。
+> **本节 2026-08-30 整节回代码重核。** 代码位置在 8-28 拆过仓：现在是 `echo/echo-server/src/main/java/com/echo/`（包根 `com.echo` 未变）。
+> 🔴 **重核方式是读代码，不是读文档。** 下面每条「已实现／未实现」都指得出类名与调用点；指不出调用点的一律记为「有契约无实现」，哪怕类写得很完整。
 
-**空白（本中台要补）：**
-- 真实嵌入模型（现为哈希占位）；真实 LLM 供应商接入；
-- **侧写引擎**（人格提炼→一致口吻叙事，时间双向）；
-- **基调 + 安全层**（语气 register + 红线可靠性）；
-- **潜台词/情绪理解**（§2.11 暗面涌现）；
-- **养成/反馈闭环**（反向精炼人格、沉淀语料）；
-- **隐私/自托管推理** 路径。
+### 1.1 v0.2 旧文的三处说法已被代码推翻
+
+**保留旧文并标注推翻，不删**（本项目硬规矩）：
+
+- ~~「实现 `MockLlmClient`（外部服务一律 mock）。真实 HTTP 供应商实现待选型。」~~
+  > **⚠️ 2026-08-30 推翻。** 原因：`com.echo.infra.llm.ApiLlmClient` 已落地——走 OpenAI 兼容的 Chat Completions，用 JDK 自带 `HttpClient` + 现有 Gson，不引第三方依赖；`LlmConfig` 内置豆包/DeepSeek/Qwen/OpenAI/local(Ollama) 五套默认端点，切供应商只改 `ECHO_LLM_PROVIDER` 等环境变量，业务代码零改动。「待选型」这句话写于接入之前，照抄它会让人以为还得先做选型才能动工。
+- ~~「`encode`（占位=确定性哈希，待真实嵌入模型替换）」~~
+  > **⚠️ 2026-08-30 推翻一半。** 原因：新增了 `com.echo.infra.embedding` 整包（`IEmbeddingClient` / `ApiEmbeddingClient` / `MockEmbeddingClient` / `EmbeddingConfig` / `EmbeddingClientFactory`），`InMemoryVectorStore` 与 `PgVectorStore` 的 `encode` 都已改为委托可插拔的 `IEmbeddingClient`。**仍成立的那一半**：默认装配回落 `MockEmbeddingClient`（确定性伪向量），所以不配 `ECHO_EMBED_API_KEY` 时线上向量依旧没有语义。`IVectorStore` 接口上那段哈希实现还在，但只作为 default 方法兜底。
+- ~~空白清单里的「基调 + 安全层（语气 register + 红线可靠性）」~~
+  > **⚠️ 2026-08-30 推翻一半。** 见 §1.2「安全层」条：输出侧五关已实现且已接线，外部内容安全网关已实现且失败方向为拒绝。**仍空白的那一半**是前置闸与自研模型层。
+
+### 1.2 已就位（逐条核到类与调用点）
+
+- **LLM 抽象** `com.echo.infra.llm.ILlmClient`：`enrich(rawPrefs)` + `complete(prompt)`（默认兜底 `"{}"`）。三个实现：`MockLlmClient`、`ApiLlmClient`（真实 HTTP）、以及由 `LlmClientFactory` 按 `LlmConfig.isMock()` 选路。降级方向是**向下兜底不抛异常**：连接/超时/非 2xx/解析失败一律委托 fallback，不让坏网络把接口打成 500。
+  > 🔴 **一个容易踩的接线细节**：真实供应商**只在 HTTP 域生效**。`EchoHttpBootstrap.start()` 里做了 `LlmClientFactory.create(LlmConfig.fromEnv(), llm)` 覆盖，而 `EchoServer` 主入口向 protobuf 网关侧传的是硬编码的 `new MockLlmClient()`。**后果：意识档案补全 `MindProfileService.enrich()` 恒走 mock，配了 key 也不会生效。** 这不是配置问题，是装配问题。
+- **嵌入抽象** `com.echo.infra.embedding.IEmbeddingClient`：`embed(text)` + `dimension()`，`DEFAULT_DIM=768`。`ApiEmbeddingClient` 走 OpenAI 兼容 `/embeddings`，支持 `dimensions` 参数。配置项 `ECHO_EMBED_PROVIDER / BASE_URL / API_KEY / MODEL / DIM`，默认 mock。
+- **视觉抽象** `com.echo.infra.vision.IVisionClient`：`detect(resourceId)` + `detectWithSource()`（🔴 带来源标记，默认保守标 `FALLBACK`——看不出来源时宁可说"这是兜底"，也不让前端把中性默认当识别结果展示）。`ApiVisionClient` 走百炼 qwen-vl 的多模态 Chat Completions，配 `ResolvingVisionClient`（先把 resourceId 解析成可送模型的图）与 `ImageCompressor`（按 `ECHO_VISION_MAX_EDGE` 缩放）。默认 `StubVisionClient`。
+- **向量抽象** `com.echo.infra.vector.IVectorStore`：`encode`（现委托 `IEmbeddingClient`）/`upsert`/`get`/`topN(query,k,threshold)`（余弦距离）；`DIM=768`（对齐 `t_self_vector.embedding vector(768)`）。实现 `InMemoryVectorStore` ↔ `PgVectorStore`。消费方 `ResonanceService`（protobuf 网关 1401/1402）。
+- **安全层**（这一块比 v0.2 想象的完整得多）：
+  - `com.echo.http.safety.OutputSafetyGate`——输出侧五关（合规词表 / 产品红线 / 注入逃逸 / 丧失断言 / 在世对象拟真）。🔴 **命中即整条不投递，不做词面替换后放行**。已接线到四条路径：近况生成、回信生成、`POST /works` 发布、留一句话。
+  - `com.echo.infra.safety.ContentSafetyGate`——第一关的外部内容安全 API 收口。🔴 **失败方向一律「未通过」**（超时/限流/鉴权失败/格式异常/熔断中全部 failed-closed），且就绪判据是「最近一次真实调用成功」而不是「配置齐了」。未配置时返回 `skipped()` 而非拒绝——此时 `isOperational()=false`，`S13` 开关打不开，公开层根本没有用户自由文本。
+  - `com.echo.http.CopyGuardFilter`——**注意它不是安全闸**，定位是给我们自己写的静态文案做兜底改写。
+  - `SafetyMetrics`——五个可量化口径（输出拦截率、按关拦截数、内容告警数、入口拒绝数、用户文本拦截率）。这是 §10 Q6 能收口一半的依据。
+- **语料回流** `com.echo.infra.corpus`：`ITrainingCorpus` / `TrainSample` / `InMemoryTrainingCorpus`；埋点在 `EchoApi.recordTrainSample()`（建档确认）与 `recordFeedbackSample()`（回声反馈），受 `trainConsent` 门控，`accountId` 经 SHA-256 去标识。表结构 `t_train_sample` 已在 `schema.sql`。🔴 **三处硬伤见概述 B3，落 PG 前必修。**
+- **持久化 "B'"**：`PgRepository` + `CachedPgRepository` + PostgreSQL/pgvector。模块 repo：`account`/`avatar`/`echo`/`space`/`mind`/`social`/`resonance`。
+  > ⚠️ 旧文没写但重要：**HTTP 域另有一套并存的存储**（`com.echo.http.store.EchoStore`，双实现 `InMemoryEchoStore` / `PgEchoStore`），与 `com.echo.module.*` 的 Aengine repo 是两套东西。往宠档案、近况、明信片、记录、光谱都在这一套里。
+- **引擎底座** Aengine（`maven.compiler.release=26`；network/Netty、scheduler、cache、template、event、class table）。
+- **验证闭环** `com.echo.harness`（在 `src/test/java` 下）：体验 bot 含 LLM 定性层 `LlmBotReviewer`，用 `complete`，解析失败退回温和兜底评审。
+
+### 1.3 AI 能力清单三分类（A–K，对齐 `AI-CAPABILITIES.md` §1 的编号）
+
+**分类判据**（写死，免得下一轮各按各的理解填）：
+
+| 类别 | 判据 |
+|---|---|
+| **已实现** | 接口 + 真实实现 + **已接线到线上路径**。默认回落 mock 不影响归类——配 env 就生效的算已实现 |
+| **有契约无实现** | 接口/数据结构/DB 列已在，但**没有真实实现，或有实现但零生产调用点** |
+| **完全不存在** | 连接口都没有。要做得从定接口开始 |
+
+| # | 能力 | 归类 | 代码事实 |
+|---|---|---|---|
+| **A** | 肖像种类识别 | **已实现** | `IVisionClient` + `ApiVisionClient`（qwen-vl）+ `StubVisionClient` 兜底，调用点 `EchoApi` 建档第 1 步 |
+| **B** | 定妆推荐形象生成 | 🔴 **完全不存在** | `EchoApi.generateCandidates()` 产出的是**渐变色名 + emoji + 一句签名**，没有任何图像字节。`IImageGenClient` 未建 |
+| **C** | 动态预览 / 视频生成 | 🔴 **完全不存在** | `IVideoGenClient` 未建。`AI-CAPABILITIES §2`「待建接口」里列了，代码里没有 |
+| **D** | 素材特征分析（→性情词） | 🔴 **完全不存在**（服务端） | 视觉侧只做种类 detect，没有打标签的路径。前端随机取词 |
+| **E** | 语音识别 | 🔴 **完全不存在**（服务端） | `ISttClient` 未建。前端走浏览器 Web Speech API |
+| **F** | 回声 / 近况生成 | **已实现** | `EchoApi.generateEchoText()` / `generateReply()` → `ILlmClient.complete` → 过 `OutputSafetyGate` → 不过重生成一次 → 仍不过回落兜底池 |
+| **G** | 叙事基调 / 性格拓扑 | **有契约无实现** | 基调这一半是真跑的：`copyGuardSystemPrompt()` 把红线约束注入 prompt。**性格拓扑与反馈投喂这一半没有**——`TrainSample` 只把反馈**采集**下来，没有任何路径把它回流到生成 |
+| **H** | 我的光谱（内在光暗） | **有契约无实现** | `spectrumNodes` / `spectrumShadows` 是 `ConcurrentHashMap`，🔴 **进程内、无表、重启即失**（`PgEchoStore` 类注释自己写明「无独立表」）。无 LLM、无 embedding 参与 |
+| **I** | 向前的光谱 / 明日回声 | 🔴 **完全不存在** | 概念，无代码 |
+| **J** | 共鸣匹配 / 向量检索 | **已实现** | `IVectorStore.topN` + `ResonanceService`。⚠️ 默认嵌入是 mock 伪向量，所以**检索链路通了但结果没有语义**——这是配置状态，不是实现缺失 |
+| **K** | 文案 / 内容安全护栏 | **已实现** | `OutputSafetyGate` 五关 + `ContentSafetyGate` + `CopyGuardFilter`，已接线四条路径 |
+
+**另有三样不在 A–K 编号里、但同属「有契约无实现」，排期时容易漏掉：**
+
+1. **`GenerationEntryGate`（生成前置闸）**——`SPEC-security §4.1` 要求拟真类生成在**任务创建之前**拦，类写完了、`TaskKind` 五种拟真任务都定义了、测试也有，🔴 **全仓零生产调用点**。
+2. **`GeneratedMediaPublisher`（AIGC 隐式标识落盘唯一入口）**——同样零生产调用点，只有测试引用。它现在存在的意义是「等第一条生成管线上线时，让『生成了却没标识』在结构上做不到」。
+3. **`IConsentGate`（素材使用授权统一门控）**——`SPEC G0-10 ②③` 点名要求的五个校验点共用入口，🔴 **全仓不存在**。今天只有训练一处自己判 `trainConsent`。
+
+### 1.4 🔴 要让 AI 产出可发布的视频作品，缺哪些东西
+
+**背景**：作品域（`SPEC-works.md`）的发布口从第一天就同时收图片与视频，`t_work` 有 `mediaType='video'`、`posterKey`、`durationMs`，库约束 `t_work_ck_video_poster` 也已就位。**收得下，但没人产得出**——生成侧一件都没有。
+
+清单如下。🔴 **前六条是工程前置，不是选型问题**——选定供应商也解决不了它们：
+
+| # | 缺什么 | 为什么它是前置 |
+|---|---|---|
+| 1 | **`IVideoGenClient` 接口**（以及多数图生视频路线要先有的 `IImageGenClient`） | 缺的是两级：主流图生视频要先有一张定妆图，而 B 也不存在 |
+| 2 | 🔴 **异步任务模型** | 现有 `ILlmClient.complete` 是 20 秒超时的**同步阻塞**调用，视频生成是分钟级。没有任务表、没有 `taskId`、没有轮询或回调端点，`t_work.status` 枚举（`draft/pending/public/rejected/takendown/appealing/deleted`）里**也没有「生成中」这一态** |
+| 3 | 🔴 **把 `GeneratedMediaPublisher` 真正接进落盘路径** | 它已经强制「先打隐式标识、往返自检、读回不一致就拒绝落盘」。真接生成时必须从这里落，**不要给生成侧留一条直接调 `IStorage.put` 的近路** |
+| 4 | 🔴 **`t_work.aiGenerated` 的服务端真源** | 该列今天由客户端自报（`Json.getBool(b,"aiGenerated",false)`），服务端不校验。生成侧接进来之后，这就是「监管要的 S-8 显式标识可以被调用方关掉」。判据应当是「这个 mediaKey 是不是我们生成的」，由服务端答 |
+| 5 | 🔴 **把 `GenerationEntryGate` 接到创建口** | `TaskKind.ANIMATION` / `AWAKEN_VIDEO` 已定义为拟真类，语义就是**等生成完再拦就来不及了**（产物已落盘、钱已花掉）。它现在零调用点，视频生成上线必须同时接它 |
+| 6 | **视频首帧谁来抽** | 库约束强制 `posterKey` 非空，客户端目前没有抽帧实现（`SPEC-works` 概述已记）。AI 生成路径下客户端根本不在场，**只能服务端抽** |
+| 7 | **`originType` 对 AI 作品的口径** | 该列只有 `user \| official`，是运营口径不是 AI 口径（`SPEC-works` 概述已记，此处只留指针，不重复展开） |
+| 8 | 🔴 **素材出域的授权基础** | 图生视频要把用户上传的宠物照片送给第三方。这是**原始素材出域**，而 `IConsentGate` 不存在（§1.3 末）。今天没有任何一条路径能回答「这张照片有没有被授权拿去做视频生成」 |
+| 9 | **成本口径** | 视频生成单条成本比文本高两到三个数量级，且失败重试也要计费。定它需要先有 §10 Q4 的调用量基线 |
+
+**上传口的容量不是瓶颈但要确认走哪条路**：`POST /upload` 上限 25MB、作品视频时长上限 5 分钟。AI 生成的视频若由服务端直接经 `GeneratedMediaPublisher` → `IStorage` 落盘，不受 25MB 限制；若设计成「生成后回传走上传口」则受限。**这两条路要先选一条**，因为第 3 条（隐式标识）只在前一条路上才成立。
+
+### 1.5 仍然空白（本中台要补）
+
+- **侧写引擎**（人格提炼 → 一致口吻叙事，时间双向）—— 🔴 完全空白。**今天的近况生成不是它**，见 §2.5 与概述 A7。
+- **情感记忆层** —— 🔴 完全空白，定义见 §2.5。这是侧写引擎的前置：没有可检索的记忆，"提炼人格"没有输入。
+- **潜台词 / 情绪理解**（§2.11 暗面涌现）—— 完全空白（H 那套进程内 Map 不是它）。
+- **养成 / 反馈闭环的回流侧** —— 采集侧已有（`ITrainingCorpus`），🔴 **回流侧没有**：没有任何路径把反馈变回生成时的输入。
+- **隐私 / 自托管推理路由** —— 契约已具备（`LlmConfig` 的 `provider=local` 指向 Ollama/vLLM 的 OpenAI 兼容端点），🔴 **但按敏感度分流的路由不存在**：全进程单例一个 client。见 §10 Q1。
+- **自研窄模型**（领域嵌入 / 基调 / 潜台词 / 安全分类）—— 全部空白，按 §5.3 阶段二启动。
 
 ---
 
