@@ -1037,6 +1037,9 @@ public record SimilarQuery(
 - WS `ResonanceHandler.onQueryResonance`（`ResonanceHandler.java:33`）**不动**，继续调 `queryResonance` → WS 侧行为零变化，`ResonanceServiceTest.java:50,68` 的两条 `verify` 断言**不需要改**。
 - feed 侧只调 `findSimilar`。
 - 符合 `QA6`「HTTP 真正复用 WS 侧领域服务，非平行自建域」。
+  ⚠️ **这是本设计这一处的局部符合，不代表 `QA6` 已整体达成**——全局仍是两套平行域
+  （`SPEC-admin-console §0.2`、`PRODUCT-MINDMAP B10`、`TECH-DB-INVENTORY §6` 均已核实）。
+  🔴 事实上，`ResonanceService` 是目前**唯一**被两侧共用的领域服务，值得作为迁移的样板。
 
 #### 2.5.2 加的第一条：`persistRecords` 本身也是缺陷，要一并改
 

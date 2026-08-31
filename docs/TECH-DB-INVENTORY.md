@@ -27,13 +27,30 @@
 8. **`t_train_sample` 有表无实现**：代码走 `InMemoryTrainingCorpus`，PG 落库标着 TODO。
    进程一重启训练语料全丢。
 
+9. 🔴 **「两套世界」这件事早就裁定过，是实现没照做。** `DECISIONS QA6`：
+   **「WS + HTTP 并存，HTTP 真正复用 WS 侧领域服务，不平行自建域」**（交后端落实）；
+   `AD6` 又重申一次「共享领域层，不重造域，守 `QA6`」。而实际发生的是
+   **HTTP 侧建了一个完整的平行域**——70 个文件、26 张表、95 条手写 SQL、自己的 store 层。
+   ⚠️ **本文档 v1 把它写成「待定：两套世界要不要合并」，那是错的**，
+   它不待定，它是一条已拍板结论的执行欠账。
+10. **方向已定：统一到引擎的注解 / 领域服务那套，不走手写 SQL**（2026-08-31 制作人重申 `QA6`）。
+    但引擎现在表达不了 HTTP 侧要的东西，缺口量化见 §6——**先扩引擎，再迁**。
+    ⚠️ 这条欠账 `API-CONTRACT` 已用 **`M-6`** 编号在跟，本文档不另起编号，只补量化与执行前置。
+    🔴 **已有一个可抄的样板**：`ResonanceService` 是目前唯一被两侧共用的领域服务
+    （`TECH-DESIGN-feed-recall-and-exposure §2.5.1`），迁移时照它的形状做。
+11. **WS 那 8 条协议入口没有活着的客户端**（2026-08-31 核实）。H5 原型全仓零 WebSocket 引用；
+    唯一的 WS 客户端 `unity-legacy/` 功能代码停在 2026-08-28 拆仓那天，之后只改过名，
+    且需本地 Unity Editor 手动 Play 才会连。⚠️ **但这不等于可以直接删**——
+    `QA6` 裁的是「并存」，删掉 WS 是推翻裁定，要单独走推翻流程。
+
 🔴 **仍然待定的**：
 
-- **两套世界要不要合并，往哪边合** —— 定它需要先确认 WS 那 8 条入口还有没有客户端在用。
-  H5 原型走的全是 HTTP；`unity-legacy/` 走的是 WS。**如果 Unity 那条线确认不再维护，
-  module 世界连同它的 7 张独占表可以整体下线**，`t_account` 的双写问题随之消失。
+- **`QA6` 的「并存」还作不作数** —— WS 已确认无活跃客户端，但 `QA6`/`AD6` 明写并存。
+  🔴 **这条不能由实现侧自行决定**：删 WS 会让 `TECH-P1` 整份传输层规格、7 个 proto 文件、
+  `unity-legacy/` 一起失去承接。定它需要制作人对「Unity 那条线是否永久放弃」拍板。
 - **`schema.sql` 要不要改成迁移脚本序列** —— 现在是一个「从零建库」的全量脚本，
-  没有版本号、不能增量执行。定它需要先定上一条（合并方案会决定迁移工具的选型）。
+  没有版本号、不能增量执行。⚠️ 若按 §10 迁到注解，本条自动消解（DDL 由注解生成），
+  但**迁移期两者并行时仍需要一个防分叉的检查**。
 - **`t_memory_card` 补 `deletedAt` 的代价** —— 该表 7 个索引、被 30 处代码引用，
   补列意味着所有读路径都要加谓词。**漏一处不会报错，只会让删掉的卡重新出现**。
   定它需要先把读路径清点完。
@@ -156,3 +173,64 @@
 （perl 找不到要替换的内容，git 报 nothing to commit——这一步反而是唯一的报警）。
 
 **判准**：用 ripgrep 检索时不要带 `-r`；递归是默认行为，不需要开关。
+
+## 6. 迁到注解那套之前，引擎要先补什么
+
+方向已定（§10：统一到引擎注解 / 领域服务，不走手写 SQL）。这一节记的是**执行前置**——
+引擎当前表达不了 HTTP 侧在用的东西，先补齐才谈得上迁。数字为 2026-08-31 实测。
+
+### 6.1 查询端：`IRepository` 只有等值查询
+
+`Aengine/src/main/java/com/aengine/persistence/IRepository.java` 全部 12 个方法：
+`get(id)` / `get(field,value)` / `list(field,value)` / `list(Map)` / `listAll()` /
+`add` / `save` / `forceSave` / `remove` / `truncateAll`。
+
+`PgRepository` 里 **`ORDER BY`、`LIMIT`、`JOIN` 各 0 处**。`buildWhereSQL` 只拼
+`col = ?` 的 AND 串——没有范围、没有 `IS NULL`、没有 `IN`。
+
+🔴 **它的设计假设是「整表装进内存，在 Java 里筛」**，`CachedRepository` /
+`DelaySaveRepository` / Redis 那一整套都围绕这个假设。对游戏服的玩家、道具成立；
+对一条要 `ORDER BY publishedAt DESC LIMIT 20` 的内容流不成立。
+
+现有 11 个手写 SQL 类、约 95 条语句用到的特性：
+
+| 特性 | 用量 | 引擎 |
+|---|---|---|
+| `IS NULL`（软删谓词） | 22 | 无 |
+| `ORDER BY` | 21 | 无 |
+| `LIMIT` | 16 | 无 |
+| `ON CONFLICT`（幂等写） | 14 | 无 |
+| `jsonb` | 11 | 无 |
+| `JOIN` | 2 | 无 |
+
+### 6.2 表定义端：注解表达不了 `schema.sql` 里的多数约束
+
+`@Table` 有 `name` / `index` / `cache` / `clusterBy` / `comment` / `autoCreate` / `charset`；
+`@Column` 有 `name` / `notNull` / `defaultValue` / `readOnly` / `length` / `immutable` /
+`comment` / `charset`；`@Index` 只有 `name` / `columns` / `type`。
+⚠️ **`@Fk` 打开看只是一个索引类型标记，不生成外键约束。**
+
+`schema.sql` 里注解表达不了的：
+
+| 东西 | 数量 |
+|---|---|
+| `CHECK` 约束 | 30 |
+| 外键 | 19 |
+| 局部索引（`WHERE ...`） | 23（共 76 个索引） |
+| 索引内 `DESC` | 9 |
+| `jsonb` 列 | 12 |
+| `vector` 列 | 1 |
+| 特殊索引类型（ivfflat 等） | 1 |
+
+🔴 **那 23 个局部索引正是软删的守卫**（`WHERE deletedAt IS NULL` 的唯一索引），
+迁移时如果表达不出来，「一张卡只能发一个未删除的作品」这类约束会从数据库层掉到应用层——
+**掉下去不会报错，只会在并发时偶发重复**。
+
+⚠️ 另注：`@Column.charset()` 默认 `utf8mb4`，说明引擎原本是给 MySQL 写的，
+`PgRepository` 是 echo 侧的 PG 适配。扩展时要留意两边的类型映射不是一一对应。
+
+### 6.3 建议留一处例外
+
+`t_self_vector` 的 pgvector 相似度检索。它的意义就是让数据库算距离；
+搬进 Java 内存等于把这个能力废掉。建议这一处继续走原生 SQL，并在文档里写明是**刻意例外**，
+否则下一个人会当成遗漏顺手"修"掉。
