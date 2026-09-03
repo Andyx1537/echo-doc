@@ -9,7 +9,7 @@ Apply this standard before technical implementation. Turn human intent into veri
 
 ## Use the authoritative copy
 
-For the Echo project, treat `echo-doc/docs/skills/development-readiness/` as the authoritative shared copy. Treat personal `.codex/skills/development-readiness/` directories as installed replicas. Change the repository copy through review, validation, commit, and remote archival first, then synchronize installed replicas. Do not maintain undocumented professional variants.
+For the Echo project, treat `docs/skills/development-readiness/SKILL.md` as the only authoritative copy. All people, automation services, and editing tools must read this repository document. Treat any runtime-loaded copy as a replaceable cache, never as an editable source. Change only the repository copy through review, validation, commit, and remote archival. Do not introduce tool-specific paths, names, metadata, or undocumented professional variants into the shared contract.
 
 ## Run the preflight
 
@@ -146,7 +146,7 @@ Before editing product or implementation artifacts:
 
 1. Inspect repository instructions, current branch, dirty files, remote configuration, and branch policy.
 2. Preserve unrelated user work. If the relevant tree already contains overlapping uncommitted changes, resolve ownership before creating a branch or commit.
-3. Use a focused branch that follows the repository convention; default to a short `codex/<topic>` branch when no project convention exists.
+3. Use a focused branch that follows the repository convention. When no convention exists, use the business-neutral form `<area>/<topic>`, such as `product/work-publication`, `frontend/work-detail`, or `backend/phone-binding`; never encode the editing tool or content author in a branch name.
 4. Keep the documentation delta and the implementation it governs traceable. Use one coherent commit when they belong to one change; otherwise use linked commits with the same decision or issue identifier.
 5. Run document hygiene, link/reference checks, contract checks, and relevant code tests before committing.
 6. Write a commit message and handoff note that name the product decision, affected systems, implementation delta, verification, and remaining gaps.
