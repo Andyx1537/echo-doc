@@ -1268,8 +1268,8 @@ assertThat(wall).doesNotContainKeys("count", "total", "rememberCount", "rank");
 
 ### 19.7 驳回后编辑与重提
 
-- `PUT /works/:workId/draft`：仅作者可把 `rejected` 作品带入编辑并保存新内容草稿；首次内容变化创建 `contentVersion+1`，不得覆盖旧审核版本。
-- `POST /works/:workId/resubmit { contentVersion, contentHash, idempotencyKey }`：仅当前草稿版本可提交；服务端校验素材、授权、AIGC 标识与当前审核条件，成功返回 `{ workId, contentVersion, status: "pending", moderationId }`。
+- `PUT /works/:workId/draft`：仅作者可编辑 `rejected` 作品并保存新内容草稿；作品主状态继续保持 `rejected`，首次内容变化创建 `contentVersion+1`，不得覆盖旧审核版本。
+- `POST /works/:workId/resubmit { contentVersion, idempotencyKey }`：仅当前草稿版本可提交；服务端重新计算权威内容哈希，校验素材、授权、AIGC 标识与当前审核条件，成功返回 `{ workId, contentVersion, contentHash, status: "pending", moderationId }`。
 - 旧公开审核凭证在内容变化后不得复用；并发重提通过版本 CAS 与幂等键只创建一个审核工单。
 
 ### 19.8 手机验证码归属解析
@@ -1280,9 +1280,11 @@ assertThat(wall).doesNotContainKeys("count", "total", "rememberCount", "rank");
 2. `POST /auth/phone/challenges/:challengeId/verify { code }`：验证成功返回一次性 `resolutionToken` 与 `resolution=bind_current|switch_existing`，此时不改变会话。
 3. `POST /auth/phone/resolutions/:resolutionToken/confirm`：
    - `bind_current`：手机号绑定当前匿名 `accountId`，返回同一账号的新会话；
-   - `switch_existing`：返回手机号所属原账号的新会话，当前匿名资料不迁移。
+   - `switch_existing`：返回手机号所属原账号的新会话，当前匿名资料不迁移；当前匿名 token 立即失效，但匿名账号和数据保留。
 
 `resolutionToken` 必须短时、单次使用并绑定当前匿名会话。验证码错误、过期、频控、解析过期和重复确认使用稳定错误码；任何失败均保留当前匿名会话。客户端只有在确认成功后才替换 token，并按 `returnTo` 恢复允许的原路径。
+
+用户可从明确的“切换账号”入口重新唤醒保留的匿名账号。该动作必须由服务端校验受控的一次性切换凭证或本地受保护的匿名会话凭证，签发新的匿名会话；客户端不得提交 `accountId` 直接恢复，也不得让已失效 token 继续访问。
 
 ## 20. 行为证据与适配（目标契约 · Phase 0）
 
