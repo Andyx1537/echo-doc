@@ -11,6 +11,11 @@
 
 ---
 
+> 🆕 🔴 **2026-09-01 作品公开闭环覆盖说明**：`DECISIONS G-27` 已把公开层收口为作品。
+> 回忆卡继续私域存在；用户公开一张卡时创建独立 `Work` 并关联 `sourceCardId`。
+> 因此本文旧版中“`GET /plaza` 发回忆卡”是**当前实现/迁移前契约**，不再是目标产品语义。
+> 目标契约见本文 §19；在迁移完成前，前后端不得把新目标误报为已上线。
+
 ## 0. 通用约定
 
 - **Base URL**：`/api/v1`
@@ -1180,3 +1185,145 @@ assertThat(wall).doesNotContainKeys("count", "total", "rememberCount", "rank");
 今天不漏（排序引擎不看这些）。但 🔴 **一旦哪天按暖光排，位置本身就是名次**，而且**前端完全看不出来** —— 这正是 `CHECKLIST-number-leak.md` 里「手法②：有序列表里的位置」。建议解冻这一批时一并补一句明禁。
 
 **状态。** ❄️ 同批冻结。
+
+---
+
+## 19. 作品公开闭环（目标契约 · 待技术核查）
+
+> 本节确定对象和接口语义，不代表现有服务已完整实现。现状差距以
+> `PRODUCT-DECISION-WORK-PUBLICATION.md §9` 的 W-01—W-14 核查。
+
+### 19.1 创建作品
+
+`POST /works` 统一承接两种来源：
+
+```json
+{
+  "sourceType": "user_upload|memory_card",
+  "sourceCardId": "仅 memory_card 必填",
+  "title": "用户上传或编辑后内容",
+  "body": "可选",
+  "media": { "resourceId": "...", "posterId": "..." },
+  "sourceContentHash": "原样发布时必填",
+  "reviewEvidenceId": "有可复用公开审核凭证时传"
+}
+```
+
+服务端不得相信客户端声称“未修改”或“已审核”；必须自行核验卡归属、冻结内容哈希、审核凭证、
+策略有效期、授权状态、素材状态、AIGC 标识和重复发布约束。
+
+响应统一返回 `{ workId, status, reviewMode }`：
+
+- 上传或内容发生变化：`status=pending, reviewMode=full`；
+- 原样内容且公开审核凭证有效、发布轻闸通过：`status=public, reviewMode=reused`；
+- 凭证不可复用但允许提交：`status=pending, reviewMode=full`；
+- 归属、授权或素材状态不允许发布：明确失败，不得降级直发。
+
+### 19.2 广场与作品墙的场景边界
+
+- 目标态 `GET /plaza` 返回作品列表，列表元素主键为 `workId`。
+- `plaza` 表示面向所有用户的公共发现瀑布流，承担推荐、排序和曝光登记。
+- `works` 在产品信息架构中表示用户自己的作品墙；接口可由 `GET /users/:userId/works` 承担，
+  当前用户缺省为本人。本人可见待审、驳回等非公开状态，访问他人作品墙只返回公开作品。
+- 当前 `GET /works` 的全站作品瀑布语义属于迁移前实现；技术需将其调用方迁往 `/plaza`，或将该路径
+  改造成“我的作品墙”。不得让它继续成为第二个公共推荐流。
+- 作品详情、作者页、搜索与分享都使用同一可见性函数：非作者只读 `public` 且未删除、未下架的作品。
+- 列表和详情显式下发 `sourceType` 与 `aiGenerated`；不得把 `sourceCardId` 暴露为陌生人可访问私域卡的入口。
+
+### 19.3 作品互动与消息
+
+公开互动端点的目标 ID 只允许 `workId`。建议统一为：
+
+- `POST /works/:workId/interactions`：创建互动，要求幂等键；
+- `DELETE /works/:workId/interactions/:interactionId`：撤回本人可撤回的互动；
+- `POST /works/:workId/reports`：举报作品或作品互动；
+- 消息到达项返回 `workId`、互动类型和事件时间，来源卡/窗口关系由服务端解析。
+
+客户端可提交 `sourceSurface` 供广场、详情、分享等入口归因，但不得提交另一个 `cardId/windowId`
+作为并列互动目标。作者消息、运营统计与私域温和提示均由同一作品互动事件投影。
+
+### 19.4 作品审核与处置
+
+审核后台必须能以 `targetType=work, targetId=workId` 查询队列、查看凭证和内容版本、执行通过、
+驳回、下架、恢复和申诉处置。所有状态迁移与审核流水、审计流水同事务写入；恢复公开不得刷新
+首次 `reviewedAt`。回忆卡审核链与作品审核链可以共用审核基础设施，但不能共用对象状态。
+
+## 20. 行为证据与适配（目标契约 · Phase 0）
+
+> 产品边界与字段语义以 `SPEC-behavior-evidence-and-adaptation.md` 为准。本节只固定前后端并行所需的端点形状；当前线上推荐在影子验证通过前不得读取隐式行为信号。
+
+### 20.1 批量接收行为事实
+
+`POST /behavior-events/batch`
+
+```json
+{
+  "events": [{
+    "idempotencyKey": "device-session-seq",
+    "eventName": "question_answered",
+    "sessionId": "...",
+    "surface": "private_onboarding",
+    "targetType": "question",
+    "targetId": "first_meeting_place:v1",
+    "activeDurationMs": 4200,
+    "foregroundDurationMs": 5100,
+    "loadWaitMs": 900,
+    "attemptCount": 1,
+    "backtrackCount": 0,
+    "context": { "answerCode": "home" },
+    "occurredAt": "2026-09-02T00:00:00Z",
+    "schemaVersion": 1,
+    "purposeCode": "ui_adaptation"
+  }]
+}
+```
+
+响应逐条给出：
+
+```json
+{
+  "results": [{
+    "idempotencyKey": "device-session-seq",
+    "status": "accepted|duplicate|rejected",
+    "eventId": "...",
+    "reasonCode": null
+  }]
+}
+```
+
+- 服务端从认证上下文确定 `accountId` 与匿名/绑定状态，不接受客户端自报；
+- `eventName`、`surface`、`targetType`、`purposeCode` 和 `context` 键均走版本字典；
+- 单条非法不拖垮整批；接收失败不得令业务主请求失败；
+- 手机号、验证码、素材正文、问卷自由文本禁止进入 `context`。
+
+### 20.2 保存用户明确反馈
+
+`POST /me/explicit-feedback`
+
+```json
+{
+  "scope": "private_generation",
+  "targetType": "generation_result",
+  "targetId": "...",
+  "questionCode": "likeness",
+  "answerCode": "looks_like_it",
+  "answerVersion": 1,
+  "sourceSurface": "first_generation"
+}
+```
+
+响应 `{ feedbackId, status, supersedesId }`。同一问题的改选创建新记录并关联旧记录，不做原地覆盖；服务端校验目标归属、可见性、题目版本和答案字典。
+
+### 20.3 查看、清除与关闭个性化
+
+- `GET /me/adaptation-profile`：返回可理解的题材偏好、界面适配和各域开关，不返回内部证据 ID、置信分或敏感推断；
+- `DELETE /me/adaptation-profile?scope=ui_adaptation|public_recommendation|private_generation`：使该域假设失效，撤销可逆决策并清缓存；
+- `PUT /me/recommendation-mode { "mode": "personalized|non_personalized" }`：关闭后公共推荐不得读取个性化假设。
+
+### 20.4 服务端硬约束
+
+- 推断与决策服务只读与自身 `scope + purposeCode` 匹配的数据；越权明确失败并留审计；
+- 假设服务不可用时返回通用体验，不静默复用过期画像；
+- 匿名账号绑定手机只升级原 `accountId`，不复制事件和反馈；
+- 禁止建立年龄、智力、心理状态、悲伤阶段、依赖程度或对象生死的假设字段/枚举；
+- Phase 0 产生的推荐假设和决策必须带 `shadow=true`，不得改变线上召回、打分、编排或批次结果。
