@@ -87,6 +87,14 @@ When a frontend requirement lacks a backend contract, report the minimum missing
 
 Treat implementation-facing product work as development work, not as informal discussion. Apply this section whenever changing a PRD, product decision, user flow, page contract, system topology, API-facing requirement, acceptance rule, or implementation plan.
 
+### Cascade every confirmed decision
+
+After a product decision is confirmed, read and execute [the cascade delivery protocol](references/cascade-delivery.md). Create one delivery ledger from [the shared template](templates/delivery-manifest.md), distribute the same versioned delta to frontend, backend, and QA for parallel assessment, and wait for all three acknowledgements before assigning implementation agents.
+
+Treat the delivery ledger as the single coordination state. Stop affected implementation immediately when a discovery changes a product mainline, core object, lifecycle, authority, public/private boundary, user-visible flow, destructive contract, safety rule, or executable acceptance. Require technical impact feedback, product-and-technical re-alignment, QA impact updates, a new baseline version, redistribution, and renewed acknowledgements before resuming.
+
+Do not close a task because product documentation, frontend work, backend work, or QA passed in isolation. Require a frozen shared contract, real frontend-backend integration evidence, QA acceptance bound to exact builds, product result confirmation, and remote archival.
+
 ### Start from the maintained baseline
 
 1. Read the project's compact product baseline first. Read full historical documents only when the changed topic, an unresolved conflict, or evidence requires them.

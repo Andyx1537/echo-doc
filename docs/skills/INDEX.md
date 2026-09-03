@@ -15,7 +15,7 @@
 
 | Skill | 作用 | 权威入口 |
 |---|---|---|
-| `development-readiness` | 产品与技术修改前的基线比对、前后端同步、验收、分支和交付标准 | `development-readiness/SKILL.md` |
+| `development-readiness` | 产品与技术修改前的基线比对、三方级联评估、前后端同步、验收、分支和交付标准 | `development-readiness/SKILL.md` |
 
 ## 分发结构
 
@@ -23,7 +23,11 @@
 docs/skills/
 ├── INDEX.md
 └── development-readiness/
-    └── SKILL.md
+    ├── SKILL.md
+    ├── references/
+    │   └── cascade-delivery.md
+    └── templates/
+        └── delivery-manifest.md
 ```
 
 专业人员、自动化服务和编辑工具只需要读取通用 `SKILL.md`。任何工具专属配置均不得进入本公共契约目录。仓库提交号应记录在交接信息中，以便确认各方使用的是哪一版。
