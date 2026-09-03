@@ -162,6 +162,7 @@ flowchart LR
 
 ## 5. 维护与专业同步
 
+- 产品、设计、前端、后端、QA 与运营共同执行 `docs/skills/development-readiness/SKILL.md`；该仓库版本是权威副本，个人 skill 目录只作安装缓存。
 - 日常先读本文相关章节；触及某分支再读对应 SPEC，触及根基必须回读裁定和架构源文档。
 - 新裁定同步更新本文 §1/§2、`DECISIONS.md` 和对应 SPEC；涉及接口再更新 `API-CONTRACT.md`。
 - 开发计划只写新增差额，并说明旧能力是复用、迁移、废弃还是不动。

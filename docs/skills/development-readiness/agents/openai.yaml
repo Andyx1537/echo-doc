@@ -1,0 +1,4 @@
+interface:
+  display_name: "产品与开发就绪"
+  short_description: "同步产品基线、前后端契约、开发差额、分支与交付证据"
+  default_prompt: "Use $development-readiness to compare the confirmed product baseline with current implementation, define synchronized frontend and backend contracts, and archive the verified change according to project workflow."
