@@ -1248,6 +1248,42 @@ assertThat(wall).doesNotContainKeys("count", "total", "rememberCount", "rank");
 驳回、下架、恢复和申诉处置。所有状态迁移与审核流水、审计流水同事务写入；恢复公开不得刷新
 首次 `reviewedAt`。回忆卡审核链与作品审核链可以共用审核基础设施，但不能共用对象状态。
 
+### 19.5 评论与二级回复
+
+- `GET /works/:workId/comments?sort=hot|latest&cursor=`：返回一级评论分页；匿名视角最多返回热门 3 条且不给后续游标。
+- `GET /comments/:rootCommentId/replies?cursor=`：绑定用户读取同一根评论的二级回复，按创建时间正序。
+- `POST /works/:workId/comments { body, idempotencyKey }`：发表一级评论。
+- `POST /comments/:commentId/replies { body, idempotencyKey }`：回复任意可见评论。服务端解析并返回 `rootCommentId`、`replyToCommentId`；回复二级评论也不得产生第三级树。
+- `DELETE /comments/:commentId`：评论者删除自己的评论，或作品作者治理删除自己作品下评论；服务端返回 `displayState=hidden|deleted_placeholder`。
+
+评论 DTO 至少包含 `commentId, workId, rootCommentId, replyToCommentId, authorPublic, body, createdAt, displayState, capabilities`。删除、跨作品关系、绑定要求和排序规则以 `SPEC-work-comments-and-favorites.md` 为准。
+
+### 19.6 收藏
+
+- `PUT /works/:workId/favorite`：幂等收藏，返回 `{ workId, favorited: true }`；
+- `DELETE /works/:workId/favorite`：幂等取消，返回 `{ workId, favorited: false }`；
+- `GET /me/favorites?cursor=`：只返回本人收藏且当前仍可见的作品。
+
+收藏要求手机号绑定。作者消息、作者视角和公开 DTO 均不得返回收藏者或收藏数。
+
+### 19.7 驳回后编辑与重提
+
+- `PUT /works/:workId/draft`：仅作者可把 `rejected` 作品带入编辑并保存新内容草稿；首次内容变化创建 `contentVersion+1`，不得覆盖旧审核版本。
+- `POST /works/:workId/resubmit { contentVersion, contentHash, idempotencyKey }`：仅当前草稿版本可提交；服务端校验素材、授权、AIGC 标识与当前审核条件，成功返回 `{ workId, contentVersion, status: "pending", moderationId }`。
+- 旧公开审核凭证在内容变化后不得复用；并发重提通过版本 CAS 与幂等键只创建一个审核工单。
+
+### 19.8 手机验证码归属解析
+
+手机号登录采用“验证—解析—确认”三步，避免验证码通过即错误切号：
+
+1. `POST /auth/phone/challenges { phone, purpose: "login_or_bind" }`：发送验证码；响应不暴露号码是否已注册。
+2. `POST /auth/phone/challenges/:challengeId/verify { code }`：验证成功返回一次性 `resolutionToken` 与 `resolution=bind_current|switch_existing`，此时不改变会话。
+3. `POST /auth/phone/resolutions/:resolutionToken/confirm`：
+   - `bind_current`：手机号绑定当前匿名 `accountId`，返回同一账号的新会话；
+   - `switch_existing`：返回手机号所属原账号的新会话，当前匿名资料不迁移。
+
+`resolutionToken` 必须短时、单次使用并绑定当前匿名会话。验证码错误、过期、频控、解析过期和重复确认使用稳定错误码；任何失败均保留当前匿名会话。客户端只有在确认成功后才替换 token，并按 `returnTo` 恢复允许的原路径。
+
 ## 20. 行为证据与适配（目标契约 · Phase 0）
 
 > 产品边界与字段语义以 `SPEC-behavior-evidence-and-adaptation.md` 为准。本节只固定前后端并行所需的端点形状；当前线上推荐在影子验证通过前不得读取隐式行为信号。
