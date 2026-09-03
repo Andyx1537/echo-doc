@@ -1256,6 +1256,8 @@ assertThat(wall).doesNotContainKeys("count", "total", "rememberCount", "rank");
 - `POST /comments/:commentId/replies { body, idempotencyKey }`：回复任意可见评论。服务端解析并返回 `rootCommentId`、`replyToCommentId`；回复二级评论也不得产生第三级树。
 - `DELETE /comments/:commentId`：评论者删除自己的评论，或作品作者治理删除自己作品下评论；服务端返回 `displayState=hidden|deleted_placeholder`。
 
+`G-34/BC2` 覆盖旧占位返回：删除一级评论时服务端在同一事务中软删整棵评论树，公开读取不再返回根、回复或占位，响应固定为 `{ commentId, displayState: "hidden", cascadedReplyCount }`；删除二级回复时 `cascadedReplyCount=0`。任一节点更新失败则整笔回滚。
+
 评论 DTO 至少包含 `commentId, workId, rootCommentId, replyToCommentId, authorPublic, body, createdAt, displayState, capabilities`。删除、跨作品关系、绑定要求和排序规则以 `SPEC-work-comments-and-favorites.md` 为准。
 
 ### 19.6 收藏
@@ -1355,7 +1357,7 @@ assertThat(wall).doesNotContainKeys("count", "total", "rememberCount", "rank");
 ### 20.3 查看、清除与关闭个性化
 
 - `GET /me/adaptation-profile`：返回可理解的题材偏好、界面适配和各域开关，不返回内部证据 ID、置信分或敏感推断；
-- `DELETE /me/adaptation-profile?scope=ui_adaptation|public_recommendation|private_generation`：使该域假设失效，撤销可逆决策并清缓存；
+- `DELETE /me/adaptation-profile?scope=ui_adaptation|public_recommendation|private_generation`：软清除该域在线适配；保留历史行为事实、反馈、假设和决策，将当前假设标记为 `cleared`、相关决策标记为 `reverted`，清除在线投影与缓存；
 - `PUT /me/recommendation-mode { "mode": "personalized|non_personalized" }`：关闭后公共推荐不得读取个性化假设。
 
 ### 20.4 服务端硬约束

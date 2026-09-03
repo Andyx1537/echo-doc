@@ -172,7 +172,7 @@ expiresAt, revertedAt
 ### 5.3 用户控制
 
 - `GET /me/adaptation-profile`：返回面向用户可理解的当前题材偏好和界面适配，不暴露内部画像分数；
-- `DELETE /me/adaptation-profile?scope=...`：清除指定域假设并撤销可逆适配；
+- `DELETE /me/adaptation-profile?scope=...`：对指定域执行软清除；历史事实、反馈、假设和决策继续保留，但当前假设标记为 `cleared`、可逆决策标记为 `reverted`，清空在线投影与缓存并恢复通用体验；
 - `PUT /me/recommendation-mode`：`personalized|non_personalized`；关闭后生产推荐不得读取个性化假设。
 
 内部推断与决策接口不得直接暴露给客户端写入；客户端不能自报置信度或适配策略。
@@ -183,7 +183,7 @@ expiresAt, revertedAt
 - 事件以 `(accountId, idempotencyKey)` 去重；匿名账号绑定手机后只变认证状态，不迁出或复制行为主体。
 - 读取按“账号 + scope + purposeCode”三重校验；推荐服务拿不到私域问卷与素材内容。
 - 假设必须有 `validUntil`；决策到期或假设失效后自动撤销。
-- 用户删除账号、撤回相关用途或清除适配档案时，停止下游使用并形成可审计清理任务。
+- 清除适配档案时只停止下游使用并写入可审计软清除记录，不物理删除行为事实、明确反馈、历史假设和历史决策；账号删除与法定数据删除走独立流程。
 - 原始事件精确保存期、聚合保存期和匿名长期不活跃清理天数，需在数据生命周期专项按必要性定数；在定数前不得无限期默认保存。
 
 ## 7. 降级与异常
