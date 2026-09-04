@@ -6,6 +6,7 @@
 
 状态：`PRODUCT_CONFIRMED / TECH_ASSESSING`
 基线分支：三仓 `develop`；基线标签 `baseline-2026.09.03`
+本轮产品与契约基线：`echo-doc/develop@f91a200`
 
 ## 统一增量
 
