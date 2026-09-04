@@ -1248,17 +1248,21 @@ assertThat(wall).doesNotContainKeys("count", "total", "rememberCount", "rank");
 驳回、下架、恢复和申诉处置。所有状态迁移与审核流水、审计流水同事务写入；恢复公开不得刷新
 首次 `reviewedAt`。回忆卡审核链与作品审核链可以共用审核基础设施，但不能共用对象状态。
 
+审核并发保护必须存在，但锁定作用域尚未定案。按 `workId`、`contentVersion`、`moderationId` 或组合约束的方案，需由后端给出并发场景、失败原子性和恢复影响，前端给出冲突展示，QA 给出可执行竞态用例，再由产品确认；当前不得自行写死。
+
 ### 19.5 评论与二级回复
 
-- `GET /works/:workId/comments?sort=hot|latest&cursor=`：返回一级评论分页；匿名视角最多返回热门 3 条且不给后续游标。
+- `GET /works/:workId/comments?sort=hot|latest&cursor=`：返回一级评论分页；匿名视角仅用于 Plaza 作品详情，最多返回热门一级 3 条及每条受控的 `previewReplies`，不给完整评论后续游标。
 - `GET /comments/:rootCommentId/replies?cursor=`：绑定用户读取同一根评论的二级回复，按创建时间正序。
 - `POST /works/:workId/comments { body, idempotencyKey }`：发表一级评论。
 - `POST /comments/:commentId/replies { body, idempotencyKey }`：回复任意可见评论。服务端解析并返回 `rootCommentId`、`replyToCommentId`；回复二级评论也不得产生第三级树。
-- `DELETE /comments/:commentId`：评论者删除自己的评论，或作品作者治理删除自己作品下评论；服务端返回 `displayState=hidden|deleted_placeholder`。
+- `DELETE /comments/:commentId`：普通用户只能删除自己写的内容；作品作者可删除自己作品下评论；平台具备全局处置权限。服务端返回删除后的权威展示结果。
 
 `G-34/BC2` 覆盖旧占位返回：删除一级评论时服务端在同一事务中软删整棵评论树，公开读取不再返回根、回复或占位，响应固定为 `{ commentId, displayState: "hidden", cascadedReplyCount }`；删除二级回复时 `cascadedReplyCount=0`。任一节点更新失败则整笔回滚。
 
-评论 DTO 至少包含 `commentId, workId, rootCommentId, replyToCommentId, authorPublic, body, createdAt, displayState, capabilities`。删除、跨作品关系、绑定要求和排序规则以 `SPEC-work-comments-and-favorites.md` 为准。
+评论 DTO 至少包含 `commentId, workId, rootCommentId, replyToCommentId, authorPublic, body, createdAt, displayState, previewReplies, capabilities`。`capabilities` 由服务端按当前角色下发，至少表达 `canReply/canDelete/canHide/canReport`；作品作者在自己作品下可以隐藏、删除、举报，但不得获得编辑他人评论的能力或接口。平台能力由独立全局治理角色控制。
+
+删除一级评论后整树不可见且不可回复；删除二级不影响其他节点。被回复目标删除但同根其他回复仍可见时，响应只给通用删除目标，不返回原正文。作者隐藏的恢复能力、回复预览条数、分页信封、错误标识、幂等和并发保护由技术方提交方案，产品确认用户展示与恢复后冻结。
 
 ### 19.6 收藏
 
@@ -1287,6 +1291,42 @@ assertThat(wall).doesNotContainKeys("count", "total", "rememberCount", "rank");
 `resolutionToken` 必须短时、单次使用并绑定当前匿名会话。验证码错误、过期、频控、解析过期和重复确认使用稳定错误码；任何失败均保留当前匿名会话。客户端只有在确认成功后才替换 token，并按 `returnTo` 恢复允许的原路径。
 
 用户可从明确的“切换账号”入口重新唤醒保留的匿名账号。该动作必须由服务端校验受控的一次性切换凭证或本地受保护的匿名会话凭证，签发新的匿名会话；客户端不得提交 `accountId` 直接恢复，也不得让已失效 token 继续访问。
+
+### 19.9 设备凭据匿名登录
+
+`POST /auth/device/session { deviceCredential }`
+
+- `deviceCredential` 是服务端签发、前端可保存的不透明凭据；客户端不得从设备标识推导 `accountId` 或绑定状态。
+- 凭据只可恢复未绑定手机号的匿名账号。
+- 匿名账号绑定手机号时，服务端必须原子撤销该账号的设备凭据登录关系。
+- 已撤销凭据或同一设备标识再次进入匿名入口时，服务端不得登录已绑定账号，而应创建/返回新的匿名账号并轮换设备凭据。
+- 已绑定账号只能通过手机号登录。需要唤醒另一个保留的未绑定匿名账号时，走受控“切换账号”流程，不把通用设备登录变成账号选择器。
+
+响应至少给出服务端权威的 `{ accountId, phoneBound: false, sessionToken, deviceCredential }`。具体失效错误、幂等键、并发创建去重和凭据轮换标识由后端提出，前端与 QA 复核后冻结。
+
+### 19.10 用户级作品提交通道
+
+作品墙响应或独立能力查询必须下发：
+
+```json
+{
+  "submissionCapability": {
+    "canSubmitWork": false,
+    "blockingWorkId": "服务端判定的占用作品；无则 null",
+    "blockingStatus": "服务端权威状态；无则 null",
+    "nextAction": "open_work|edit|resubmit|wait|none"
+  }
+}
+```
+
+- `POST /works` 与 `POST /works/:workId/resubmit` 均在服务端按用户维度原子校验单通道，不相信客户端 `canSubmitWork`。
+- 并发请求最多只能创建一条处理/审核链，失败请求不得产生作品、版本、审核工单或进度投影。
+- 前端只在“我的作品墙”和单条作品详情展示状态与 `nextAction`，不建立独立审核进度中心。
+- `uploading/submitting/pending` 返回 `canSubmitWork=false` 并给出 `blockingWorkId/blockingStatus`。
+- `public/rejected/takendown/deleted/appealing` 不占新投稿名额；驳回作品本地编辑期间仍可开始新投稿。
+- 服务端未受理的网络失败立即释放；已经受理但客户端响应丢失时，能力查询必须返回真实占用结果，不得仅凭客户端报错释放。
+- 待审撤回只有服务端确认成功后释放；重提只有服务端受理并进入 `pending` 后占用。
+- 审核工单自身的并发锁作用域仍待 `DECISIONS H19`，不得用本节用户级名额规则代替。
 
 ## 20. 行为证据与适配（目标契约 · Phase 0）
 
