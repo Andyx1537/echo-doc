@@ -1252,7 +1252,7 @@ assertThat(wall).doesNotContainKeys("count", "total", "rememberCount", "rank");
 
 ### 19.5 评论与二级回复
 
-- `GET /works/:workId/comments?sort=hot|latest&cursor=`：返回一级评论分页；匿名视角仅用于 Plaza 作品详情，最多返回热门一级 3 条及每条受控的 `previewReplies`，不给完整评论后续游标。
+- `GET /works/:workId/comments?sort=hot|latest&cursor=`：返回一级评论分页；省略 `sort` 时固定为 `hot`。作品详情首屏返回热门一级 3 条，每条最多返回 2 条 `previewReplies`；匿名视角仅用于 Plaza 作品详情且不给完整评论后续游标。
 - `GET /comments/:rootCommentId/replies?cursor=`：绑定用户读取同一根评论的二级回复，按创建时间正序。
 - `POST /works/:workId/comments { body, idempotencyKey }`：发表一级评论。
 - `POST /comments/:commentId/replies { body, idempotencyKey }`：回复任意可见评论。服务端解析并返回 `rootCommentId`、`replyToCommentId`；回复二级评论也不得产生第三级树。
@@ -1260,9 +1260,13 @@ assertThat(wall).doesNotContainKeys("count", "total", "rememberCount", "rank");
 
 `G-34/BC2` 覆盖旧占位返回：删除一级评论时服务端在同一事务中软删整棵评论树，公开读取不再返回根、回复或占位，响应固定为 `{ commentId, displayState: "hidden", cascadedReplyCount }`；删除二级回复时 `cascadedReplyCount=0`。任一节点更新失败则整笔回滚。
 
-评论 DTO 至少包含 `commentId, workId, rootCommentId, replyToCommentId, authorPublic, body, createdAt, displayState, previewReplies, capabilities`。`capabilities` 由服务端按当前角色下发，至少表达 `canReply/canDelete/canHide/canReport`；作品作者在自己作品下可以隐藏、删除、举报，但不得获得编辑他人评论的能力或接口。平台能力由独立全局治理角色控制。
+评论列表响应至少包含 `{ sort, visibleCommentCount, items, nextCursor }`。每个一级 `item` 至少包含 `comment, previewReplies, visibleReplyCount, remainingReplyCount, repliesCursor, capabilities`；首屏 `previewReplies` 最大长度为 2，`remainingReplyCount=0` 时前端不显示展开入口。匿名响应的 `nextCursor/repliesCursor` 均为 `null`。
 
-删除一级评论后整树不可见且不可回复；删除二级不影响其他节点。被回复目标删除但同根其他回复仍可见时，响应只给通用删除目标，不返回原正文。作者隐藏的恢复能力、回复预览条数、分页信封、错误标识、幂等和并发保护由技术方提交方案，产品确认用户展示与恢复后冻结。
+评论 DTO 至少包含 `commentId, workId, rootCommentId, replyToCommentId, authorPublic, body, createdAt, displayState, capabilities`。`capabilities` 由服务端按当前角色下发，至少表达 `canReply/canDelete/canHide/canReport/canExpandReplies`；作品作者在自己作品下可以隐藏、删除、举报，但不得获得编辑他人评论的能力或接口。平台能力由独立全局治理角色控制。
+
+删除一级评论后整树不可见且不可回复，`visibleCommentCount` 按该组实际可见节点数整体减少；删除二级只减少该节点。被回复目标删除但同根其他回复仍可见时，响应只给通用删除目标，不返回原正文。作者隐藏的恢复能力、分页页长与游标、错误标识、幂等和并发保护由技术方提交方案，产品确认用户展示与恢复后冻结。
+
+匿名用户请求完整评论或回复展开时，服务端返回手机号绑定要求；前端以 `returnTo=workId+rootCommentId` 打开二级登录弹窗。登录成功后重新请求服务端列表并继续展开，禁止使用登录前缓存自行补齐或重排。
 
 ### 19.6 收藏
 
