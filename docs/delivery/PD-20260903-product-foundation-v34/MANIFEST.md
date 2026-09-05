@@ -1,10 +1,11 @@
 # 级联交付账本 · PD-20260903-product-foundation-v34
 
-状态：`DISTRIBUTED / TECH_ASSESSING`
+状态：`CONTRACT_REVIEW / REWORK`
 任务版本：`v3`
 决策范围：`G-27`～`G-30`
 产品基线提交：`f5347a2`
 v3 总账本与评论契约提交：`350c564`
+v3 三方派发基线：`fda59c3`
 协调机制版本：以本文件所在提交为准
 创建时间：2026-09-03
 
@@ -123,11 +124,44 @@ v3 总账本与评论契约提交：`350c564`
 
 ## 7. v3 重新派发与开工边界
 
-- FE_ACK：待 v3 回执
-- BE_ACK：待 v3 回执
-- QA_ACK：待 v3 回执
+- FE_ACK：`accepted-with-risks`
+- BE_ACK：`needs-product-decision`
+- QA_ACK：`rework`
 - 当前允许：状态机/schema/API 字典、迁移盘点、固定契约样例、页面状态骨架、QA 测试数据与用例设计。
 - 评论前端已确认：默认三加二、剩余 N 条、匿名登录原路续接、热门/最新且前端不重排；可据此制作页面状态和契约样例。
 - 当前禁止：把建议接口当冻结契约、仅凭 Mock 宣称完成、在保存期限/审核有效期/短信采购未定时写死不可迁移常量。
 - 局部可开工：旧 Card 公开读写封口、行为四账本可迁移骨架、Work 审核凭证字段骨架、Onboarding 持久会话骨架、评论软删与角色权限骨架。
 - 进入 `READY_FOR_DEVELOPMENT`：三方回执齐全，技术方案已补齐可执行契约，QA 复签，需产品确认的四项已有明确结论或被拆为不阻塞当前骨架的后续里程碑。
+
+## 8. v3 三方回执摘要（2026-09-05）
+
+### 前端
+
+- 可立即做：页面状态、路由恢复、DTO/Mock 夹具、Work 详情与作品墙骨架、评论三加二、手机号状态组件、Onboarding 页面组件、行为上报 SDK 外壳。
+- 阻塞真接线：Plaza/Work DTO、Onboarding 状态机、行为字典闭集、评论游标/错误/隐藏恢复、审核冲突展示。
+- 工程风险：客户端 `develop` 有 9 个未提交文件，且现有 Plaza 改动仍朝 `CardView/PlazaCard`，与 Work 唯一公开对象相反；写任务前必须确认归属并停止或迁移该方向。
+
+### 后端
+
+- 可立即做：Onboarding 持久会话六表、行为四账本与版本字典、Work 内容版本与审核凭证表、Work 评论/软删/权限/幂等、短信适配抽象、旧 Card 公开写封口和调用监控。
+- 已提出但未定案：Onboarding 状态机、Phase 0 v1 字典、分层保存期限、审核凭证 30/90 天、评论游标与错误码、短信供应商和频控、审核并发组合约束。
+- 实现事实：当前匿名绑定不失效旧 token；Onboarding 仍为进程内 Map；Plaza 仍读公开 Card；Work 尚无版本/审核凭证/评论；短信能力不存在。
+
+### QA
+
+- 可先做：测试矩阵、固定数据、契约样例、评论页面/DTO/软删骨架验证、旧 Card 封口验证准备。
+- `REWORK` 原因：Onboarding 旧验收仍要求“上传前绑定”，与 G-29“生成前绑定”冲突；最终状态机、行为闭集、保存期、审核凭证时窗、短信生产参数未冻结。
+- 真联调最低环境：真实前后端与数据库、可控时钟、服务重启/多实例、并发注入、短信沙箱、审核策略版本切换、审计只读探针。
+
+## 9. 专业提案待产品确认
+
+1. **Onboarding**：内部状态建议 `collecting → ready_to_bind → ready_to_generate → generating → candidate_ready ↔ refining → ready_to_confirm → confirmed`；失败记录为可恢复的 `lastOperation`，不滥增主状态。若无外部已发布客户端，新客户端切换后直接封旧接口；若存在活跃客户端，建议兼容 30 天、最长 60 天。
+2. **Phase 0 v1 字典**：后端已提交 Onboarding、生成反馈、Plaza 事件，以及 `likeness/ease/continue_intent/change_request/less_like_this` 反馈、三域弱假设和九项白名单动作；全部影子运行，禁止敏感推断与跨域。
+3. **保存期限建议**：原始事件 180 天；用户级聚合/历史假设与决策 24 个月；不可逆去标识群体统计 36 个月；身份/授权/画像清除审计 3 年；公开内容审核/安全处置审计 5 年。
+4. **画像清除**：已定立即停止使用；后端建议写 `usageBlockedAt`，原始事件不再训练/聚合/回填，并按 180 天普通期限物理删除。
+5. **Work 审核凭证**：后端补充 `reviewEvidenceId/sourceCardId/sourceContentVersion/ownerAccountId/expiresAt/invalidatedAt/invalidationReason/consumedByWorkId` 等字段；有效期建议 90 天，严格方案 30 天；策略重大升级立即失效。
+6. **评论**：默认根分页建议 20、最大 50，回复同；不透明 keyset cursor；稳定错误码与幂等冲突规则由服务端负责。作者隐藏建议可恢复，仅作者治理视图可见。
+7. **短信**：建议 `SmsProvider` 抽象；已有云账号优先阿里云，腾讯云可作候选/灾备。初始建议：验证码 5 分钟、重发 60 秒、单挑战错 5 次、号码 5 次/小时与 10 次/日、设备 10/小时与 30/日、IP 20/小时与 100/日、解析凭证 10 分钟单次。
+8. **审核并发 H19**：技术候选为提交按 `(workId, contentVersion)` 去重，处置按 `(moderationId, expectedStateVersion)` CAS；是否增加 work 级活动工单唯一约束待产品确认。
+
+上述提案在产品确认前只用于可迁移骨架和测试夹具，不得作为生产常量或已冻结契约。
