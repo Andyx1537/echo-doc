@@ -181,7 +181,22 @@ validFrom / supersededAt / visibility / allowedUses
 - `POST /pet/onboarding/:id/refine`：基于已选候选细化；
 - `POST /pet/onboarding/:id/confirm`：确认最终候选并原子创建窗口。
 
-旧端点是否兼容保留由技术迁移评估决定；产品要求是会话可恢复、答案可追溯、生成前绑定、一窗一宠。
+### 7.1 冻结状态机与恢复
+
+主状态固定为：
+
+```text
+collecting → ready_to_bind → ready_to_generate → generating
+→ candidate_ready ↔ refining → ready_to_confirm → confirmed
+```
+
+- 任一未完成状态可被用户主动放弃为 `abandoned`；服务端不得用超时静默确认或建窗。
+- 上传、主体选择、裁切和问卷均属于 `collecting`，完成生成前资料后进入 `ready_to_bind`。
+- 手机号绑定成功后进入 `ready_to_generate`；生成失败记录 `lastOperation=generate_failed` 并回到 `ready_to_generate`。
+- 细化失败记录 `lastOperation=refine_failed` 并回到 `candidate_ready`；确认采用版本 CAS 和原子建窗，失败仍可恢复到 `ready_to_confirm`。
+- `GET` 响应必须返回 `status/currentStep/sessionVersion/lastOperation/allowedActions`，前端只按服务端能力展示。
+
+旧接口按无外部已发布客户端处理：新客户端切换后直接停止新增调用并退役。若发布盘点发现活跃旧端，兼容 30 天、最长 60 天；到期统一返回 `410 endpoint_retired`，不得无限双写。
 
 ## 8. 当前实现差额与开发顺序
 

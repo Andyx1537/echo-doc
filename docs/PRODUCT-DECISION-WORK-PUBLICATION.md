@@ -83,13 +83,24 @@ flowchart LR
 
 ```text
 PublicReviewEvidence
+  reviewEvidenceId    凭证唯一 ID
+  sourceCardId        来源回忆卡
+  sourceContentVersion 来源内容版本
   result              passed | restricted | failed
   contentHash         被审核内容的稳定摘要
+  ownerAccountId      审核时所有者
   policyVersion       审核规则版本
+  policyEpoch         强制失效策略纪元
   reviewedAt          审核发生时间
+  expiresAt           默认 reviewedAt + 90 天
   aigcLabelReady      显式标识是否完备
-  consentSnapshot     发布所需授权快照
+  consentSnapshotId   发布所需授权快照
+  consentSnapshotHash 授权快照摘要
+  resourceManifestHash 资源清单摘要
   riskFlags           可解释的风险标签
+  invalidatedAt       失效时间
+  invalidationReason  失效原因
+  consumedByWorkId    已绑定作品，防止重放
 ```
 
 ### 4.2 原样发布可以免完整复审
@@ -102,6 +113,8 @@ PublicReviewEvidence
 - 素材授权未撤回，源回忆卡未删除或下架。
 - AI 显式标识仍可完整展示。
 - 审核凭证使用的策略版本仍在有效复用窗口内。
+- 自 `reviewedAt` 起未超过 90 天，且 `policyEpoch` 未被平台强制失效。
+- 凭证未被其他作品或其他内容版本消费。
 
 这不是“作品不审核”，而是**作品复用生成阶段已经完成的公开级审核结果**。
 
@@ -115,6 +128,9 @@ PublicReviewEvidence
 - 审核凭证不存在、失败、过期或策略版本失效。
 - 授权范围变化，或素材包含第三人等需重新确认的条件。
 - 作品重新编辑后申请恢复公开。
+- 所有权变化、授权撤回、资源删除/下架、安全元数据变化、源卡删除/下架、AIGC 标识缺失或重大审核策略纪元升级。
+
+凭证复用有效期固定为 90 天；90 天只是最长时间窗，上述任一失效条件都必须即时阻止复用。
 
 ## 5. 作品状态机
 

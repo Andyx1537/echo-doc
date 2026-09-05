@@ -1248,7 +1248,7 @@ assertThat(wall).doesNotContainKeys("count", "total", "rememberCount", "rank");
 驳回、下架、恢复和申诉处置。所有状态迁移与审核流水、审计流水同事务写入；恢复公开不得刷新
 首次 `reviewedAt`。回忆卡审核链与作品审核链可以共用审核基础设施，但不能共用对象状态。
 
-审核并发保护必须存在，但锁定作用域尚未定案。按 `workId`、`contentVersion`、`moderationId` 或组合约束的方案，需由后端给出并发场景、失败原子性和恢复影响，前端给出冲突展示，QA 给出可执行竞态用例，再由产品确认；当前不得自行写死。
+审核并发采用组合约束：作品提交以 `(workId, contentVersion)` 唯一防重；同一 `workId` 仅允许一张活动审核工单；审核处置必须携带 `expectedStateVersion`，服务端对 `(moderationId, expectedStateVersion)` 执行 CAS。冲突返回稳定 `moderation_state_conflict` 和当前工单状态，前端刷新后展示，不可覆盖新结果。
 
 ### 19.5 评论与二级回复
 
@@ -1264,7 +1264,9 @@ assertThat(wall).doesNotContainKeys("count", "total", "rememberCount", "rank");
 
 评论 DTO 至少包含 `commentId, workId, rootCommentId, replyToCommentId, authorPublic, body, createdAt, displayState, capabilities`。`capabilities` 由服务端按当前角色下发，至少表达 `canReply/canDelete/canHide/canReport/canExpandReplies`；作品作者在自己作品下可以隐藏、删除、举报，但不得获得编辑他人评论的能力或接口。平台能力由独立全局治理角色控制。
 
-删除一级评论后整树不可见且不可回复，`visibleCommentCount` 按该组实际可见节点数整体减少；删除二级只减少该节点。被回复目标删除但同根其他回复仍可见时，响应只给通用删除目标，不返回原正文。作者隐藏的恢复能力、分页页长与游标、错误标识、幂等和并发保护由技术方提交方案，产品确认用户展示与恢复后冻结。
+删除一级评论后整树不可见且不可回复，`visibleCommentCount` 按该组实际可见节点数整体减少；删除二级只减少该节点。被回复目标删除但同根其他回复仍可见时，响应只给通用删除目标，不返回原正文。
+
+根评论与回复分页默认 `limit=20`、最大 50，使用服务端不透明 keyset cursor，并绑定目标、`sort/rankingVersion/lastKey/lastId`。删除/隐藏后过滤并补足页面，不返回占位。作者隐藏可恢复；普通公开面和评论作者侧只收到通用不可用状态，仅作品作者治理视图获得 `canRestore=true`，恢复后按当前服务端排序重新出现。评论写入和治理必须接受 `Idempotency-Key`；重复键重放原结果，内容不一致返回 `idempotency_conflict`，状态版本冲突返回 `comment_state_conflict`。
 
 匿名用户请求完整评论或回复展开时，服务端返回手机号绑定要求；前端以 `returnTo=workId+rootCommentId` 打开二级登录弹窗。登录成功后重新请求服务端列表并继续展开，禁止使用登录前缓存自行补齐或重排。
 
@@ -1293,6 +1295,8 @@ assertThat(wall).doesNotContainKeys("count", "total", "rememberCount", "rank");
    - `switch_existing`：返回手机号所属原账号的新会话，当前匿名资料不迁移；当前匿名 token 立即失效，但匿名账号和数据保留。
 
 `resolutionToken` 必须短时、单次使用并绑定当前匿名会话。验证码错误、过期、频控、解析过期和重复确认使用稳定错误码；任何失败均保留当前匿名会话。客户端只有在确认成功后才替换 token，并按 `returnTo` 恢复允许的原路径。
+
+初始生产参数由服务端配置：验证码 5 分钟、重发 60 秒、单挑战错 5 次、手机号 5 次/小时与 10 次/日、设备 10/小时与 30/日、IP 20/小时与 100/日、`resolutionToken` 10 分钟单次。频控响应返回 `rate_limited + retryAfterSeconds`。供应商通过 `SmsProvider` 抽象；已有阿里云账号优先阿里云，否则由技术/运维选择阿里云或腾讯云，前端无供应商分支。
 
 用户可从明确的“切换账号”入口重新唤醒保留的匿名账号。该动作必须由服务端校验受控的一次性切换凭证或本地受保护的匿名会话凭证，签发新的匿名会话；客户端不得提交 `accountId` 直接恢复，也不得让已失效 token 继续访问。
 
@@ -1330,7 +1334,7 @@ assertThat(wall).doesNotContainKeys("count", "total", "rememberCount", "rank");
 - `public/rejected/takendown/deleted/appealing` 不占新投稿名额；驳回作品本地编辑期间仍可开始新投稿。
 - 服务端未受理的网络失败立即释放；已经受理但客户端响应丢失时，能力查询必须返回真实占用结果，不得仅凭客户端报错释放。
 - 待审撤回只有服务端确认成功后释放；重提只有服务端受理并进入 `pending` 后占用。
-- 审核工单自身的并发锁作用域仍待 `DECISIONS H19`，不得用本节用户级名额规则代替。
+- 审核工单执行 `G-37/FC8` 组合约束：版本提交防重、work 级唯一活动工单、处置版本 CAS；用户级投稿名额与工单级并发是两层独立约束。
 
 ## 20. 行为证据与适配（目标契约 · Phase 0）
 
@@ -1344,7 +1348,7 @@ assertThat(wall).doesNotContainKeys("count", "total", "rememberCount", "rank");
 {
   "events": [{
     "idempotencyKey": "device-session-seq",
-    "eventName": "question_answered",
+    "eventName": "onboarding_question_answered",
     "sessionId": "...",
     "surface": "private_onboarding",
     "targetType": "question",

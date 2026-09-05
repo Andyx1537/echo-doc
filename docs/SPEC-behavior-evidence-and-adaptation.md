@@ -68,6 +68,14 @@ P0 首批事件域：
 | 生成反馈 | 结果观看、选择“像不像/想不想继续/换个方式” | 当前结果是否被明确接受 |
 | Plaza | 曝光、打开、有效观看、完播、复播、明确互动、减少此类 | 内容探索与公共题材弱偏好 |
 
+### 2.1.1 Phase 0 v1 事件闭集
+
+- Onboarding：`onboarding_session_started`、`onboarding_asset_upload_started`、`onboarding_asset_upload_succeeded`、`onboarding_asset_upload_failed`、`onboarding_subjects_presented`、`onboarding_subject_selected`、`onboarding_crop_submitted`、`onboarding_asset_quality_failed`、`onboarding_asset_quality_accepted`、`onboarding_question_viewed`、`onboarding_question_answered`、`onboarding_question_changed`、`onboarding_question_skipped`、`onboarding_backtracked`、`onboarding_summary_viewed`、`onboarding_bind_prompt_shown`、`onboarding_binding_completed`、`onboarding_generation_requested`、`onboarding_generation_succeeded`、`onboarding_generation_failed`、`onboarding_candidate_selected`、`onboarding_refine_requested`、`onboarding_confirmed`、`onboarding_abandoned`。
+- 生成反馈：`generation_result_viewed`、`generation_playback_completed`、`generation_result_replayed`、`explicit_feedback_submitted`、`explicit_feedback_changed`。
+- Plaza：`plaza_batch_received`、`work_impression`、`work_opened`、`work_effective_view`、`work_playback_completed`、`work_replayed`、`work_like_changed`、`work_favorite_changed`、`author_follow_changed`、`less_like_this_changed`、`comment_panel_opened`。
+
+客户端负责浏览、界面呈现和有效操作时长；服务端负责成功上传、生成、绑定和互动事实。双方不得对同一成功事实重复记账。`contextJson` 只允许版本字典登记的键，禁止手机号、验证码、素材正文和自由文本。
+
 ### 2.2 `ExplicitFeedback`：记录用户明确表达
 
 ```text
@@ -82,6 +90,14 @@ answerCode, answerVersion, sourceSurface, occurredAt, supersedesId
 - `continue_intent`：想不想沿这个方向继续；
 - `change_request`：要不要换一种方式；
 - `less_like_this`：公共内容明确减少此类。
+
+Phase 0 v1 答案闭集：
+
+- `likeness`: `looks_like_it|somewhat_like_it|not_like_it`
+- `ease`: `easy|acceptable|difficult`
+- `continue_intent`: `continue|pause`
+- `change_request`: `keep|change_scene|change_style|change_medium|regenerate`
+- `less_like_this`: `reduce_similar|undo_reduce`
 
 用户改选时保留历史，用 `supersedesId` 指向被替代答案；当前视图只取最新有效答案。
 
@@ -98,6 +114,12 @@ validFrom, validUntil, status, rejectedAt, clearedAt, updatedAt
 - `ui_adaptation`：题目密度、提示颗粒度、是否分步、默认媒体表达方式；
 - `public_recommendation`：Plaza 题材探索与减少重复；
 - `private_generation`：仅用户在私域明确选择或明确接纳的内容锚点。
+
+Phase 0 v1 假设维度闭集：
+
+- `ui_adaptation`: `question_density|guidance_level|step_granularity|choice_input_preference`
+- `public_recommendation`: `topic_affinity|topic_avoidance|format_affinity|repeat_sensitivity`
+- `private_generation`: `generation_medium_preference|scene_anchor_preference`
 
 推断规则：
 
@@ -122,6 +144,8 @@ expiresAt, revertedAt
 - 是否优先点选、是否拆成更短步骤；
 - 公共瀑布流题材的探索比例与重复抑制；
 - 用户明确要求后更换漫画/静帧/视频等表现方式。
+
+对应 Phase 0 v1 动作码固定为：`ui.set_question_density`、`ui.set_guidance_level`、`ui.set_step_granularity`、`ui.prefer_choice_input`、`public.set_exploration_ratio`、`public.suppress_topic`、`public.suppress_recent_repeat`、`private.set_generation_medium`、`private.set_scene_anchor`。全部必须标记 `shadow=true`；Phase 0 只记录“若应用将怎样变化”，不得真正改变界面、排序或生成。
 
 不得用适配决策制造连续使用压力、情绪刺激或依赖召回。
 
@@ -183,8 +207,8 @@ expiresAt, revertedAt
 - 事件以 `(accountId, idempotencyKey)` 去重；匿名账号绑定手机后只变认证状态，不迁出或复制行为主体。
 - 读取按“账号 + scope + purposeCode”三重校验；推荐服务拿不到私域问卷与素材内容。
 - 假设必须有 `validUntil`；决策到期或假设失效后自动撤销。
-- 清除适配档案时只停止下游使用并写入可审计软清除记录，不物理删除行为事实、明确反馈、历史假设和历史决策；账号删除与法定数据删除走独立流程。
-- 原始事件精确保存期、聚合保存期和匿名长期不活跃清理天数，需在数据生命周期专项按必要性定数；在定数前不得无限期默认保存。
+- 保存期限：原始行为事件 180 天；账号级聚合、历史假设和决策 24 个月；不可逆去标识群体统计 36 个月；身份、授权和画像清除审计 3 年；公开内容审核与安全处置审计 5 年。期限从记录服务端接收/形成时起算；到期任务必须可观测、可重试并留删除批次审计。
+- 清除适配档案时立即写 `usageBlockedAt`，停止训练、聚合、回填、个性化和任何下游读取，撤销当前假设/决策并清空投影与缓存。原始事件不立即物理删除，按 180 天普通期限到期删除；账号删除与法定数据删除走独立的更高优先级流程。
 
 ## 7. 降级与异常
 
@@ -228,11 +252,9 @@ expiresAt, revertedAt
 9. 清除 `ui_adaptation` 不误删 `public_recommendation`，两个域分别恢复；
 10. 任何接口均无法写入年龄、心理状态、悲伤阶段、依赖程度或生死状态假设。
 
-## 10. 尚待数值化，不阻塞基础搭建
+## 10. 后续实验参数，不阻塞基础搭建
 
-- 原始事件、聚合和审计记录的具体保存期限；
 - 每个弱假设的最小证据数、衰减周期和置信度分档；
 - 隐式信号从影子模式提升到线上排序的样本量与效果门槛；
-- 首批 `eventName/actionCode/dimension` 完整字典。
 
-这些数值必须在事件质量可测后由产品、技术、QA 与合规共同定档；数据表和接口不得把任一临时数值写死成不可迁移结构。
+这些实验数值必须在事件质量可测后由产品、技术、QA 与合规共同定档；Phase 0 v1 字典和保存期限已经冻结。数据表仍须版本化，不能把实验阈值写死成不可迁移结构。
