@@ -123,6 +123,7 @@ flowchart LR
 | `state` | `collecting/ready_to_bind/ready_to_generate/generating/candidate_ready/refining/ready_to_confirm/confirmed/abandoned` |
 | `selectedSubjectId` | 本次唯一宠物主体 |
 | `currentStep` | 前端恢复位置 |
+| `memoryUseConsent/consentVersion` | 当前场景/素材使用授权及版本；确认建窗必须校验 |
 | `createdAt/updatedAt` | 创建与最近更新 |
 
 当前实现把 onboarding 放在进程内 Map，目标态必须持久化，否则服务重启、登录跳转或多实例会丢进度。
@@ -175,7 +176,7 @@ validFrom / supersededAt / visibility / allowedUses
 - `POST /pet/onboarding`：创建匿名建档会话；
 - `POST /pet/onboarding/:id/assets`：加入素材；
 - `POST /pet/onboarding/:id/subject/select`：选择唯一宠物；
-- `PUT /pet/onboarding/:id/answers/:questionId`：幂等保存/修改答案；
+- `PUT /pet/onboarding/:id/answers/:questionId`：用 `answerCodes[]` 幂等保存/修改单选或多选答案；题目允许时可带非必填短输入及来源；
 - `GET /pet/onboarding/:id`：恢复当前步骤和已答内容；
 - `POST /pet/onboarding/:id/generate`：要求手机号已绑定，冻结生成锚点并开始生成；
 - `POST /pet/onboarding/:id/refine`：基于已选候选细化；

@@ -129,15 +129,15 @@
 - `POST /pet/onboarding`：入参 `{ flowVersion, questionnaireVersion }`，返回 `201 + snapshot`。
 - `POST /pet/onboarding/:id/assets`：入参 `{ resourceId, mediaType, expectedSessionVersion }`，返回 `{ snapshot, asset, subjectCandidates, quality }`；素材总量和质量由服务端判定。
 - `POST /pet/onboarding/:id/subject/select`：入参 `{ subjectId, crop, expectedSessionVersion }`，返回 `{ snapshot, selectedSubject, quality }`；只能选择一个主体。
-- `PUT /pet/onboarding/:id/answers/:questionId`：入参 `{ answerCode, answerVersion, expectedSessionVersion }`，返回 `{ snapshot, answerId, supersedesId }`。
-- `GET /pet/onboarding/:id`：返回最新 `snapshot`、素材摘要、当前有效答案和候选；不得下发其他账号会话。
+- `PUT /pet/onboarding/:id/answers/:questionId`：入参 `{ answerCodes:string[], answerVersion, freeText?, freeTextSource?:"typed|voice_transcript", expectedSessionVersion }`，返回 `{ snapshot, answerId, supersedesId }`。服务端按题库版本校验单选/多选及数量；Q2/Q3 为 1～3 项，Q4 最多 2 项。`freeText` 仅在题目版本明确允许时接收，且不是完成阻塞项。
+- `GET /pet/onboarding/:id`：返回最新 `snapshot`、素材摘要、当前有效 `answers:[{questionId,answerCodes,answerVersion,freeText?,freeTextSource?}]`、候选和 `memoryUseConsent:{granted,consentVersion,grantedAt}`；不得下发其他账号会话。
 - `POST /pet/onboarding/:id/generate`：要求手机号已绑定；入参 `{ expectedSessionVersion }`，返回 `202 { snapshot, generationJob:{ jobId,status:"queued|running",pollAfterMs:1500 } }`。相同幂等键不得重复生成。
 - `POST /pet/onboarding/:id/candidates/:candidateId/select`：返回进入 `ready_to_confirm` 的最新快照。
 - `POST /pet/onboarding/:id/refine`：入参 `{ candidateId, adjustmentCode, expectedSessionVersion }`，返回 `202` 和异步任务；失败回到 `candidate_ready`。
-- `POST /pet/onboarding/:id/confirm`：入参 `{ candidateId, expectedSessionVersion }`，以 CAS 原子创建唯一窗口，返回 `{ snapshot, petId, windowId }`；重复确认返回同一结果。
+- `POST /pet/onboarding/:id/confirm`：入参 `{ candidateId, consentVersion, expectedSessionVersion }`，服务端校验当前有效 `memoryUseConsent.granted=true` 且版本一致，以 CAS 原子创建唯一窗口，返回 `{ snapshot, petId, windowId }`；重复确认返回同一结果。
 - `DELETE /pet/onboarding/:id`：主动放弃，返回 `status=abandoned`，不创建窗口。
 
-稳定错误至少包含：`onboarding_not_found`、`onboarding_forbidden`、`onboarding_invalid_state`、`onboarding_version_conflict`、`phone_binding_required`、`asset_limit_exceeded`、`asset_quality_failed`、`subject_selection_required`、`subject_inconsistent`、`generation_in_progress`、`candidate_not_found`、`confirmation_conflict`、`idempotency_conflict`、`endpoint_retired`。错误统一返回 `{ errorCode, messageKey, retryable, currentSnapshot? }`；前端不得根据 HTTP 文案猜状态。
+稳定错误至少包含：`onboarding_not_found`、`onboarding_forbidden`、`onboarding_invalid_state`、`onboarding_version_conflict`、`phone_binding_required`、`asset_limit_exceeded`、`asset_quality_failed`、`subject_selection_required`、`subject_inconsistent`、`answer_cardinality_invalid`、`consent_required`、`consent_version_conflict`、`generation_in_progress`、`candidate_not_found`、`confirmation_conflict`、`idempotency_conflict`、`endpoint_retired`。全部使用全局错误信封 `{ code, msg, detail, data }`，其中 `detail` 放稳定原因码，`data` 可含 `{ retryable, currentSnapshot, currentStateVersion, retryAfterSeconds }`；前端不得根据 HTTP 文案猜状态。
 
 ### POST /upload — 素材上传（图片/音频/视频）
 - `multipart/form-data`（字段名 `file`），需 Bearer；出参：`{ "resourceId", "url" }`。
@@ -1259,6 +1259,8 @@ assertThat(wall).doesNotContainKeys("count", "total", "rememberCount", "rank");
 
 成功响应同时返回 `{ reasonCode, contentVersion, evidenceExpiresAt, currentModerationState, capabilities, nextAction }`；普通作者不接收原始 `riskFlags/contentHash/policyEpoch`。当 `now >= expiresAt` 时凭证已过期。`evidence_expired/evidence_policy_invalid/evidence_content_mismatch/evidence_missing` 可降级为 `reviewMode=full,status=pending`；`owner_mismatch/consent_revoked/resource_unavailable/source_unavailable/aigc_label_missing/evidence_consumed` 硬失败且不创建作品。凭证消费必须与 Work 创建同事务，竞争失败返回 `evidence_consumed`。
 
+所有硬失败均使用全局信封，例如 `{ code, msg, detail:"evidence_consumed", data:{ reviewMode:"none", workCreated:false, retryable:false } }`；不得另造 `{errorCode,...}` 响应。
+
 ### 19.2 广场与作品墙的场景边界
 
 - 目标态 `GET /plaza` 返回作品列表，列表元素主键为 `workId`。
@@ -1288,9 +1290,9 @@ assertThat(wall).doesNotContainKeys("count", "total", "rememberCount", "rank");
 驳回、下架、恢复和申诉处置。所有状态迁移与审核流水、审计流水同事务写入；恢复公开不得刷新
 首次 `reviewedAt`。回忆卡审核链与作品审核链可以共用审核基础设施，但不能共用对象状态。
 
-审核并发采用组合约束：作品提交以 `(workId, contentVersion)` 唯一防重；同一 `workId` 仅允许一张活动审核工单；审核处置必须携带 `expectedStateVersion`，服务端对 `(moderationId, expectedStateVersion)` 执行 CAS。冲突返回稳定 `moderation_state_conflict` 和当前工单状态，前端刷新后展示，不可覆盖新结果。
+审核并发采用组合约束：作品提交以 `(workId, contentVersion)` 唯一防重；同一 `workId` 仅允许一张活动审核工单；审核处置必须携带 `expectedStateVersion`，服务端对 `(moderationId, expectedStateVersion)` 执行 CAS。冲突以全局错误信封返回 `detail=moderation_state_conflict` 和当前工单状态，前端刷新后展示，不可覆盖新结果。
 
-活动工单状态固定为 `queued|assigned|reviewing`；`approved|rejected|cancelled` 为终态并释放唯一约束。冲突响应固定为 `{ errorCode:"moderation_state_conflict", moderationId, currentState, currentStateVersion, retryable:false }`。状态迁移、Work 更新和审计流水必须同事务；任一写入失败整笔回滚。
+活动工单状态固定为 `queued|assigned|reviewing`；`approved|rejected|cancelled` 为终态并释放唯一约束。冲突响应固定为 `{ code, msg, detail:"moderation_state_conflict", data:{ moderationId, currentState, currentStateVersion, retryable:false } }`。状态迁移、Work 更新和审计流水必须同事务；任一写入失败整笔回滚。
 
 ### 19.5 评论与二级回复
 
@@ -1311,7 +1313,7 @@ assertThat(wall).doesNotContainKeys("count", "total", "rememberCount", "rank");
 
 删除一级评论后整树不可见且不可回复，`visibleCommentCount` 按该组实际可见节点数整体减少；删除二级只减少该节点。被回复目标删除但同根其他回复仍可见时，响应只给通用删除目标，不返回原正文。
 
-根评论与回复分页默认 `limit=20`、最大 50，使用服务端不透明 keyset cursor，并绑定目标、`sort/rankingVersion/lastKey/lastId`。删除/隐藏后过滤并补足页面，不返回占位。隐藏节点从所有普通列表消失；只有旧直达、已打开页面或继续操作触达时返回通用 `comment_unavailable`。仅作品作者治理视图获得 `canRestore=true`，恢复后按当前服务端排序重新出现。评论写入和治理必须接受 `Idempotency-Key`；重复键重放原结果，内容不一致返回 `idempotency_conflict`，状态版本冲突返回 `{ errorCode:"comment_state_conflict", commentId, currentDisplayState, currentStateVersion }`。游标错误固定为 `comment_cursor_invalid|comment_cursor_expired|comment_sort_version_changed`，客户端重新从首屏读取。
+根评论与回复分页默认 `limit=20`、最大 50，使用服务端不透明 keyset cursor，并绑定目标、`sort/rankingVersion/lastKey/lastId`。删除/隐藏后过滤并补足页面，不返回占位。隐藏节点从所有普通列表消失；只有旧直达、已打开页面或继续操作触达时返回通用 `comment_unavailable`。仅作品作者治理视图获得 `canRestore=true`，恢复后按当前服务端排序重新出现。评论写入和治理必须接受 `Idempotency-Key`；重复键重放原结果，内容不一致返回 `detail=idempotency_conflict`。状态版本冲突用全局信封返回 `{ code, msg, detail:"comment_state_conflict", data:{ commentId, currentDisplayState, currentStateVersion } }`。游标错误固定放在 `detail=comment_cursor_invalid|comment_cursor_expired|comment_sort_version_changed`，客户端重新从首屏读取。
 
 匿名用户请求完整评论或回复展开时，服务端返回手机号绑定要求；前端以 `returnTo=workId+rootCommentId` 打开二级登录弹窗。登录成功后重新请求服务端列表并继续展开，禁止使用登录前缓存自行补齐或重排。
 
@@ -1341,7 +1343,7 @@ assertThat(wall).doesNotContainKeys("count", "total", "rememberCount", "rank");
 
 `resolutionToken` 必须短时、单次使用并绑定当前匿名会话。手机号进入服务前规范为 E.164；频控采用滑动窗口。重发成功立即废止同手机号、同 purpose 的旧挑战验证码。稳定错误为 `phone_invalid/code_invalid/challenge_expired/challenge_locked/resend_cooldown/rate_limited/resolution_expired/resolution_used/resolution_session_mismatch/sms_provider_unavailable`；任何失败均保留当前匿名会话。客户端只有在确认成功后才替换 token，并按 `returnTo` 恢复允许的原路径。
 
-challenge 成功返回 `{ challengeId, expiresAt, resendAvailableAt }`；verify 成功返回 `{ resolution, resolutionToken, resolutionExpiresAt }`；confirm 成功统一返回 `{ accountId, phoneBound:true, sessionToken, deviceCredential:null, returnToAllowed:true }`。`sms_provider_unavailable` 可重试但不得伪造已发送。
+challenge 成功返回 `{ challengeId, expiresAt, resendAvailableAt }`；verify 成功返回 `{ resolution, resolutionToken, resolutionExpiresAt }`；confirm 成功返回 `{ accountId, phoneBound:true, sessionToken, deviceCredential:null, returnToAllowed, nextAction }`。`bind_current` 可按原 `returnTo` 续接；`switch_existing` 遇匿名私域 Onboarding 时固定 `returnToAllowed=false,nextAction=restart_in_existing_account`，不得把匿名资料带入原账号；公开评论等目标仍由服务端按可见性决定是否续接。短信错误同样使用全局 `{code,msg,detail,data}`，`sms_provider_unavailable` 可重试但不得伪造已发送。
 
 初始生产参数由服务端配置：验证码 5 分钟、重发 60 秒、单挑战错 5 次、手机号 5 次/小时与 10 次/日、设备 10/小时与 30/日、IP 20/小时与 100/日、`resolutionToken` 10 分钟单次。频控响应返回 `rate_limited + retryAfterSeconds`。供应商通过 `SmsProvider` 抽象；已有阿里云账号优先阿里云，否则由技术/运维选择阿里云或腾讯云，前端无供应商分支。
 

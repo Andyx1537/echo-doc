@@ -81,9 +81,11 @@ Phase 0 字段闭集：
 - `surface`: `private_onboarding|first_generation|plaza|work_detail`
 - `targetType`: `onboarding_session|asset|subject|question|generation_result|plaza_batch|work|author|comment_panel`
 - `purposeCode`: `ui_adaptation|public_recommendation|private_generation`
-- 客户端唯一记录：`*_viewed`、`*_presented`、`*_selected`、`*_changed`、`*_skipped`、`*_backtracked`、`work_impression/work_opened/work_effective_view/work_playback_completed/work_replayed/comment_panel_opened`。
-- 服务端唯一记录：素材上传成功/失败、绑定完成、生成请求/成功/失败、确认完成、点赞/收藏/关注/减少此类等已受理业务事实。客户端可记点击意图，但不得用相同正式事件名重复记录成功。
-- Onboarding `contextJson` 只允许 `questionId/questionVersion/answerCode/mediaType/slotIndex/qualityReasonCode/attemptIndex`；生成反馈只允许 `candidateIndex/mediumCode/playbackPercentBucket`；Plaza/Work 只允许 `batchId/position/sourceSurface/mediaFormat/effectiveDurationBucket`。未登记键返回 `context_field_not_allowed`，类型错误返回 `context_field_invalid`。
+- 客户端唯一记录：`onboarding_asset_upload_started`、`onboarding_subjects_presented`、`onboarding_subject_selected`、`onboarding_crop_submitted`、`onboarding_question_viewed`、`onboarding_question_answered`、`onboarding_question_changed`、`onboarding_question_skipped`、`onboarding_backtracked`、`onboarding_summary_viewed`、`onboarding_bind_prompt_shown`、`onboarding_candidate_selected`、`onboarding_refine_requested`、`generation_result_viewed`、`generation_playback_completed`、`generation_result_replayed`、`plaza_batch_received`、`work_impression`、`work_opened`、`work_effective_view`、`work_playback_completed`、`work_replayed`、`comment_panel_opened`。
+- 服务端唯一记录：`onboarding_session_started`、`onboarding_asset_upload_succeeded`、`onboarding_asset_upload_failed`、`onboarding_asset_quality_failed`、`onboarding_asset_quality_accepted`、`onboarding_binding_completed`、`onboarding_generation_requested`、`onboarding_generation_succeeded`、`onboarding_generation_failed`、`onboarding_confirmed`、`onboarding_abandoned`、`explicit_feedback_submitted`、`explicit_feedback_changed`、`work_like_changed`、`work_favorite_changed`、`author_follow_changed`、`less_like_this_changed`。客户端可记录不同名称的点击意图，但不得用这些正式成功事件名重复记账。
+- Onboarding `contextJson` 只允许 `questionId/questionVersion/answerCodes/mediaType/slotIndex/qualityReasonCode/attemptIndex`；生成反馈只允许 `candidateIndex/mediumCode/playbackPercentBucket`；Plaza/Work 只允许 `batchId/position/sourceSurface/mediaFormat/effectiveDurationBucket`。未登记键返回 `context_field_not_allowed`，类型错误返回 `context_field_invalid`。
+
+字段类型与必填性：题目事件必填 `questionId:string,questionVersion:integer`，回答/改选事件另必填 `answerCodes:string[]`；素材事件必填 `mediaType:image|video,slotIndex:integer`，质量失败另必填 `qualityReasonCode:string`，重试可选 `attemptIndex:integer`；生成播放事件必填 `mediumCode:still|four_panel|video`，播放类另必填 `playbackPercentBucket:0|25|50|75|100`；Plaza/Work 浏览事件必填 `batchId:string,position:integer,sourceSurface:string,mediaFormat:still|comic|video`，有效观看可选 `effectiveDurationBucket:short|medium|long`。服务端事实只带其业务主记录 ID 和版本，不接收客户端补写这些 context。
 
 ### 2.2 `ExplicitFeedback`：记录用户明确表达
 
