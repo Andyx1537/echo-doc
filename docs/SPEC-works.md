@@ -159,7 +159,7 @@
 - 名额释放状态：`public/rejected/takendown/deleted`；`appealing` 不占新投稿名额。
 - 服务端未受理请求的网络失败立即释放；待审作品撤回只有在服务端确认成功后释放。
 - 驳回作品的本地编辑不占名额；重新提交被服务端受理并进入 `pending` 后才占用。
-- 审核处置并发的锁定作用域仍待 `DECISIONS H19` 确认；不得把投稿名额的用户级原子约束误当成审核工单并发锁定案。
+- 审核处置并发按 `G-37/FC8`：提交 `(workId, contentVersion)` 防重、每个 work 仅一张活动审核工单、处置 `(moderationId, expectedStateVersion)` CAS。投稿名额仍是独立的用户级原子约束。
 
 ## 6. 互动、归因与消息（目标态）
 

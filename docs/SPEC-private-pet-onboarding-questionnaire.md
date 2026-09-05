@@ -120,7 +120,7 @@ flowchart LR
 |---|---|
 | `onboardingId/accountId` | 会话与匿名/绑定账号归属 |
 | `flowVersion/questionnaireVersion` | 流程和题库版本 |
-| `state` | `collecting/ready_to_bind/generating/refining/confirmed/abandoned` |
+| `state` | `collecting/ready_to_bind/ready_to_generate/generating/candidate_ready/refining/ready_to_confirm/confirmed/abandoned` |
 | `selectedSubjectId` | 本次唯一宠物主体 |
 | `currentStep` | 前端恢复位置 |
 | `createdAt/updatedAt` | 创建与最近更新 |
@@ -170,7 +170,7 @@ validFrom / supersededAt / visibility / allowedUses
 
 ## 7. 接口目标
 
-建议把现有一次性 `/pet/onboarding/start` 拆成可恢复步骤：
+现有一次性 `/pet/onboarding/start` 必须拆成以下可恢复步骤：
 
 - `POST /pet/onboarding`：创建匿名建档会话；
 - `POST /pet/onboarding/:id/assets`：加入素材；

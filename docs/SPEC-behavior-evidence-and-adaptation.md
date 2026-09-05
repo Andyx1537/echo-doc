@@ -76,6 +76,15 @@ P0 首批事件域：
 
 客户端负责浏览、界面呈现和有效操作时长；服务端负责成功上传、生成、绑定和互动事实。双方不得对同一成功事实重复记账。`contextJson` 只允许版本字典登记的键，禁止手机号、验证码、素材正文和自由文本。
 
+Phase 0 字段闭集：
+
+- `surface`: `private_onboarding|first_generation|plaza|work_detail`
+- `targetType`: `onboarding_session|asset|subject|question|generation_result|plaza_batch|work|author|comment_panel`
+- `purposeCode`: `ui_adaptation|public_recommendation|private_generation`
+- 客户端唯一记录：`*_viewed`、`*_presented`、`*_selected`、`*_changed`、`*_skipped`、`*_backtracked`、`work_impression/work_opened/work_effective_view/work_playback_completed/work_replayed/comment_panel_opened`。
+- 服务端唯一记录：素材上传成功/失败、绑定完成、生成请求/成功/失败、确认完成、点赞/收藏/关注/减少此类等已受理业务事实。客户端可记点击意图，但不得用相同正式事件名重复记录成功。
+- Onboarding `contextJson` 只允许 `questionId/questionVersion/answerCode/mediaType/slotIndex/qualityReasonCode/attemptIndex`；生成反馈只允许 `candidateIndex/mediumCode/playbackPercentBucket`；Plaza/Work 只允许 `batchId/position/sourceSurface/mediaFormat/effectiveDurationBucket`。未登记键返回 `context_field_not_allowed`，类型错误返回 `context_field_invalid`。
+
 ### 2.2 `ExplicitFeedback`：记录用户明确表达
 
 ```text
@@ -121,6 +130,8 @@ Phase 0 v1 假设维度闭集：
 - `public_recommendation`: `topic_affinity|topic_avoidance|format_affinity|repeat_sensitivity`
 - `private_generation`: `generation_medium_preference|scene_anchor_preference`
 
+对应 `valueCode`：题量 `compact|standard`；引导 `concise|guided`；步骤 `combined|step_by_step`；输入 `choice_first`；公开题材取版本化 `topicCode`，形式 `still|comic|video`，重复敏感度 `normal|high`；私域媒介 `still|four_panel|video`，场景锚点 `first_meeting|familiar_routine|favorite_place|user_selected`。禁止自由文本 valueCode。
+
 推断规则：
 
 1. 单次点击、一次停留或一次改选不能形成稳定偏好；
@@ -146,6 +157,8 @@ expiresAt, revertedAt
 - 用户明确要求后更换漫画/静帧/视频等表现方式。
 
 对应 Phase 0 v1 动作码固定为：`ui.set_question_density`、`ui.set_guidance_level`、`ui.set_step_granularity`、`ui.prefer_choice_input`、`public.set_exploration_ratio`、`public.suppress_topic`、`public.suppress_recent_repeat`、`private.set_generation_medium`、`private.set_scene_anchor`。全部必须标记 `shadow=true`；Phase 0 只记录“若应用将怎样变化”，不得真正改变界面、排序或生成。
+
+`parametersJson` schema：前三个 UI 动作分别只接受上述对应 valueCode；`ui.prefer_choice_input` 只接受 `{enabled:boolean}`；`public.set_exploration_ratio` 只接受 `{bucket:"low|standard|high"}`；两个 suppress 动作分别接受 `{topicCode,until}` 与 `{windowSize}`；私域动作分别接受 `{mediumCode}` 与 `{sceneAnchorCode}`。额外字段返回 `action_parameter_not_allowed`，非法值返回 `action_parameter_invalid`。
 
 不得用适配决策制造连续使用压力、情绪刺激或依赖召回。
 
@@ -207,7 +220,8 @@ expiresAt, revertedAt
 - 事件以 `(accountId, idempotencyKey)` 去重；匿名账号绑定手机后只变认证状态，不迁出或复制行为主体。
 - 读取按“账号 + scope + purposeCode”三重校验；推荐服务拿不到私域问卷与素材内容。
 - 假设必须有 `validUntil`；决策到期或假设失效后自动撤销。
-- 保存期限：原始行为事件 180 天；账号级聚合、历史假设和决策 24 个月；不可逆去标识群体统计 36 个月；身份、授权和画像清除审计 3 年；公开内容审核与安全处置审计 5 年。期限从记录服务端接收/形成时起算；到期任务必须可观测、可重试并留删除批次审计。
+- 保存期限：原始行为事件 180 天；账号级聚合、历史假设和决策 24 个月；不可逆去标识群体统计 36 个月；身份、授权和画像清除审计 3 年；公开内容审核与安全处置审计 5 年。统一使用 UTC，以服务端 `receivedAt/formedAt` 起算；当 `now >= expiresAt` 即进入到期集合。画像清除不重置原事件起算点。
+- 删除作业按批次记录 `deletionBatchId/dataClass/windowStart/windowEnd/selectedCount/deletedCount/failedCount/startedAt/completedAt/status/retryCount/errorCode`；失败指数退避重试并告警，不因单条失败回滚已删除批次。法定保留必须写 `legalHoldId/reason/authority/expiresAt`，只暂停对应记录删除，不得恢复被 `usageBlockedAt` 阻断的业务使用。
 - 清除适配档案时立即写 `usageBlockedAt`，停止训练、聚合、回填、个性化和任何下游读取，撤销当前假设/决策并清空投影与缓存。原始事件不立即物理删除，按 180 天普通期限到期删除；账号删除与法定数据删除走独立的更高优先级流程。
 
 ## 7. 降级与异常

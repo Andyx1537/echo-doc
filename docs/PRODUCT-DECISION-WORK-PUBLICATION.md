@@ -107,7 +107,7 @@ PublicReviewEvidence
 
 以下条件同时满足时，创建作品后可以直接公开，不重复调用完整内容审核：
 
-- `publicPublishable = passed`。
+- `PublicReviewEvidence.result = passed`。
 - 当前内容哈希与审核凭证一致。
 - 用户未增加或修改标题、正文、媒体、裁切和声音。
 - 素材授权未撤回，源回忆卡未删除或下架。
@@ -130,7 +130,9 @@ PublicReviewEvidence
 - 作品重新编辑后申请恢复公开。
 - 所有权变化、授权撤回、资源删除/下架、安全元数据变化、源卡删除/下架、AIGC 标识缺失或重大审核策略纪元升级。
 
-凭证复用有效期固定为 90 天；90 天只是最长时间窗，上述任一失效条件都必须即时阻止复用。
+凭证复用有效期固定为 90 天；当 `now >= expiresAt` 时即为过期。90 天只是最长时间窗，上述任一失效条件都必须即时阻止复用。
+
+复用失败分两类：凭证过期、策略纪元变化、内容哈希不符或凭证不存在，但内容仍具备提交资格时，作品进入完整审核并返回 `reviewMode=full`；所有权不符、授权撤回、资源/源卡删除下架、AIGC 标识不完整或凭证已被其他作品消费时硬失败，不创建公开作品。稳定原因码分别为 `evidence_expired/evidence_policy_invalid/evidence_content_mismatch/evidence_missing` 与 `owner_mismatch/consent_revoked/resource_unavailable/source_unavailable/aigc_label_missing/evidence_consumed`。
 
 ## 5. 作品状态机
 
