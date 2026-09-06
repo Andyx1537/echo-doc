@@ -1,8 +1,20 @@
 {
-  "fixtureVersion": "onboarding-v1.0",
+  "fixtureVersion": "onboarding-v1.1",
   "deliveryId": "PD-20260906-private-onboarding-session",
-  "documentBaseline": "09ecec2",
-  "contractCommit": "347e846",
+  "documentBaseline": "5e00d2f",
+  "baseContractCommit": "347e846",
+  "contractCommit": "5e00d2f",
+  "profile": {
+    "petName": {
+      "required": false,
+      "defaultWhenMissingOrCleared": "它",
+      "snapshotField": "petName",
+      "independentFromQuestionnaire": true,
+      "mutationEndpoint": "PATCH /pet/onboarding/:id/profile",
+      "requiresIdempotencyKey": true,
+      "requiresExpectedSessionVersion": true
+    }
+  },
   "questionnaire": {
     "version": "v1",
     "questions": [
@@ -49,7 +61,7 @@
     {"caseId": "refine-success", "sequence": ["queued", "running", "succeeded"], "expectedState": "candidate_ready"},
     {"caseId": "refine-failure", "sequence": ["queued", "running", "failed"], "expectedState": "candidate_ready"}
   ],
-  "errors": ["onboarding_not_found", "onboarding_forbidden", "onboarding_invalid_state", "onboarding_version_conflict", "phone_binding_required", "asset_limit_exceeded", "asset_upload_incomplete", "asset_quality_failed", "subject_selection_required", "subject_inconsistent", "answer_code_invalid", "answer_cardinality_invalid", "consent_required", "consent_version_conflict", "generation_in_progress", "candidate_not_found", "confirmation_conflict", "idempotency_conflict", "endpoint_retired"],
+  "errors": ["onboarding_not_found", "onboarding_forbidden", "onboarding_invalid_state", "onboarding_version_conflict", "pet_name_invalid", "phone_binding_required", "asset_limit_exceeded", "asset_upload_incomplete", "asset_quality_failed", "subject_selection_required", "subject_inconsistent", "answer_code_invalid", "answer_cardinality_invalid", "consent_required", "consent_version_conflict", "generation_in_progress", "candidate_not_found", "confirmation_conflict", "idempotency_conflict", "endpoint_retired"],
   "uploadLimits": {
     "photo": {"minimum": 1, "recommended": 2, "maximum": 2},
     "video": {"minimum": 0, "recommended": 1, "maximum": 2}

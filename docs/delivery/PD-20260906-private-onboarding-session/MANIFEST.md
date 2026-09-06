@@ -65,7 +65,7 @@ ACK：`accepted`。建档专用匿名 multipart、consent CAS/撤回和稳定选
 ### QA 回执
 
 ACK：`accepted-with-risks`
-可测性：`PASS`。风险仅为孤立上传对象物理清理 SLA/监控口径需由后端实现方案登记；不阻塞开发。
+可测性：`PASS`。已对 `5e00d2f` 称呼增量短复签：默认“它”、profile 修改、快照恢复及幂等/CAS 均可执行且不改变四题；`pet_name_invalid` 的长度/字符触发边界待实现前固定样例，不阻塞最小主链。既有孤立上传对象物理清理 SLA/监控风险不变。
 
 ## 6. 联合冻结门
 
@@ -87,6 +87,7 @@ ACK：`accepted-with-risks`
 | 2026-09-06 | QA 准备 | 建立 `TEST-PLAN.md`、固定机器夹具和 `QA-EXECUTION-CHECKLIST.md`；尚无候选，不执行真联调 | `READY_FOR_DEVELOPMENT` | 等待前端/后端固定候选 |
 | 2026-09-06 | 后端实现核查 | 发现称呼存在于产品流程但目标 API 无写入字段，停止相关接线 | `STOP_PRODUCT_REVIEW` | 产品/契约最小修订 |
 | 2026-09-06 | 产品/契约 | 冻结 `petName`：可选、默认“它”、会话快照返回、独立 profile CAS 修改 | `CONTRACT_REVIEW` | 三方字段短复签 |
+| 2026-09-06 | QA 短复签 | `5e00d2f` 称呼增量可测，新增默认/修改/恢复/幂等/CAS 用例与夹具 | `CONTRACT_REVIEW` | 等待 FE/BE 短复签后重开开发 |
 
 ## 8. 缺陷闭环
 
