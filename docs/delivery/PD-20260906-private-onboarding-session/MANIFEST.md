@@ -84,6 +84,7 @@ ACK：`accepted-with-risks`
 | 2026-09-06 | 三方初评 | 发现匿名上传、授权写入和稳定选项码三个本单元缺口 | `REWORK` | 产品/契约修订 |
 | 2026-09-06 | 产品/契约 | 采用建档专用 multipart 原子挂接；新增 consent CAS；冻结 Q1～Q4 选项码 | `CONTRACT_REVIEW` | FE/BE/QA 复签 |
 | 2026-09-06 | 三方复签 | FE/BE/QA 均接受；无契约阻断 | `READY_FOR_DEVELOPMENT` | 前端/后端实现，QA 准备专项 |
+| 2026-09-06 | QA 准备 | 建立 `TEST-PLAN.md`、固定机器夹具和 `QA-EXECUTION-CHECKLIST.md`；尚无候选，不执行真联调 | `READY_FOR_DEVELOPMENT` | 等待前端/后端固定候选 |
 
 ## 8. 缺陷闭环
 
@@ -93,5 +94,6 @@ ACK：`accepted-with-risks`
 ## 9. 验收与归档
 
 - 必须证据：持久化会话、单宠一致性、四题多选、生成前绑定门、失败恢复、确认 CAS、服务重启恢复、真实前后端接口和 QA 专项报告。
+- QA 入口：`TEST-PLAN.md`；固定夹具：`fixtures/onboarding-v1.json`；候选执行门：`QA-EXECUTION-CHECKLIST.md`。
 - 组合主线不在本单元验收；完成后只向最终组合单元提供固定构建和契约版本。
 - 最终状态：待开发与验收。

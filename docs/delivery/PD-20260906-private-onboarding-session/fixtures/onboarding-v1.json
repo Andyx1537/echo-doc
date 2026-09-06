@@ -1,0 +1,64 @@
+{
+  "fixtureVersion": "onboarding-v1.0",
+  "deliveryId": "PD-20260906-private-onboarding-session",
+  "documentBaseline": "09ecec2",
+  "contractCommit": "347e846",
+  "questionnaire": {
+    "version": "v1",
+    "questions": [
+      {
+        "questionId": "Q1",
+        "minSelections": 1,
+        "maxSelections": 1,
+        "answerCodes": ["home", "adoption", "family_friend", "outdoors", "clinic_rescue", "online", "unclear"]
+      },
+      {
+        "questionId": "Q2",
+        "minSelections": 1,
+        "maxSelections": 3,
+        "answerCodes": ["tiny", "timid", "quiet", "eye_contact", "approached_quickly", "exploring", "tired", "energetic", "same_as_now", "appearance_unclear"]
+      },
+      {
+        "questionId": "Q3",
+        "minSelections": 1,
+        "maxSelections": 3,
+        "answerCodes": ["follows_me", "waits_for_me", "nuzzles", "sleeps_in_spot", "watches_window", "runs_to_sound", "plays_together", "stays_quietly", "food_motivated", "explores", "special_gesture"],
+        "freeTextAllowedWhenSelected": "special_gesture",
+        "freeTextSources": ["typed", "voice_transcript"]
+      },
+      {
+        "questionId": "Q4",
+        "minSelections": 1,
+        "maxSelections": 2,
+        "answerCodes": ["waits_at_door", "sleeps_in_familiar_spot", "goes_out_together", "eats_beside_me", "watches_me", "being_petted", "runs_over", "ordinary_routine"]
+      }
+    ]
+  },
+  "states": ["collecting", "ready_to_bind", "ready_to_generate", "generating", "candidate_ready", "refining", "ready_to_confirm", "confirmed", "abandoned"],
+  "steps": ["upload", "subject_select", "crop", "questionnaire", "summary", "bind", "generate", "candidate_select", "refine", "confirm", "done"],
+  "lastOperations": ["none", "generate_failed", "refine_failed", "confirm_failed"],
+  "identityBoundary": [
+    {"caseId": "identity-unbound", "phoneBound": false, "result": "phone_binding_required"},
+    {"caseId": "identity-bind-current", "phoneBound": true, "mode": "bind_current", "result": "continue_same_session"},
+    {"caseId": "identity-switch-existing", "phoneBound": true, "mode": "switch_existing", "result": "restart_in_existing_account"}
+  ],
+  "generationBoundary": [
+    {"caseId": "generation-success", "sequence": ["queued", "running", "succeeded"]},
+    {"caseId": "generation-failure", "sequence": ["queued", "running", "failed"], "expectedState": "ready_to_generate"},
+    {"caseId": "generation-timeout", "sequence": ["queued", "running", "timeout"], "expectedState": "ready_to_generate"},
+    {"caseId": "refine-success", "sequence": ["queued", "running", "succeeded"], "expectedState": "candidate_ready"},
+    {"caseId": "refine-failure", "sequence": ["queued", "running", "failed"], "expectedState": "candidate_ready"}
+  ],
+  "errors": ["onboarding_not_found", "onboarding_forbidden", "onboarding_invalid_state", "onboarding_version_conflict", "phone_binding_required", "asset_limit_exceeded", "asset_upload_incomplete", "asset_quality_failed", "subject_selection_required", "subject_inconsistent", "answer_code_invalid", "answer_cardinality_invalid", "consent_required", "consent_version_conflict", "generation_in_progress", "candidate_not_found", "confirmation_conflict", "idempotency_conflict", "endpoint_retired"],
+  "uploadLimits": {
+    "photo": {"minimum": 1, "recommended": 2, "maximum": 2},
+    "video": {"minimum": 0, "recommended": 1, "maximum": 2}
+  },
+  "orphanAcceptance": {
+    "mustNotBeReferenceable": true,
+    "mustReleaseQuota": true,
+    "mustEnterCleanupQueue": true,
+    "physicalDeletionSlaFrozen": false
+  },
+  "globalErrorEnvelope": {"requiredFields": ["code", "msg", "detail", "data"]}
+}
