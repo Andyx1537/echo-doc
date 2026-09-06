@@ -1,10 +1,10 @@
 # 级联交付账本 · PD-20260906-private-onboarding-session
 
-状态：`CONTRACT_REVIEW / REWORK`
-任务版本：`v1.1`
+状态：`READY_FOR_DEVELOPMENT`
+任务版本：`v1.2`
 决策编号：`G-29 / G-37 FC1-FC2`
 产品基线提交：`be20048`
-契约版本/提交：`1d901c7`
+契约版本/提交：`347e846`
 协调负责人：产品
 创建时间：2026-09-06
 目标完成窗口：三方评估后确定
@@ -44,9 +44,9 @@
 
 | 任务 | 专业/Owner | 仓库与业务分支 | 允许修改范围 | 依赖 | 状态 |
 |---|---|---|---|---|---|
-| Onboarding 持久化与 API | 后端 | `echo` / `backend/private-onboarding-session` | Onboarding 表、领域、路由、迁移和专项测试 | 身份/生成边界契约桩 | 待评估 |
-| 建档页面与恢复 | 前端 | `echo-client` / `frontend/private-onboarding-session` | Onboarding 页面、状态容器、DTO 和组件测试 | 冻结 API；不得覆盖既存脏文件 | 待评估 |
-| 专项用例与真联调 | QA | 测试资产 / 同任务标识 | 本单元验收、数据和报告 | 前后端候选构建 | 待评估 |
+| Onboarding 持久化与 API | 后端 | `echo` / `backend/private-onboarding-session` | Onboarding 表、领域、路由、迁移和专项测试 | 身份/生成边界契约桩 | 可开工 |
+| 建档页面与恢复 | 前端 | `echo-client` / `frontend/private-onboarding-session` | Onboarding 页面、状态容器、DTO 和组件测试 | 冻结 API；独立干净 worktree | 可开工 |
+| 专项用例与真联调 | QA | 测试资产 / 同任务标识 | 本单元验收、数据和报告 | 前后端候选构建 | 可准备；候选完成后执行 |
 
 共享契约唯一 Owner：后端提供 OpenAPI/固定样例，产品与 QA 复核；前端不得自造状态。
 
@@ -56,25 +56,25 @@
 
 ### 前端回执
 
-ACK：`accepted-with-risks`。现有客户端 9 个脏文件中 5 个与本单元共享文件重叠；必须从干净基线建独立 worktree，合并时人工协调，不覆盖既存 Plaza 改动。
+ACK：`accepted-with-risks`。契约无阻断；现有客户端 9 个脏文件中 5 个与本单元共享文件重叠，必须从干净基线建独立 worktree，合并时人工协调，不覆盖既存 Plaza 改动。
 
 ### 后端回执
 
-ACK：`blocked`。缺建档专用匿名上传边界和授权写入口；其余可实现。
+ACK：`accepted`。建档专用匿名 multipart、consent CAS/撤回和稳定选项码已关闭阻断。
 
 ### QA 回执
 
-ACK：`blocked`
-可测性：`REWORK`。缺 Q2～Q4 稳定选项码和授权授予/更新入口。
+ACK：`accepted-with-risks`
+可测性：`PASS`。风险仅为孤立上传对象物理清理 SLA/监控口径需由后端实现方案登记；不阻塞开发。
 
 ## 6. 联合冻结门
 
-- FE_ACK：`pending`
-- BE_ACK：`pending`
-- QA_ACK：`pending`
-- 冻结契约版本：`be20048`
+- FE_ACK：`accepted-with-risks`
+- BE_ACK：`accepted`
+- QA_ACK：`accepted-with-risks / PASS`
+- 冻结契约版本：`347e846`
 - 产品/技术重新定调项：无；实现事实若推翻边界则触发停止闸。
-- 开工结论：`NOT_READY`
+- 开工结论：`READY_FOR_DEVELOPMENT`
 
 ## 7. 开发、联调与反馈
 
@@ -83,6 +83,7 @@ ACK：`blocked`
 | 2026-09-06 | 产品拆分 | 从基础大账本拆出单一 Onboarding 用户结果 | `DISTRIBUTED` | FE/BE/QA 评估 |
 | 2026-09-06 | 三方初评 | 发现匿名上传、授权写入和稳定选项码三个本单元缺口 | `REWORK` | 产品/契约修订 |
 | 2026-09-06 | 产品/契约 | 采用建档专用 multipart 原子挂接；新增 consent CAS；冻结 Q1～Q4 选项码 | `CONTRACT_REVIEW` | FE/BE/QA 复签 |
+| 2026-09-06 | 三方复签 | FE/BE/QA 均接受；无契约阻断 | `READY_FOR_DEVELOPMENT` | 前端/后端实现，QA 准备专项 |
 
 ## 8. 缺陷闭环
 
