@@ -1,7 +1,7 @@
 # 级联交付账本 · PD-20260906-private-onboarding-session
 
-状态：`IMPLEMENTING`
-任务版本：`v1.4`
+状态：`INTEGRATING`
+任务版本：`v1.5`
 决策编号：`G-29 / G-37 FC1-FC2`
 产品基线提交：`be20048`
 契约版本/提交：`5e00d2f`
@@ -44,9 +44,9 @@
 
 | 任务 | 专业/Owner | 仓库与业务分支 | 允许修改范围 | 依赖 | 状态 |
 |---|---|---|---|---|---|
-| Onboarding 持久化与 API | 后端 | `echo` / `backend/private-onboarding-session` | Onboarding 表、领域、路由、迁移和专项测试 | 身份/生成边界契约桩 | 可开工 |
-| 建档页面与恢复 | 前端 | `echo-client` / `frontend/private-onboarding-session` | Onboarding 页面、状态容器、DTO 和组件测试 | 冻结 API；独立干净 worktree | 可开工 |
-| 专项用例与真联调 | QA | 测试资产 / 同任务标识 | 本单元验收、数据和报告 | 前后端候选构建 | 可准备；候选完成后执行 |
+| Onboarding 持久化与 API | 后端 | `echo` / `backend/private-onboarding-session` | Onboarding 表、领域、路由、迁移和专项测试 | 身份/生成边界契约桩 | 已固定候选 `20a2279` |
+| 建档页面与恢复 | 前端 | `echo-client` / `frontend/private-onboarding-session` | Onboarding 页面、状态容器、DTO 和组件测试 | 冻结 API；独立干净 worktree | 已固定候选 `0aa3d17` |
+| 专项用例与真联调 | QA | 测试资产 / 同任务标识 | 本单元验收、数据和报告 | 前后端固定候选 | 待真实边界联调 |
 
 共享契约唯一 Owner：后端提供 OpenAPI/固定样例，产品与 QA 复核；前端不得自造状态。
 
@@ -90,6 +90,16 @@ ACK：`accepted-with-risks`
 | 2026-09-06 | QA 短复签 | `5e00d2f` 称呼增量可测，新增默认/修改/恢复/幂等/CAS 用例与夹具 | `CONTRACT_REVIEW` | 等待 FE/BE 短复签后重开开发 |
 | 2026-09-06 | FE/BE 短复签 | 称呼增量均 `accepted`；QA=`accepted-with-risks/PASS` | `IMPLEMENTING` | 前端/后端继续实现 |
 | 2026-09-06 | 前端环境 | 独立工作树与 `frontend/private-onboarding-session` 已创建，原脏 develop 未改 | `IMPLEMENTING` | 前端实现 |
+| 2026-09-06 | 前端候选 | `0aa3d17`：可恢复建档页、受控素材 URL 适配；专项 9/9、全量 155/155、生产构建通过 | `IMPLEMENTING` | 后端候选/真联调 |
+| 2026-09-06 | 后端候选 | `20a2279`：持久会话、专用匿名上传、四题/称呼、幂等/CAS、异步生成恢复、授权与原子确认；专项 22/22 通过 | `INTEGRATING` | QA 真实边界联调 |
+
+### 7.1 固定候选与未过门证据
+
+- 前端：`echo-client@0aa3d17`，分支 `frontend/private-onboarding-session`。
+- 后端：`echo@20a2279`，分支 `backend/private-onboarding-session`，schema 版本 `2026090601`。
+- 后端专项：`OnboardingApiTest + PgOnboardingRepositoryTest + SchemaContractTest + UploadStorageTest + ResourceStoreTest`，共 22 项通过；本机未配置真实 PostgreSQL，因此 PG 用例实际执行 0 项。
+- 仓库既有全量回归：Aengine 79/79 通过；`echo-server` 444 项中 42 错误、2 失败，集中于旧测试夹具以未绑定账号调用旧建档入口，本切片未改动 `BindingGuard`；作为既有回归债务保留，不宣称全量通过。
+- 尚未通过：真实 PostgreSQL 重启恢复/确认失败注入，以及固定前后端候选的真 HTTP 整链。未通过前不进入 `QA_VERIFYING`。
 
 ## 8. 缺陷闭环
 
@@ -101,4 +111,4 @@ ACK：`accepted-with-risks`
 - 必须证据：持久化会话、单宠一致性、四题多选、生成前绑定门、失败恢复、确认 CAS、服务重启恢复、真实前后端接口和 QA 专项报告。
 - QA 入口：`TEST-PLAN.md`；固定夹具：`fixtures/onboarding-v1.json`；候选执行门：`QA-EXECUTION-CHECKLIST.md`。
 - 组合主线不在本单元验收；完成后只向最终组合单元提供固定构建和契约版本。
-- 最终状态：待开发与验收。
+- 最终状态：前后端候选已固定，待真实 PostgreSQL 与真 HTTP 联调、QA 和产品验收。
