@@ -1,6 +1,6 @@
 # 级联交付账本 · PD-20260903-product-foundation-v34
 
-状态：`DISTRIBUTED / AWAITING_REACK`
+状态：`READY_FOR_DEVELOPMENT / DECOMPOSED`
 任务版本：`v4.2`
 决策范围：`G-27`～`G-37`
 产品基线提交：`34c9344`
@@ -191,3 +191,12 @@ v4.2 最终契约修订：`be20048`
 - QA_ACK：`blocked`；仅剩多选 DTO、全局错误信封和评论隐藏验收措辞三项。
 - v4.2 修订 `be20048`：答案改为 `answerCodes[]` 并支持可选短输入/语音转写来源；快照和确认增加授权版本；`switch_existing` 私域建档固定不续接；所有新增错误统一 `{code,msg,detail,data}`；评论验收限定“列表无占位、仅旧直达/已打开/继续操作显示不可用”；Phase 0 emitter 改为逐事件明确归属并补字段类型与必填性。
 - 当前重新派发基线：以本账本所在提交 + `be20048` 为准。本轮目标是最终 `READY_FOR_DEVELOPMENT` 复签。
+
+## 13. v4.2 最终复签与拆分结论（2026-09-06）
+
+- FE_ACK：`accepted`。
+- BE_ACK：`accepted`。
+- QA_ACK：`accepted-with-risks`，Readiness=`PASS`；风险仅为各单元进入 QA 前需准备真实环境、可控时钟、并发/事务故障注入、短信沙箱和固定夹具。
+- 冻结契约：`be20048`；方法与拆分基线：`1d901c7`。
+- 本大账本不直接作为实现任务。六个能力单元和一个最终组合单元见 `IMPLEMENTATION-SLICES.md`；每个单元独立建账、复签、实现和验收。
+- 第一开发单元：`PD-20260906-private-onboarding-session`。其他系统不得因本账本整体范围被顺带带入。
