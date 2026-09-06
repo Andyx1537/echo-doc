@@ -1,7 +1,7 @@
 # 级联交付账本 · PD-20260906-private-onboarding-session
 
-状态：`READY_FOR_DEVELOPMENT`
-任务版本：`v1.2`
+状态：`CONTRACT_REVIEW / STOP_PRODUCT_REVIEW`
+任务版本：`v1.3`
 决策编号：`G-29 / G-37 FC1-FC2`
 产品基线提交：`be20048`
 契约版本/提交：`347e846`
@@ -85,6 +85,8 @@ ACK：`accepted-with-risks`
 | 2026-09-06 | 产品/契约 | 采用建档专用 multipart 原子挂接；新增 consent CAS；冻结 Q1～Q4 选项码 | `CONTRACT_REVIEW` | FE/BE/QA 复签 |
 | 2026-09-06 | 三方复签 | FE/BE/QA 均接受；无契约阻断 | `READY_FOR_DEVELOPMENT` | 前端/后端实现，QA 准备专项 |
 | 2026-09-06 | QA 准备 | 建立 `TEST-PLAN.md`、固定机器夹具和 `QA-EXECUTION-CHECKLIST.md`；尚无候选，不执行真联调 | `READY_FOR_DEVELOPMENT` | 等待前端/后端固定候选 |
+| 2026-09-06 | 后端实现核查 | 发现称呼存在于产品流程但目标 API 无写入字段，停止相关接线 | `STOP_PRODUCT_REVIEW` | 产品/契约最小修订 |
+| 2026-09-06 | 产品/契约 | 冻结 `petName`：可选、默认“它”、会话快照返回、独立 profile CAS 修改 | `CONTRACT_REVIEW` | 三方字段短复签 |
 
 ## 8. 缺陷闭环
 

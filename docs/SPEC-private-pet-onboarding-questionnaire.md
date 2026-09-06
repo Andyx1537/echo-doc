@@ -126,6 +126,7 @@ flowchart LR
 |---|---|
 | `onboardingId/accountId` | 会话与匿名/绑定账号归属 |
 | `flowVersion/questionnaireVersion` | 流程和题库版本 |
+| `petName` | 用户给出的称呼；可选，缺省为“它”，不阻断建档 |
 | `state` | `collecting/ready_to_bind/ready_to_generate/generating/candidate_ready/refining/ready_to_confirm/confirmed/abandoned` |
 | `selectedSubjectId` | 本次唯一宠物主体 |
 | `currentStep` | 前端恢复位置 |
@@ -180,6 +181,7 @@ validFrom / supersededAt / visibility / allowedUses
 现有一次性 `/pet/onboarding/start` 必须拆成以下可恢复步骤：
 
 - `POST /pet/onboarding`：创建匿名建档会话；
+- `PATCH /pet/onboarding/:id/profile`：幂等/CAS 保存或修改可选称呼；空值恢复为“它”；
 - `POST /pet/onboarding/:id/assets`：加入素材；
 - 建档素材使用专用 multipart 上传并在同一事务预占额度、保存资源、挂入当前会话；不得先走要求已绑定的全局 `/upload`，也不得解除全局上传绑定门；
 - `POST /pet/onboarding/:id/subject/select`：选择唯一宠物；

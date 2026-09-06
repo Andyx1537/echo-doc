@@ -113,6 +113,7 @@
 {
   "onboardingId": "...",
   "accountId": "...",
+  "petName": "它",
   "status": "collecting|ready_to_bind|ready_to_generate|generating|candidate_ready|refining|ready_to_confirm|confirmed|abandoned",
   "currentStep": "upload|subject_select|crop|questionnaire|summary|bind|generate|candidate_select|refine|confirm|done",
   "sessionVersion": 4,
@@ -126,7 +127,8 @@
 
 端点：
 
-- `POST /pet/onboarding`：入参 `{ flowVersion, questionnaireVersion }`，返回 `201 + snapshot`。
+- `POST /pet/onboarding`：入参 `{ flowVersion, questionnaireVersion, petName? }`，返回 `201 + snapshot`。`petName` 可选，缺省或清空时服务端规范化为“它”，不阻断后续流程。
+- `PATCH /pet/onboarding/:id/profile`：入参 `{ petName?, expectedSessionVersion }`，幂等/CAS 修改称呼并返回最新快照；称呼不是 Q1～Q4 答案，不得塞入答案码或模型摘要。
 - `POST /pet/onboarding/:id/assets`：建档专用 `multipart/form-data`，字段含 `file/mediaType/expectedSessionVersion`；服务端校验匿名会话归属，在同一事务预占素材槽位、保存资源元数据并挂入会话，返回 `{ snapshot, asset, subjectCandidates, quality }`。失败释放预占，孤立对象进入清理队列。不得要求先调用全局 `/upload`，也不得因此放开全局上传绑定门。
 - `POST /pet/onboarding/:id/subject/select`：入参 `{ subjectId, crop, expectedSessionVersion }`，返回 `{ snapshot, selectedSubject, quality }`；只能选择一个主体。
 - `PUT /pet/onboarding/:id/answers/:questionId`：入参 `{ answerCodes:string[], answerVersion, freeText?, freeTextSource?:"typed|voice_transcript", expectedSessionVersion }`，返回 `{ snapshot, answerId, supersedesId }`。服务端按题库版本校验单选/多选及数量；Q2/Q3 为 1～3 项，Q4 最多 2 项。`freeText` 仅在题目版本明确允许时接收，且不是完成阻塞项。
@@ -139,7 +141,7 @@
 - `POST /pet/onboarding/:id/confirm`：入参 `{ candidateId, consentVersion, expectedSessionVersion }`，服务端校验当前有效 `memoryUseConsent.granted=true` 且版本一致，以 CAS 原子创建唯一窗口，返回 `{ snapshot, petId, windowId }`；重复确认返回同一结果。
 - `DELETE /pet/onboarding/:id`：主动放弃，返回 `status=abandoned`，不创建窗口。
 
-稳定错误至少包含：`onboarding_not_found`、`onboarding_forbidden`、`onboarding_invalid_state`、`onboarding_version_conflict`、`phone_binding_required`、`asset_limit_exceeded`、`asset_upload_incomplete`、`asset_quality_failed`、`subject_selection_required`、`subject_inconsistent`、`answer_code_invalid`、`answer_cardinality_invalid`、`consent_required`、`consent_version_conflict`、`generation_in_progress`、`candidate_not_found`、`confirmation_conflict`、`idempotency_conflict`、`endpoint_retired`。全部使用全局错误信封 `{ code, msg, detail, data }`，其中 `detail` 放稳定原因码，`data` 可含 `{ retryable, currentSnapshot, currentStateVersion, retryAfterSeconds }`；前端不得根据 HTTP 文案猜状态。
+稳定错误至少包含：`onboarding_not_found`、`onboarding_forbidden`、`onboarding_invalid_state`、`onboarding_version_conflict`、`pet_name_invalid`、`phone_binding_required`、`asset_limit_exceeded`、`asset_upload_incomplete`、`asset_quality_failed`、`subject_selection_required`、`subject_inconsistent`、`answer_code_invalid`、`answer_cardinality_invalid`、`consent_required`、`consent_version_conflict`、`generation_in_progress`、`candidate_not_found`、`confirmation_conflict`、`idempotency_conflict`、`endpoint_retired`。全部使用全局错误信封 `{ code, msg, detail, data }`，其中 `detail` 放稳定原因码，`data` 可含 `{ retryable, currentSnapshot, currentStateVersion, retryAfterSeconds }`；前端不得根据 HTTP 文案猜状态。
 
 ### POST /upload — 素材上传（图片/音频/视频）
 - `multipart/form-data`（字段名 `file`），需 Bearer；出参：`{ "resourceId", "url" }`。
