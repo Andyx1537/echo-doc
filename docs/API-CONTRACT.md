@@ -127,9 +127,11 @@
 端点：
 
 - `POST /pet/onboarding`：入参 `{ flowVersion, questionnaireVersion }`，返回 `201 + snapshot`。
-- `POST /pet/onboarding/:id/assets`：入参 `{ resourceId, mediaType, expectedSessionVersion }`，返回 `{ snapshot, asset, subjectCandidates, quality }`；素材总量和质量由服务端判定。
+- `POST /pet/onboarding/:id/assets`：建档专用 `multipart/form-data`，字段含 `file/mediaType/expectedSessionVersion`；服务端校验匿名会话归属，在同一事务预占素材槽位、保存资源元数据并挂入会话，返回 `{ snapshot, asset, subjectCandidates, quality }`。失败释放预占，孤立对象进入清理队列。不得要求先调用全局 `/upload`，也不得因此放开全局上传绑定门。
 - `POST /pet/onboarding/:id/subject/select`：入参 `{ subjectId, crop, expectedSessionVersion }`，返回 `{ snapshot, selectedSubject, quality }`；只能选择一个主体。
 - `PUT /pet/onboarding/:id/answers/:questionId`：入参 `{ answerCodes:string[], answerVersion, freeText?, freeTextSource?:"typed|voice_transcript", expectedSessionVersion }`，返回 `{ snapshot, answerId, supersedesId }`。服务端按题库版本校验单选/多选及数量；Q2/Q3 为 1～3 项，Q4 最多 2 项。`freeText` 仅在题目版本明确允许时接收，且不是完成阻塞项。
+- 稳定选项码：Q1=`home|adoption|family_friend|outdoors|clinic_rescue|online|unclear`；Q2=`tiny|timid|quiet|eye_contact|approached_quickly|exploring|tired|energetic|same_as_now|appearance_unclear`；Q3=`follows_me|waits_for_me|nuzzles|sleeps_in_spot|watches_window|runs_to_sound|plays_together|stays_quietly|food_motivated|explores|special_gesture`；Q4=`waits_at_door|sleeps_in_familiar_spot|goes_out_together|eats_beside_me|watches_me|being_petted|runs_over|ordinary_routine`。只有 Q3 选择 `special_gesture` 时允许 `freeText/freeTextSource`。
+- `PUT /pet/onboarding/:id/consent`：入参 `{ granted:boolean, policyVersion, expectedSessionVersion }`，返回 `{ snapshot, memoryUseConsent:{ granted,consentVersion,policyVersion,grantedAt?,withdrawnAt? } }`。授予后已有候选可进入 `ready_to_confirm`；确认前撤回时保留候选但回到 `candidate_ready` 并移除 `confirm` 能力。`confirmed` 后的授权管理属于独立隐私设置单元，本端点返回 `onboarding_invalid_state`，不得越权删除既有窗口。
 - `GET /pet/onboarding/:id`：返回最新 `snapshot`、素材摘要、当前有效 `answers:[{questionId,answerCodes,answerVersion,freeText?,freeTextSource?}]`、候选和 `memoryUseConsent:{granted,consentVersion,grantedAt}`；不得下发其他账号会话。
 - `POST /pet/onboarding/:id/generate`：要求手机号已绑定；入参 `{ expectedSessionVersion }`，返回 `202 { snapshot, generationJob:{ jobId,status:"queued|running",pollAfterMs:1500 } }`。相同幂等键不得重复生成。
 - `POST /pet/onboarding/:id/candidates/:candidateId/select`：返回进入 `ready_to_confirm` 的最新快照。
@@ -137,7 +139,7 @@
 - `POST /pet/onboarding/:id/confirm`：入参 `{ candidateId, consentVersion, expectedSessionVersion }`，服务端校验当前有效 `memoryUseConsent.granted=true` 且版本一致，以 CAS 原子创建唯一窗口，返回 `{ snapshot, petId, windowId }`；重复确认返回同一结果。
 - `DELETE /pet/onboarding/:id`：主动放弃，返回 `status=abandoned`，不创建窗口。
 
-稳定错误至少包含：`onboarding_not_found`、`onboarding_forbidden`、`onboarding_invalid_state`、`onboarding_version_conflict`、`phone_binding_required`、`asset_limit_exceeded`、`asset_quality_failed`、`subject_selection_required`、`subject_inconsistent`、`answer_cardinality_invalid`、`consent_required`、`consent_version_conflict`、`generation_in_progress`、`candidate_not_found`、`confirmation_conflict`、`idempotency_conflict`、`endpoint_retired`。全部使用全局错误信封 `{ code, msg, detail, data }`，其中 `detail` 放稳定原因码，`data` 可含 `{ retryable, currentSnapshot, currentStateVersion, retryAfterSeconds }`；前端不得根据 HTTP 文案猜状态。
+稳定错误至少包含：`onboarding_not_found`、`onboarding_forbidden`、`onboarding_invalid_state`、`onboarding_version_conflict`、`phone_binding_required`、`asset_limit_exceeded`、`asset_upload_incomplete`、`asset_quality_failed`、`subject_selection_required`、`subject_inconsistent`、`answer_code_invalid`、`answer_cardinality_invalid`、`consent_required`、`consent_version_conflict`、`generation_in_progress`、`candidate_not_found`、`confirmation_conflict`、`idempotency_conflict`、`endpoint_retired`。全部使用全局错误信封 `{ code, msg, detail, data }`，其中 `detail` 放稳定原因码，`data` 可含 `{ retryable, currentSnapshot, currentStateVersion, retryAfterSeconds }`；前端不得根据 HTTP 文案猜状态。
 
 ### POST /upload — 素材上传（图片/音频/视频）
 - `multipart/form-data`（字段名 `file`），需 Bearer；出参：`{ "resourceId", "url" }`。

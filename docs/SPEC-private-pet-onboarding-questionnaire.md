@@ -71,6 +71,8 @@ flowchart LR
 多选 1—3 项：小小一只、有点怕人、很安静、一直看着我、很快靠过来、到处探索、
 有点疲惫、精神很好、和现在差不多、记不清具体样子。
 
+稳定选项码：`tiny / timid / quiet / eye_contact / approached_quickly / exploring / tired / energetic / same_as_now / appearance_unclear`。
+
 这是初见印象，不写成宠物永久性格。
 
 ### Q3 · 后来，它慢慢有了哪些习惯？
@@ -78,12 +80,16 @@ flowchart LR
 多选最多 3 项：跟着我、等我回来、靠过来蹭、固定位置睡觉、看窗外、听到声音跑过来、
 喜欢一起玩、自己安静待着、惦记吃的、到处探索、有一个特别的小动作。
 
+稳定选项码：`follows_me / waits_for_me / nuzzles / sleeps_in_spot / watches_window / runs_to_sound / plays_together / stays_quietly / food_motivated / explores / special_gesture`。
+
 只有选择“特别的小动作”时，展开可选短输入或语音；不阻断流程。
 
 ### Q4 · 如果先留下一幅画面，你想从哪一刻开始？
 
 单选或最多 2 项：门口等候、熟悉位置睡觉、一起出门、在身边吃东西、看着用户做事、
 被轻轻抚摸、突然跑来、普通但反复出现的日常。
+
+稳定选项码：`waits_at_door / sleeps_in_familiar_spot / goes_out_together / eats_beside_me / watches_me / being_petted / runs_over / ordinary_routine`。
 
 该题直接形成第一次生成的叙事重点。
 
@@ -175,8 +181,10 @@ validFrom / supersededAt / visibility / allowedUses
 
 - `POST /pet/onboarding`：创建匿名建档会话；
 - `POST /pet/onboarding/:id/assets`：加入素材；
+- 建档素材使用专用 multipart 上传并在同一事务预占额度、保存资源、挂入当前会话；不得先走要求已绑定的全局 `/upload`，也不得解除全局上传绑定门；
 - `POST /pet/onboarding/:id/subject/select`：选择唯一宠物；
 - `PUT /pet/onboarding/:id/answers/:questionId`：用 `answerCodes[]` 幂等保存/修改单选或多选答案；题目允许时可带非必填短输入及来源；
+- `PUT /pet/onboarding/:id/consent`：在确认前授予或撤回本会话的素材/场景使用授权；授权版本与会话版本同步递增；
 - `GET /pet/onboarding/:id`：恢复当前步骤和已答内容；
 - `POST /pet/onboarding/:id/generate`：要求手机号已绑定，冻结生成锚点并开始生成；
 - `POST /pet/onboarding/:id/refine`：基于已选候选细化；

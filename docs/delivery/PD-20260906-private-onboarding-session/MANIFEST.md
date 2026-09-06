@@ -1,7 +1,7 @@
 # 级联交付账本 · PD-20260906-private-onboarding-session
 
-状态：`DISTRIBUTED / TECH_ASSESSING`
-任务版本：`v1`
+状态：`CONTRACT_REVIEW / REWORK`
+任务版本：`v1.1`
 决策编号：`G-29 / G-37 FC1-FC2`
 产品基线提交：`be20048`
 契约版本/提交：`1d901c7`
@@ -56,16 +56,16 @@
 
 ### 前端回执
 
-ACK：`pending`
+ACK：`accepted-with-risks`。现有客户端 9 个脏文件中 5 个与本单元共享文件重叠；必须从干净基线建独立 worktree，合并时人工协调，不覆盖既存 Plaza 改动。
 
 ### 后端回执
 
-ACK：`pending`
+ACK：`blocked`。缺建档专用匿名上传边界和授权写入口；其余可实现。
 
 ### QA 回执
 
-ACK：`pending`
-可测性：`pending`
+ACK：`blocked`
+可测性：`REWORK`。缺 Q2～Q4 稳定选项码和授权授予/更新入口。
 
 ## 6. 联合冻结门
 
@@ -81,6 +81,8 @@ ACK：`pending`
 | 时间 | 角色/任务 | 新差额或证据 | 状态变化 | 下一责任方 |
 |---|---|---|---|---|
 | 2026-09-06 | 产品拆分 | 从基础大账本拆出单一 Onboarding 用户结果 | `DISTRIBUTED` | FE/BE/QA 评估 |
+| 2026-09-06 | 三方初评 | 发现匿名上传、授权写入和稳定选项码三个本单元缺口 | `REWORK` | 产品/契约修订 |
+| 2026-09-06 | 产品/契约 | 采用建档专用 multipart 原子挂接；新增 consent CAS；冻结 Q1～Q4 选项码 | `CONTRACT_REVIEW` | FE/BE/QA 复签 |
 
 ## 8. 缺陷闭环
 
