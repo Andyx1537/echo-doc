@@ -1,10 +1,10 @@
 # 级联交付账本 · PD-20260906-private-onboarding-session
 
-状态：`CONTRACT_REVIEW / STOP_PRODUCT_REVIEW`
-任务版本：`v1.3`
+状态：`IMPLEMENTING`
+任务版本：`v1.4`
 决策编号：`G-29 / G-37 FC1-FC2`
 产品基线提交：`be20048`
-契约版本/提交：`347e846`
+契约版本/提交：`5e00d2f`
 协调负责人：产品
 创建时间：2026-09-06
 目标完成窗口：三方评估后确定
@@ -72,7 +72,7 @@ ACK：`accepted-with-risks`
 - FE_ACK：`accepted-with-risks`
 - BE_ACK：`accepted`
 - QA_ACK：`accepted-with-risks / PASS`
-- 冻结契约版本：`347e846`
+- 冻结契约版本：`5e00d2f`
 - 产品/技术重新定调项：无；实现事实若推翻边界则触发停止闸。
 - 开工结论：`READY_FOR_DEVELOPMENT`
 
@@ -88,6 +88,8 @@ ACK：`accepted-with-risks`
 | 2026-09-06 | 后端实现核查 | 发现称呼存在于产品流程但目标 API 无写入字段，停止相关接线 | `STOP_PRODUCT_REVIEW` | 产品/契约最小修订 |
 | 2026-09-06 | 产品/契约 | 冻结 `petName`：可选、默认“它”、会话快照返回、独立 profile CAS 修改 | `CONTRACT_REVIEW` | 三方字段短复签 |
 | 2026-09-06 | QA 短复签 | `5e00d2f` 称呼增量可测，新增默认/修改/恢复/幂等/CAS 用例与夹具 | `CONTRACT_REVIEW` | 等待 FE/BE 短复签后重开开发 |
+| 2026-09-06 | FE/BE 短复签 | 称呼增量均 `accepted`；QA=`accepted-with-risks/PASS` | `IMPLEMENTING` | 前端/后端继续实现 |
+| 2026-09-06 | 前端环境 | 独立工作树与 `frontend/private-onboarding-session` 已创建，原脏 develop 未改 | `IMPLEMENTING` | 前端实现 |
 
 ## 8. 缺陷闭环
 
