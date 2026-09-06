@@ -95,6 +95,34 @@ Treat the delivery ledger as the single coordination state. Stop affected implem
 
 Do not close a task because product documentation, frontend work, backend work, or QA passed in isolation. Require a frozen shared contract, real frontend-backend integration evidence, QA acceptance bound to exact builds, product result confirmation, and remote archival.
 
+### Split into the smallest deliverable unit
+
+Before creating a delivery ledger or assigning implementation, split the product decision into the smallest independently useful and testable logical unit. The default unit contains:
+
+- one observable user result;
+- one primary business object and lifecycle/state machine;
+- one authoritative backend domain;
+- one primary frontend surface or flow;
+- only the minimum boundary contract needed from adjacent systems;
+- one focused acceptance set that can pass without completing unrelated systems.
+
+An architecture map, foundation plan, product mainline, or multi-system roadmap may be maintained as an umbrella index, but it must not be used directly as one implementation task. If a package contains multiple independent lifecycles, multiple user results, or can fail in one domain while another domain remains releasable, split it into separate delivery ledgers. A blocked slice must not hold unrelated accepted slices in `REWORK`.
+
+Treat cross-system behavior as an explicit boundary, not as permission to absorb both systems into one task. Record only the required input, output, authority, error, idempotency and timing at that boundary. Implement the provider and consumer in their own focused slices when either has independent state or risk.
+
+Sequence work as:
+
+```text
+compact product skeleton
+→ smallest logical slices
+→ freeze and implement each slice
+→ verify each slice independently
+→ combine accepted slices in a separate integration slice
+→ run end-to-end product acceptance
+```
+
+Every slice must declare `entry condition / owned object / user result / boundary dependencies / exit evidence / deliberately excluded systems`. If these cannot fit in a compact handoff without requiring the assignee to reread the whole project, the slice is still too large.
+
 ### Start from the maintained baseline
 
 1. Read the project's compact product baseline first. Read full historical documents only when the changed topic, an unresolved conflict, or evidence requires them.
