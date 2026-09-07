@@ -1,7 +1,7 @@
 # 级联交付账本 · PD-20260906-phone-account-resolution
 
-状态：`READY_FOR_DEVELOPMENT`
-任务版本：`v1.2`
+状态：`IN_DEVELOPMENT`
+任务版本：`v1.3`
 决策编号：`G-28 / G-32 / G-35/DC9`
 产品基线提交：`d6c2090`
 契约版本/提交：`phone-account-resolution-v1 / d6c2090`
@@ -51,8 +51,8 @@
 
 | 任务 | 专业/Owner | 仓库与业务分支 | 允许修改范围 | 依赖 | 状态 |
 |---|---|---|---|---|---|
-| 身份持久化、挑战/解析/会话 API | 后端 | `echo` / `backend/phone-account-resolution` | 身份表、凭据、会话、频控、SmsProvider 边界与专项测试 | 无外部云账号时可先 stub | 可开工 |
-| 全局手机号登录组件与会话替换 | 前端 | `echo-client` / `frontend/phone-account-resolution` | 身份 API、会话/设备凭据存储、绑定/切号窗与 returnTo | 固定后端 DTO/错误 | 可开工 |
+| 身份持久化、挑战/解析/会话 API | 后端 | `echo` / `backend/phone-account-resolution` | 身份表、凭据、会话、频控、SmsProvider 边界与专项测试 | 无外部云账号时可先 stub | 首候选 `13220f9`；补负路径 |
+| 全局手机号登录组件与会话替换 | 前端 | `echo-client` / `frontend/phone-account-resolution` | 身份 API、会话/设备凭据存储、绑定/切号窗与 returnTo | 固定后端 DTO/错误 | 候选 `e933848` |
 | 身份安全与真联调用例 | QA | 测试资产 / 同任务标识 | 枚举、频控、重放、会话固定、冲突、回滚与消费方恢复 | 可控 SmsProvider | 可准备；候选后执行 |
 
 共享契约唯一 Owner：后端提供固定 DTO/错误/时序与安全约束，产品、前端、QA 共同复核。
@@ -104,9 +104,11 @@ ACK：`accepted-with-risks`
 | 2026-09-06 | 产品 | 从基础总账本拆出第 2 个最小单元；已有 G-28/G-32/G-35 定案不变 | `DISTRIBUTED` | FE/BE/QA 并行评估 |
 | 2026-09-07 | FE/BE/QA | 三方只读评估完成；确认 continuation 缺口、两分支凭据范围、幂等重放与旧接口安全封口 | `NEEDS_PRODUCT_DECISION` | 产品确认会话有效期 |
 | 2026-09-07 | 产品 | 明确账号与登录凭据不按时间/不活跃失效；验证码与 resolution 短期安全期限不变 | `READY_FOR_DEVELOPMENT` | FE/BE 按独立分支开发 |
+| 2026-09-07 | 前端 | 统一手机号协调器、长期活动会话/设备凭据/休眠恢复槽和 Onboarding/我的页接线；身份专项 8/8、全量 164/164、构建 PASS | 候选 `e933848` | QA/后端联调 |
+| 2026-09-07 | 后端 | schema `2026090701`、持久身份服务、四类接口、网关鉴权和旧入口退役；编译 PASS、真实 PG 首批专项 5/5 | 首候选 `13220f9` | 补负路径/真 HTTP |
 
-固定联调契约：`phone-account-resolution-v1 @ d6c2090`；联调代码提交待双端候选完成后登记。
-真实请求响应证据：待实现。
+固定联调契约：`phone-account-resolution-v1 @ d6c2090`；前端 `e933848`；后端首候选 `13220f9`；schema `2026090701`。
+真实请求响应证据：真实 PostgreSQL 服务层首批 5/5；真 HTTP 与浏览器证据待补，当前不得宣称端到端完成。
 
 ## 8. 缺陷闭环
 
@@ -117,4 +119,4 @@ ACK：`accepted-with-risks`
 
 - 必须证据：手机号不枚举；挑战过期/锁定/重发/频控；解析 token 单次、场景绑定与幂等恢复；新号原子绑当前账号并撤销其设备凭据；已有号切原账号且匿名资料不迁移、仅当前匿名会话失效、受控匿名恢复凭据保留；已绑账号不可由设备凭据恢复；Onboarding `bind_current/switch_existing` 真联调。
 - 迁移/回滚/监控：按后端回执新增持久身份表、把旧 `deviceId` 降为非权威历史字段，并补短信/风控监控；旧接口不得在回滚时恢复不安全语义。
-- 最终状态：三方评估、产品确认和契约冻结完成；允许前后端按本最小单元独立分支开工。
+- 最终状态：双端首候选已固定；后端负路径、真 HTTP、真浏览器和真实短信冒烟尚未完成，不可归档。
