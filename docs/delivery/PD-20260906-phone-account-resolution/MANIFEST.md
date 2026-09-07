@@ -1,13 +1,13 @@
 # 级联交付账本 · PD-20260906-phone-account-resolution
 
-状态：`NEEDS_PRODUCT_DECISION`
-任务版本：`v1.1`
-决策编号：`G-28 / G-32 / G-35`
-产品基线提交：`be20048`
-契约版本/提交：`5e00d2f`
+状态：`READY_FOR_DEVELOPMENT`
+任务版本：`v1.2`
+决策编号：`G-28 / G-32 / G-35/DC9`
+产品基线提交：`d6c2090`
+契约版本/提交：`phone-account-resolution-v1 / d6c2090`
 协调负责人：产品
 创建时间：2026-09-06
-目标完成窗口：三方评估后确定
+目标完成窗口：后端候选 6–9 个工作日；前端候选 3–4 个工作日；固定双端后联调验收 1 个工作日
 
 ## 1. 用户结果与主线定位
 
@@ -35,6 +35,7 @@
 - 对象/生命周期：`PhoneChallenge(created→verified|expired|locked|superseded)`；`PhoneResolution(created→used|expired)`；手机凭据与设备凭据作为原子确认的边界数据。
 - 主流程：输入号码 → 发送验证码 → 校验码 → 返回 `bind_current|switch_existing` 但不改会话 → 用户确认 → 服务端原子绑定/切号并签新会话。
 - 安全与可见性：挑战创建不暴露号码是否存在；解析 token 绑当前匿名会话、有效 10 分钟、单次；已绑账号不可再由设备凭据登录。
+- 登录生命周期：匿名账号、匿名 session token、device credential 以及本单元签发的已绑定 session 均不按时间或不活跃自动失效；仅明确绑定、切号、主动退出/清除或安全治理撤销。验证码和 resolution 的 5/10 分钟期限保持不变。
 - API：`POST /auth/phone/challenges`、`POST /auth/phone/challenges/:challengeId/verify`、`POST /auth/phone/resolutions/:resolutionToken/confirm`；设备会话目标为 `POST /auth/device/session`。四类写操作均使用 `Idempotency-Key`，同键同载荷重放原结果，同键异载荷冲突。
 - DTO：challenge=`{challengeId,expiresAt,resendAvailableAt}`；verify=`{resolution,resolutionToken,resolutionExpiresAt}`；confirm=`{accountId,phoneBound:true,sessionToken,deviceCredential:null,returnToAllowed,nextAction}`。
 - 参数：验证码 5 分钟，重发 60 秒，单挑战错 5 次；手机 5/小时、10/日，设备 10/小时、30/日，IP 20/小时、100/日；resolution 10 分钟。
@@ -50,9 +51,9 @@
 
 | 任务 | 专业/Owner | 仓库与业务分支 | 允许修改范围 | 依赖 | 状态 |
 |---|---|---|---|---|---|
-| 身份持久化、挑战/解析/会话 API | 后端 | `echo` / `backend/phone-account-resolution` | 身份表、凭据、会话、频控、SmsProvider 边界与专项测试 | 无外部云账号时可先 stub | 待评估 |
-| 全局手机号登录组件与会话替换 | 前端 | `echo-client` / `frontend/phone-account-resolution` | 身份 API、会话/设备凭据存储、绑定/切号窗与 returnTo | 固定后端 DTO/错误 | 待评估 |
-| 身份安全与真联调用例 | QA | 测试资产 / 同任务标识 | 枚举、频控、重放、会话固定、冲突、回滚与消费方恢复 | 可控 SmsProvider | 待评估 |
+| 身份持久化、挑战/解析/会话 API | 后端 | `echo` / `backend/phone-account-resolution` | 身份表、凭据、会话、频控、SmsProvider 边界与专项测试 | 无外部云账号时可先 stub | 可开工 |
+| 全局手机号登录组件与会话替换 | 前端 | `echo-client` / `frontend/phone-account-resolution` | 身份 API、会话/设备凭据存储、绑定/切号窗与 returnTo | 固定后端 DTO/错误 | 可开工 |
+| 身份安全与真联调用例 | QA | 测试资产 / 同任务标识 | 枚举、频控、重放、会话固定、冲突、回滚与消费方恢复 | 可控 SmsProvider | 可准备；候选后执行 |
 
 共享契约唯一 Owner：后端提供固定 DTO/错误/时序与安全约束，产品、前端、QA 共同复核。
 
@@ -71,11 +72,11 @@ ACK：`accepted-with-risks`
 
 ### 后端回执
 
-ACK：`needs-product-decision`
+ACK：`accepted`
 预计窗口/条件/置信度：契约冻结后 6–9 个后端工作日；真实短信另 2–4 日且取决于供应商；70%。
 复用/新增/迁移/替换/废弃/不变：复用事务、错误信封、路由和账号表；新增独立身份服务、持久 session/device/phone/challenge/resolution/idempotency/rate/audit；替换内存 token 与 deviceId 权威；退役旧绑定。
 数据、接口、状态机与运行影响：token 只存 hash，手机号 hash 唯一且密文保存；生产无 PG/密钥或误装 Stub 必须 fail closed；绑定/切号和全部凭据变化单事务。
-风险/阻塞/产品问题：仅会话有效期尚待产品确认；其余 continuation、凭据分支、旧接口策略已按产品基线收口。
+风险/阻塞/产品问题：会话不按时间失效已由 `G-35/DC9` 收口；continuation、凭据分支、幂等重放和旧接口策略均已冻结。
 验证计划：单元、真 PG、真 HTTP、并发/故障注入、重启持久、隐私日志、真实供应商冒烟。
 
 ### QA 回执
@@ -89,12 +90,12 @@ ACK：`accepted-with-risks`
 
 ## 6. 联合冻结门
 
-- FE_ACK：`accepted-with-risks`
-- BE_ACK：`needs-product-decision`
-- QA_ACK：`accepted-with-risks`
-- 冻结契约版本：
-- 产品/技术重新定调项：仅会话有效期待产品确认；推荐连续 30 天未使用失效、最长 180 天强制重新手机号登录。匿名账号可凭有效设备凭据恢复，账号数据不随会话过期删除。
-- 开工结论：`NOT_READY`
+- FE_ACK：`accepted-with-risks`（风险已进入冻结契约与验收）
+- BE_ACK：`accepted`
+- QA_ACK：`accepted-with-risks`（风险已进入冻结契约与验收）
+- 冻结契约版本：`phone-account-resolution-v1 @ d6c2090`
+- 产品/技术重新定调项：无。不得重新加入 30/180 天或其他自然到期。
+- 开工结论：`READY_FOR_DEVELOPMENT`
 
 ## 7. 开发、联调与反馈
 
@@ -102,8 +103,9 @@ ACK：`accepted-with-risks`
 |---|---|---|---|---|
 | 2026-09-06 | 产品 | 从基础总账本拆出第 2 个最小单元；已有 G-28/G-32/G-35 定案不变 | `DISTRIBUTED` | FE/BE/QA 并行评估 |
 | 2026-09-07 | FE/BE/QA | 三方只读评估完成；确认 continuation 缺口、两分支凭据范围、幂等重放与旧接口安全封口 | `NEEDS_PRODUCT_DECISION` | 产品确认会话有效期 |
+| 2026-09-07 | 产品 | 明确账号与登录凭据不按时间/不活跃失效；验证码与 resolution 短期安全期限不变 | `READY_FOR_DEVELOPMENT` | FE/BE 按独立分支开发 |
 
-固定联调版本：待三方冻结。
+固定联调契约：`phone-account-resolution-v1 @ d6c2090`；联调代码提交待双端候选完成后登记。
 真实请求响应证据：待实现。
 
 ## 8. 缺陷闭环
@@ -115,4 +117,4 @@ ACK：`accepted-with-risks`
 
 - 必须证据：手机号不枚举；挑战过期/锁定/重发/频控；解析 token 单次、场景绑定与幂等恢复；新号原子绑当前账号并撤销其设备凭据；已有号切原账号且匿名资料不迁移、仅当前匿名会话失效、受控匿名恢复凭据保留；已绑账号不可由设备凭据恢复；Onboarding `bind_current/switch_existing` 真联调。
 - 迁移/回滚/监控：按后端回执新增持久身份表、把旧 `deviceId` 降为非权威历史字段，并补短信/风控监控；旧接口不得在回滚时恢复不安全语义。
-- 最终状态：三方评估已完成；待会话有效期确认与契约冻结。
+- 最终状态：三方评估、产品确认和契约冻结完成；允许前后端按本最小单元独立分支开工。
