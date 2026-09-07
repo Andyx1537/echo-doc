@@ -37,15 +37,15 @@
 - 安全与可见性：挑战创建不暴露号码是否存在；解析 token 绑当前匿名会话、有效 10 分钟、单次；已绑账号不可再由设备凭据登录。
 - 登录生命周期：匿名账号、匿名 session token、device credential 以及本单元签发的已绑定 session 均不按时间或不活跃自动失效；仅明确绑定、切号、主动退出/清除或安全治理撤销。验证码和 resolution 的 5/10 分钟期限保持不变。
 - API：`POST /auth/phone/challenges`、`POST /auth/phone/challenges/:challengeId/verify`、`POST /auth/phone/resolutions/:resolutionToken/confirm`；设备会话目标为 `POST /auth/device/session`。四类写操作均使用 `Idempotency-Key`，同键同载荷重放原结果，同键异载荷冲突。
-- DTO：challenge=`{challengeId,expiresAt,resendAvailableAt}`；verify=`{resolution,resolutionToken,resolutionExpiresAt}`；confirm=`{accountId,phoneBound:true,sessionToken,deviceCredential:null,returnToAllowed,nextAction}`。
+- DTO：challenge=`{challengeId,expiresAt,resendAvailableAt}`；verify=`{resolution,resolutionToken,resolutionExpiresAt}`；confirm=`{accountId,phoneBound:true,sessionToken,deviceCredential:null,returnToAllowed,nextAction,previousAnonymousCredentialDisposition,anonymousRecovery?}`；device session=`{accountId,phoneBound:false,sessionToken,deviceCredential,deviceCredentialAction}`。
 - 参数：验证码 5 分钟，重发 60 秒，单挑战错 5 次；手机 5/小时、10/日，设备 10/小时、30/日，IP 20/小时、100/日；resolution 10 分钟。
-- 错误：`phone_invalid/code_invalid/challenge_expired/challenge_locked/resend_cooldown/rate_limited/resolution_expired/resolution_used/resolution_session_mismatch/sms_provider_unavailable`，统一 `{code,msg,detail,data}`。
+- 错误：手机号链路包含 `phone_invalid/code_invalid/challenge_expired/challenge_locked/resend_cooldown/rate_limited/resolution_expired/resolution_used/resolution_session_mismatch/phone_ownership_changed/continuation_invalid/sms_provider_unavailable/idempotency_conflict`；设备链路包含 `device_credential_malformed/device_credential_recovery_required/device_session_idempotency_conflict/auth_persistence_unavailable`，统一 `{code,msg,detail,data}`。
 - 失败：任一失败保留当前匿名会话；短信不可用不可伪造已发送；原子确认部分失败整笔回滚。
 - 场景续接：challenge 接收结构化 `continuation`，首版仅 `none|private_onboarding_generation`；服务端校验归属和状态并把快照绑定到 challenge/resolution，禁止自由 URL。`switch_existing + private_onboarding_generation` 固定不续接；目标失效时完成登录但回安全入口。
 - 凭据处置：confirm 的 `deviceCredential:null` 只描述新的已绑活动会话。`switch_existing` 把旧匿名恢复凭据转为独立休眠恢复槽，不能被通用设备入口自动使用；恢复页面/API 另开单元。
 - 竞态：verify 仅给归属快照；confirm 前手机号归属变化返回 `phone_ownership_changed`，不得静默改分支。confirm 同一幂等键在响应丢失后重放原成功结果。
 - 兼容：项目尚未发布，不保留不安全旧语义；`/auth/bind` 直接退役，旧 `/auth/guest` 同步退出账号恢复主路，不设旧客户端兼容窗。
-- 待技术冻结：设备凭据精确错误/轮换标识和并发建号去重按三方提案落契约；`SmsProvider` 在无真实云账号的测试环境必须显式 stub 且不得在生产装配。
+- 技术冻结：设备凭据错误、`deviceCredentialAction`、`bootstrapNonce + Idempotency-Key` 并发建号去重已按 `API-CONTRACT §19.8–19.9` 冻结；`SmsProvider` 在无真实云账号的测试环境必须显式 stub 且不得在生产装配。
 
 ## 4. 任务依赖与所有权
 
