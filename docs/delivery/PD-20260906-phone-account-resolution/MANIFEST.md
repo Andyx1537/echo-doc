@@ -44,6 +44,7 @@
 - 场景续接：challenge 接收结构化 `continuation`，首版仅 `none|private_onboarding_generation`；服务端校验归属和状态并把快照绑定到 challenge/resolution，禁止自由 URL。`switch_existing + private_onboarding_generation` 固定不续接；目标失效时完成登录但回安全入口。
 - 凭据处置：confirm 的 `deviceCredential:null` 只描述新的已绑活动会话。`switch_existing` 把旧匿名恢复凭据转为独立休眠恢复槽，不能被通用设备入口自动使用；恢复页面/API 另开单元。
 - 竞态：verify 仅给归属快照；confirm 前手机号归属变化返回 `phone_ownership_changed`，不得静默改分支。confirm 同一幂等键在响应丢失后重放原成功结果。
+- 幂等交付窗：含原始登录/设备/恢复凭据的加密响应只允许在 10 分钟且不超过对应 challenge/resolution 有效期的窗口内重取；过窗或结果凭据被显式撤销时清除可还原密文。活动登录凭据本身仍不自然到期。
 - 兼容：项目尚未发布，不保留不安全旧语义；`/auth/bind` 直接退役，旧 `/auth/guest` 同步退出账号恢复主路，不设旧客户端兼容窗。
 - 技术冻结：设备凭据错误、`deviceCredentialAction`、`bootstrapNonce + Idempotency-Key` 并发建号去重已按 `API-CONTRACT §19.8–19.9` 冻结；`SmsProvider` 在无真实云账号的测试环境必须显式 stub 且不得在生产装配。
 
@@ -106,6 +107,7 @@ ACK：`accepted-with-risks`
 | 2026-09-07 | 产品 | 明确账号与登录凭据不按时间/不活跃失效；验证码与 resolution 短期安全期限不变 | `READY_FOR_DEVELOPMENT` | FE/BE 按独立分支开发 |
 | 2026-09-07 | 前端 | 统一手机号协调器、长期活动会话/设备凭据/休眠恢复槽和 Onboarding/我的页接线；身份专项 8/8、全量 164/164、构建 PASS | 候选 `e933848` | QA/后端联调 |
 | 2026-09-07 | 后端 | schema `2026090701`、持久身份服务、四类接口、网关鉴权和旧入口退役；编译 PASS、真实 PG 首批专项 5/5 | 首候选 `13220f9` | 补负路径/真 HTTP |
+| 2026-09-07 | QA/产品 | 候选审查发现 `nextAction=none` 前端漏接及幂等响应永久可重放；前者已修，后者冻结为短时交付窗 | 阻断返工 | FE/BE |
 
 固定联调契约：`phone-account-resolution-v1 @ d6c2090`；前端 `e933848`；后端首候选 `13220f9`；schema `2026090701`。
 真实请求响应证据：真实 PostgreSQL 服务层首批 5/5；真 HTTP 与浏览器证据待补，当前不得宣称端到端完成。

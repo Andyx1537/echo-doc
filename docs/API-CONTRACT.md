@@ -1353,6 +1353,8 @@ challenge 成功返回 `{ challengeId, expiresAt, resendAvailableAt }`；verify 
 
 challenge、verify、confirm 均要求 `Idempotency-Key`。同一操作、同一账号、同键同载荷重放原结果；同键异载荷返回 `idempotency_conflict`。confirm 已成功但响应丢失时，同一键必须重放原成功结果；不同键重用已消费 resolution 才返回 `resolution_used`。verify 后若手机号在 confirm 前被其他账号占用，返回 `phone_ownership_changed` 并保持匿名会话，不得静默改变 `bind_current|switch_existing` 分支。
 
+幂等重放只是一段短时响应交付保险，不是第二种登录方式。含 `sessionToken/deviceCredential/recoveryCredential` 原文的加密响应最多可重取 10 分钟，且 challenge 不得超过自身 `expiresAt`，verify/confirm 不得超过对应 resolution 的 `resolutionExpiresAt`。交付窗结束或结果凭据被主动退出、安全治理、绑定/切号等事件撤销时，服务端必须清除或不可逆失效可还原的响应密文；操作哈希和审计可以按审计期限保留。已经由客户端取得的活动登录凭据仍按“不自然到期”执行。
+
 初始生产参数由服务端配置：验证码 5 分钟、重发 60 秒、单挑战错 5 次、手机号 5 次/小时与 10 次/日、设备 10/小时与 30/日、IP 20/小时与 100/日、`resolutionToken` 10 分钟单次。频控响应返回 `rate_limited + retryAfterSeconds`。供应商通过 `SmsProvider` 抽象；已有阿里云账号优先阿里云，否则由技术/运维选择阿里云或腾讯云，前端无供应商分支。
 
 用户可从明确的“切换账号”入口重新唤醒保留的匿名账号。该动作必须由服务端校验受控的一次性切换凭证或本地受保护的匿名会话凭证，签发新的匿名会话；客户端不得提交 `accountId` 直接恢复，也不得让已失效 token 继续访问。
@@ -1370,6 +1372,8 @@ challenge、verify、confirm 均要求 `Idempotency-Key`。同一操作、同一
 - `switch_existing` 保留的 `recoveryCredential` 属于休眠恢复凭据；通用设备入口不得自动切回它，应返回 `device_credential_recovery_required`，由后续明确的账号切换流程消费。
 
 响应为 `{ accountId, phoneBound:false, sessionToken, deviceCredential, deviceCredentialAction }`，其中 action=`restored|issued|rotated_after_bind`。同一 `bootstrapNonce + Idempotency-Key` 并发请求最多创建一个匿名账号、一套有效凭据并重放同一结果；同键异载荷返回 `device_session_idempotency_conflict`。稳定错误包括 `device_credential_malformed`、`device_credential_recovery_required`、`device_session_idempotency_conflict`、`rate_limited`、`auth_persistence_unavailable`。格式合法但未知的凭据不得访问任何旧账号，可在频控内签发新匿名账号；已因绑定撤销的凭据只能原子创建新匿名账号并返回 `rotated_after_bind`，绝不能恢复已绑定账号。
+
+device session 的含密响应同样只在首次请求创建后的 10 分钟内允许同键重取；窗口结束后不得由幂等表重新交付 token。该短时窗口不影响已经签发并由客户端保存的 session/device credential 长期有效。
 
 ### 19.10 用户级作品提交通道
 
