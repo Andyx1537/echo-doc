@@ -20,7 +20,7 @@
 
 - **Base URL**：`/api/v1`
 - **编码**：请求/响应均 `application/json; charset=utf-8`
-- **鉴权**：首次访问 `POST /auth/guest` 拿匿名会话；后续请求头 `Authorization: Bearer <token>`。新手机号绑定时 `accountId` 与资料连续，但服务端可为安全轮换 token；已有手机号切换到原账号时必定签发原账号新会话，匿名资料不迁移。客户端始终以确认接口返回的新会话为准。
+- **鉴权**：新客户端首次访问 `POST /auth/device/session` 领取匿名会话；后续请求头 `Authorization: Bearer <token>`。匿名账号、匿名 session token 与 device credential 不设置时间或不活跃到期，只有明确绑定、切号、主动退出/清除或安全治理才撤销。新手机号绑定时 `accountId` 与资料连续；已有手机号切换到原账号时必定签发原账号新会话，匿名资料不迁移。客户端始终以服务端返回的会话结果为准。
 - **时间**：统一毫秒时间戳（`number`）。
 - **ID**：字符串（后端 `IDGenerator` 生成，前端只透传）。
 - **成功响应**：`{ "code": 0, "data": {...} }`
@@ -34,14 +34,14 @@
 
 ## 1. 鉴权 / 账号（复用 AccountService，游客一等公民）
 
-### POST /auth/guest — 领取游客身份（免登录体验入口）
-- 入参：`{ "deviceId": "<前端生成的稳定设备指纹>" }`
-- 出参：`{ "token": "...", "accountId": "...", "isGuest": true, "hasPet": false }`
-- 说明：同 `deviceId` 幂等返回同账号（守"免登录=游客态、逻辑同正式用户"，见 PRD §2.7）。
+### POST /auth/guest — 旧游客入口（退役）
+- 项目尚未发布，不保留不安全兼容语义；新客户端不得调用。
+- 服务端统一返回 `410 endpoint_retired`，不得继续按前端生成的 `deviceId` 恢复账号。
+- 匿名入口以 §19.9 `POST /auth/device/session` 为唯一目标契约。
 
-### POST /auth/bind — 游客升级为正式账号
-- 入参：`{ "type": "phone|wechat", "credential": "..." }`
-- 出参：`{ "isGuest": false }`
+### POST /auth/bind — 旧绑定入口（退役）
+- 项目尚未发布，不保留无验证码绑定旁路；统一返回 `410 endpoint_retired`。
+- 手机号登录与绑定以 §19.8 三步解析契约为唯一入口。微信等方式未形成可验证契约前不得复用此端点。
 
 ### GET /me — 当前账号概要
 - 出参：`{ "accountId", "isGuest", "nickname", "hasPet", "visibilityDefault": "private|friends|public" }`
@@ -1339,15 +1339,19 @@ assertThat(wall).doesNotContainKeys("count", "total", "rememberCount", "rank");
 
 手机号登录采用“验证—解析—确认”三步，避免验证码通过即错误切号：
 
-1. `POST /auth/phone/challenges { phone, purpose: "login_or_bind" }`：发送验证码；响应不暴露号码是否已注册。
+1. `POST /auth/phone/challenges { phone, purpose: "login_or_bind", continuation }`：发送验证码；响应不暴露号码是否已注册。`continuation={intent:"none"}` 或 `{intent:"private_onboarding_generation",resourceId:"<onboardingId>",schemaVersion:"v1"}`；服务端先校验当前匿名账号的资源归属与可续接状态，禁止自由 URL。
 2. `POST /auth/phone/challenges/:challengeId/verify { code }`：验证成功返回一次性 `resolutionToken` 与 `resolution=bind_current|switch_existing`，此时不改变会话。
 3. `POST /auth/phone/resolutions/:resolutionToken/confirm`：
    - `bind_current`：手机号绑定当前匿名 `accountId`，返回同一账号的新会话；
    - `switch_existing`：返回手机号所属原账号的新会话，当前匿名资料不迁移；当前匿名 token 立即失效，但匿名账号和数据保留。
 
-`resolutionToken` 必须短时、单次使用并绑定当前匿名会话。手机号进入服务前规范为 E.164；频控采用滑动窗口。重发成功立即废止同手机号、同 purpose 的旧挑战验证码。稳定错误为 `phone_invalid/code_invalid/challenge_expired/challenge_locked/resend_cooldown/rate_limited/resolution_expired/resolution_used/resolution_session_mismatch/sms_provider_unavailable`；任何失败均保留当前匿名会话。客户端只有在确认成功后才替换 token，并按 `returnTo` 恢复允许的原路径。
+`continuation` 在 challenge 创建时由服务端规范化并绑定到 challenge 与后续 resolution，verify/confirm 不允许改写。`resolutionToken` 必须短时、单次使用并绑定当前匿名会话。手机号进入服务前规范为 E.164；频控采用滑动窗口。重发成功立即废止同手机号、同 purpose 的旧挑战验证码。稳定错误为 `phone_invalid/code_invalid/challenge_expired/challenge_locked/resend_cooldown/rate_limited/resolution_expired/resolution_used/resolution_session_mismatch/phone_ownership_changed/continuation_invalid/sms_provider_unavailable`；任何失败均保留当前匿名会话。客户端只有在确认成功后才替换 token。
 
-challenge 成功返回 `{ challengeId, expiresAt, resendAvailableAt }`；verify 成功返回 `{ resolution, resolutionToken, resolutionExpiresAt }`；confirm 成功返回 `{ accountId, phoneBound:true, sessionToken, deviceCredential:null, returnToAllowed, nextAction }`。`bind_current` 可按原 `returnTo` 续接；`switch_existing` 遇匿名私域 Onboarding 时固定 `returnToAllowed=false,nextAction=restart_in_existing_account`，不得把匿名资料带入原账号；公开评论等目标仍由服务端按可见性决定是否续接。短信错误同样使用全局 `{code,msg,detail,data}`，`sms_provider_unavailable` 可重试但不得伪造已发送。
+confirm 签发的已绑定账号 `sessionToken` 不设置自然到期或不活跃到期，只在主动退出/清除、账号安全处置、平台治理或后续明确的凭据轮换事件中撤销。验证码 challenge 与 resolutionToken 的 5/10 分钟期限不属于登录会话期限，仍按安全契约执行。
+
+challenge 成功返回 `{ challengeId, expiresAt, resendAvailableAt }`；verify 成功返回 `{ resolution, resolutionToken, resolutionExpiresAt }`；confirm 成功返回 `{ accountId, phoneBound:true, sessionToken, deviceCredential:null, returnToAllowed, nextAction, previousAnonymousCredentialDisposition, anonymousRecovery? }`。`previousAnonymousCredentialDisposition=revoked|retained_as_recovery`：`bind_current` 撤销原匿名设备凭据；`switch_existing` 只撤销当前匿名 session，并以 `anonymousRecovery={recoveryCredential}` 保留受控匿名恢复能力，新的手机号活动会话仍固定 `deviceCredential:null`。`bind_current + private_onboarding_generation` 在资源仍有效时返回 `true,resume_private_onboarding`；`switch_existing` 固定返回 `false,restart_in_existing_account`；资源失效时身份确认仍成功但返回 `false,open_private_onboarding`。短信错误同样使用全局 `{code,msg,detail,data}`，`sms_provider_unavailable` 可重试但不得伪造已发送。
+
+challenge、verify、confirm 均要求 `Idempotency-Key`。同一操作、同一账号、同键同载荷重放原结果；同键异载荷返回 `idempotency_conflict`。confirm 已成功但响应丢失时，同一键必须重放原成功结果；不同键重用已消费 resolution 才返回 `resolution_used`。verify 后若手机号在 confirm 前被其他账号占用，返回 `phone_ownership_changed` 并保持匿名会话，不得静默改变 `bind_current|switch_existing` 分支。
 
 初始生产参数由服务端配置：验证码 5 分钟、重发 60 秒、单挑战错 5 次、手机号 5 次/小时与 10 次/日、设备 10/小时与 30/日、IP 20/小时与 100/日、`resolutionToken` 10 分钟单次。频控响应返回 `rate_limited + retryAfterSeconds`。供应商通过 `SmsProvider` 抽象；已有阿里云账号优先阿里云，否则由技术/运维选择阿里云或腾讯云，前端无供应商分支。
 
@@ -1355,15 +1359,17 @@ challenge 成功返回 `{ challengeId, expiresAt, resendAvailableAt }`；verify 
 
 ### 19.9 设备凭据匿名登录
 
-`POST /auth/device/session { deviceCredential }`
+`POST /auth/device/session { deviceCredential?, bootstrapNonce? }`，必须携带 `Idempotency-Key`。首次无凭据时必须提供高熵 `bootstrapNonce`；它只用于短时并发去重，不成为长期登录权威。
 
 - `deviceCredential` 是服务端签发、前端可保存的不透明凭据；客户端不得从设备标识推导 `accountId` 或绑定状态。
 - 凭据只可恢复未绑定手机号的匿名账号。
 - 匿名账号绑定手机号时，服务端必须原子撤销该账号的设备凭据登录关系。
 - 已撤销凭据或同一设备标识再次进入匿名入口时，服务端不得登录已绑定账号，而应创建/返回新的匿名账号并轮换设备凭据。
 - 已绑定账号只能通过手机号登录。需要唤醒另一个保留的未绑定匿名账号时，走受控“切换账号”流程，不把通用设备登录变成账号选择器。
+- 匿名 session token 与 device credential 均无自然到期或不活跃到期；服务端持久化有效/撤销状态。客户端卸载、清除本地数据或遗失凭据导致无法找回，但服务端不得因时间经过自动删除匿名账号或资料。
+- `switch_existing` 保留的 `recoveryCredential` 属于休眠恢复凭据；通用设备入口不得自动切回它，应返回 `device_credential_recovery_required`，由后续明确的账号切换流程消费。
 
-响应至少给出服务端权威的 `{ accountId, phoneBound: false, sessionToken, deviceCredential }`。具体失效错误、幂等键、并发创建去重和凭据轮换标识由后端提出，前端与 QA 复核后冻结。
+响应为 `{ accountId, phoneBound:false, sessionToken, deviceCredential, deviceCredentialAction }`，其中 action=`restored|issued|rotated_after_bind`。同一 `bootstrapNonce + Idempotency-Key` 并发请求最多创建一个匿名账号、一套有效凭据并重放同一结果；同键异载荷返回 `device_session_idempotency_conflict`。稳定错误包括 `device_credential_malformed`、`device_credential_recovery_required`、`device_session_idempotency_conflict`、`rate_limited`、`auth_persistence_unavailable`。格式合法但未知的凭据不得访问任何旧账号，可在频控内签发新匿名账号；已因绑定撤销的凭据只能原子创建新匿名账号并返回 `rotated_after_bind`，绝不能恢复已绑定账号。
 
 ### 19.10 用户级作品提交通道
 
