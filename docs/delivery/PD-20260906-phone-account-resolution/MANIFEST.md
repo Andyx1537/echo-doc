@@ -1,7 +1,7 @@
 # 级联交付账本 · PD-20260906-phone-account-resolution
 
 状态：`IN_DEVELOPMENT`
-任务版本：`v1.4`
+任务版本：`v1.5`
 决策编号：`G-28 / G-32 / G-35/DC9`
 产品基线提交：`d6c2090`
 契约版本/提交：`phone-account-resolution-v1 / d6c2090`
@@ -52,7 +52,7 @@
 
 | 任务 | 专业/Owner | 仓库与业务分支 | 允许修改范围 | 依赖 | 状态 |
 |---|---|---|---|---|---|
-| 身份持久化、挑战/解析/会话 API | 后端 | `echo` / `backend/phone-account-resolution` | 身份表、凭据、会话、频控、SmsProvider 边界与专项测试 | 无外部云账号时可先 stub | 负路径候选 `ecdc0a3`；真实 PG 14/14 |
+| 身份持久化、挑战/解析/会话 API | 后端 | `echo` / `backend/phone-account-resolution` | 身份表、凭据、会话、频控、SmsProvider 边界与专项测试 | 无外部云账号时可先 stub | 幂等失败候选 `e1f7a87`；真实 PG 15/15 |
 | 全局手机号登录组件与会话替换 | 前端 | `echo-client` / `frontend/phone-account-resolution` | 身份 API、会话/设备凭据存储、绑定/切号窗与 returnTo | 固定后端 DTO/错误 | 候选 `cf11e19`；全量 165/165、构建 PASS |
 | 身份安全与真联调用例 | QA | 测试资产 / 同任务标识 | 枚举、频控、重放、会话固定、冲突、回滚与消费方恢复 | 可控 SmsProvider | 可准备；候选后执行 |
 
@@ -110,9 +110,10 @@ ACK：`accepted-with-risks`
 | 2026-09-07 | QA/产品 | 候选审查发现 `nextAction=none` 前端漏接及幂等响应永久可重放；前者已修，后者冻结为短时交付窗 | 阻断返工 | FE/BE |
 | 2026-09-07 | 前端 | 接收 `nextAction=none`、完整响应校验后再换会话、密码学安全幂等键、确认处理中禁用取消；全量测试 165/165、构建 PASS | 候选 `cf11e19` | 真浏览器联调 |
 | 2026-09-07 | 后端 | 幂等敏感响应限定短时交付并关联结果凭据；到期或显式撤销即清密文；补严 `continuation`、三维频控和旧入口统一 410；真实 PG 14/14 | 候选 `ecdc0a3` | 真 HTTP/故障注入 |
+| 2026-09-07 | QA/后端 | 真 HTTP 门禁设计发现错码失败未持久化幂等结果；已改为同键重放原失败且只扣一次尝试次数，异载荷稳定冲突；真实 PG 15/15 | 候选 `e1f7a87` | 真 HTTP 网关 |
 
-固定联调契约：`phone-account-resolution-v1 @ d6c2090`；前端 `cf11e19`；后端 `ecdc0a3`；schema `2026090701`。
-真实请求响应证据：真实 PostgreSQL 服务层 14/14；前端全量 165/165 与生产构建通过。真 HTTP 与真浏览器证据待补，当前不得宣称端到端完成。
+固定联调契约：`phone-account-resolution-v1 @ d6c2090`；前端 `cf11e19`；后端 `e1f7a87`；schema `2026090701`。
+真实请求响应证据：真实 PostgreSQL 服务层 15/15；前端全量 165/165 与生产构建通过。真 HTTP 与真浏览器证据待补，当前不得宣称端到端完成。
 
 ## 8. 缺陷闭环
 
@@ -123,6 +124,7 @@ ACK：`accepted-with-risks`
 | 旧 `/auth/bind` 无 bearer 时未统一返回 410 | P1 | 已修复 | 后端 | 旧接口整体退役 | `ecdc0a3` | `RetiredAuthApiTest` PASS |
 | `continuation.intent=none` 接受多余字段 | P1 | 已修复 | 后端 | 服务端枚举且严格形状 | `ecdc0a3` | 严格字段负向用例 PASS |
 | confirm 处理中仍可取消导致静默换号 | P1 | 已修复 | 前端 | 提交阶段不可关闭 | `cf11e19` | 全量 165/165、构建 PASS |
+| verify 错码失败未记录幂等结果，同键重试重复扣次数 | P0 | 已修复 | 后端 | 所有有状态写操作同键同载荷只生效一次 | `e1f7a87` | 真实 PG 专项 15/15 |
 
 ## 9. 验收与归档
 
