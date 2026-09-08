@@ -18,6 +18,6 @@
 
 ## 当前推进位置
 
-`private-onboarding-session` 已完成前后端候选、单宠一致性返工和真实 PostgreSQL 门禁，当前只因手机号解析接口缺失处于 `BLOCKED_DEPENDENCY`。
+`private-onboarding-session` 的手机号依赖已解除；2026-09-08新号绑定续建窗真实浏览器主路径已通，当前收尾与异常组合仍待验收。完整清单与两专业架构入口见 [当前执行进展](../../CURRENT-DELIVERY-STATUS.md)。
 
-现只推进第 2 单元 `phone-account-resolution`：手机验证、归属解析、二次确认和正确会话结果。该单元交付后先解锁 Onboarding 真 UI 组合联调；不同时启动 Work、Plaza 或评论开发。
+第2单元固定验证码开发增量已通过QA；现推进第1单元与身份结果的组合收尾，并逐项记录任务恢复、媒体生成、补素材等缺失。后续Work、Plaza、评论仍按独立单元推进。
