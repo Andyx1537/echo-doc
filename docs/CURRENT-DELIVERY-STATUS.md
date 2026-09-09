@@ -28,7 +28,7 @@
 | 顺序 | 已确认任务 | 当前结果 | 未完成/下一责任 |
 |---|---|---|---|
 | 1 | private-onboarding-session | 已有实现；新号正常浏览器主链贯通，后端27项、前端165项与构建通过 | 前端异常恢复、旧号重传联调；后端任务重启补偿；真实媒体独立单元 |
-| 2 | phone-account-resolution | 固定9999开发增量QA PASS，真实新号绑定，HTTP已有号切换通过 | 建档切旧号组合；正式阿里云后置；不宣称生产短信 |
+| 2 | phone-account-resolution | 固定9999开发增量QA PASS，真实新号绑定，HTTP已有号切换通过；切号不迁资料已由专项测试锁住 | 功能分支未合 develop；正式阿里云后置；不宣称生产短信或浏览器整链 PASS |
 | 3 | work-publication-review | 产品契约冻结；已有基础Work上传/列表/软删 | 投稿名额、审核复用、修改重提完整实现与验收 |
 | 4 | plaza-work-read | 产品方向冻结 | 代码仍旧Card，需切Work公开读取及匿名批次 |
 | 5 | work-comments-favorites | 两层/三加二/权限/计数分页/私有收藏已定 | 完整新Work互动前后端及验收 |
@@ -39,7 +39,7 @@
 
 | 编号 | 缺失 | 状态/责任 |
 |---|---|---|
-| I01 | 已有手机号切换后新建档、重传、不迁移源资料 | 进行中。账本 `docs/handoff/I01-phone-dedup-validation.md`。测试号 + 9999，外接短信不做 |
+| I01 | 已有手机号切换后新建档、重传、不迁移源资料 | 专项测试已锁。账本 `docs/handoff/I01-phone-dedup-validation.md` 已关闭。`echo@20759ac` / `echo-client@54298de` 未合 develop。未做浏览器整链 |
 | I02 | 生成查询失败后的重新查询交互 | 代码已修，待故障场景复验 / FE+QA |
 | I03 | 生成进程退出后恢复 | 缺少补偿实现，可能卡generating/refining / BE |
 | I04 | 开发候选错误显示内部评审JSON | 已关闭：BE修复、专项通过，更新后真实页面显示开发预览文案而非评分JSON |
@@ -51,9 +51,9 @@
 ## 版本与证据
 
 - 文档之前基线：76f8a1d；本次文档以当前develop提交为准。
-- 后端：`develop` @ `c4fbc69`（含手机号解析与私域建档）。
-- 前端：`develop` @ `55053e5`（含建档集成与 Plaza Card 对齐）。
+- 后端：`develop` @ `c4fbc69`（含手机号解析与私域建档）。I01 功能分支 `backend/i01-phone-dedup-validation` @ `20759ac` 未合入。
+- 前端：`develop` @ `55053e5`（含建档集成与 Plaza Card 对齐）。I01 功能分支 `frontend/i01-phone-dedup-validation` @ `54298de` 未合入。
 - schema：2026090702；开发API 18080、页面5180；真实PostgreSQL，短信固定9999；视觉/生成使用开发适配器，非真实模型效果验收。
-- 后端Onboarding专项27/27（含真PG2），前端现有165/165与build通过。前端测试数不表示165项均覆盖本轮UI。
+- 本轮：`OnboardingApiTest` 11/11；前端 vitest 168/168。不宣称浏览器整链 PASS。前端测试数不表示均覆盖本轮 UI。
 - QA核查：两拓扑对应一致；正常主路径证据来自主执行者浏览器，QA未独立重跑；仍须收尾复验，不签完整私域PASS。
 - 原“手机号接口404阻塞建档”已解除，旧账本该记录仅作历史；下一步定位本页I01—I07，不重新讨论已定产品规则。
