@@ -47,13 +47,13 @@
 | I06 | 选宠后追加素材入口、视频首传反馈 | 建档内不做（`ON1`/`ON2`）。补素材后置；选宠只收图片 |
 | I07 | 建档写成功但后续GET失败的恢复、幂等键复用 | 待核实与修复 / FE+BE |
 | I08 | 前后端功能分支合入develop及整版标签 | 合入已完成，未打 Tag。后端 `echo@c4fbc69`，前端 `echo-client@55053e5`。账本 `docs/handoff/I08-archive-integration.md`。测试夹具红灯不在公共区做 |
-| I09 | 切号后受控唤醒旧匿名会话 | 代码已交，未合 develop。`echo@6d2b1b3` / `echo-client@f8dd94c`。账本 `docs/handoff/I09-anonymous-recovery.md`。未做浏览器整链 |
+| I09 | 切号后受控唤醒旧匿名会话 | 代码已交，未合 develop。`echo@6d2b1b3` / `echo-client@5c4efde`。mock 已走切号/我/唤醒；修钥匙后未重跑；真 PG 未接 |
 
 ## 版本与证据
 
 - 文档之前基线：76f8a1d；本次文档以当前develop提交为准。
 - 后端：`develop` @ `c4fbc69`。I01 `20759ac`、I09 `6d2b1b3` 均未合入。
-- 前端：`develop` @ `55053e5`。I01 `54298de`、I09 `f8dd94c` 均未合入。
+- 前端：`develop` @ `55053e5`。I01 `54298de`、I09 `5c4efde` 均未合入。
 - schema：2026090702；开发API 18080、页面5180；真实PostgreSQL，短信固定9999；视觉/生成使用开发适配器，非真实模型效果验收。
 - 本轮 I09：后端已编译，Auth PG 测无库 skip；前端 vitest 167/167。不宣称浏览器整链 PASS。
 - QA核查：两拓扑对应一致；正常主路径证据来自主执行者浏览器，QA未独立重跑；仍须收尾复验，不签完整私域PASS。
