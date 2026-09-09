@@ -16,8 +16,8 @@
 
 | 资源 | 状态 |
 |---|---|
-| echo `backend/i09-anonymous-recovery` | 本线写（尚未检出则从 develop 开） |
-| echo-client `frontend/i09-anonymous-recovery` | 本线写（尚未检出则从 develop 开） |
+| echo `backend/i09-anonymous-recovery` | 已推 `6d2b1b3`，未合 develop |
+| echo-client `frontend/i09-anonymous-recovery` | 已推 `f8dd94c`，未合 develop |
 | `BlockSilentFailureTest.java`、`WindowVisibilityTrimTest.java` | 锁，不改 |
 
 ## 阶段
@@ -25,20 +25,19 @@
 | 块 | 状态 | 提交 | 验证 | 备注 |
 |---|---|---|---|---|
 | 1. 落 G-38 并开账本 | `done` | 本提交 | 定案进 develop | PH5/ON1–ON3/GN1 |
-| 2. 后端：`POST /auth/account/recovery/session` | `todo` | | 相关 surefire | 只收 recoveryCredential；签发匿名会话 |
-| 3. 前端：「我」页唤醒入口 | `todo` | | vitest | 用本地恢复凭据；不得提交 accountId |
+| 2. 后端：`POST /auth/account/recovery/session` | `done` | `echo@6d2b1b3` | 已编译；Auth PG 测无库 skip | 只收 recoveryCredential；签发匿名会话 |
+| 3. 前端：「我」页唤醒入口 | `done` | `echo-client@f8dd94c` | vitest 167/167 | 用本地恢复凭据；不得提交 accountId |
 | 4. 回填 I09 | `todo` | | STATUS | 不宣称浏览器整链；合入等做完再提 |
 
 ## 下一块入口
 
 ```text
-仓库：echo
-分支：backend/i09-anonymous-recovery（从 develop 开）
-接口：POST /auth/account/recovery/session { recoveryCredential }
-禁止改动：BlockSilentFailureTest.java、WindowVisibilityTrimTest.java
+仓库：echo-doc
+动作：浏览器走通切号→「我」→唤醒→仍停在绑定墙 之后，再回填并提合入
+禁止：打 Tag；合入未经验证的功能分支；改两份锁住的测试夹具
 ```
 
 ## 发现
 
 - 通用 `POST /auth/device/session` 对 `recovery_only` 已返回 `device_credential_recovery_required`；缺的是专用消费口。
-- 切号 confirm 已签发 `anonymousRecovery.recoveryCredential`，前端写入 `echo.auth.anonymous-recovery.v1`。「我」页绑定态还没有唤醒按钮。
+- 切号 confirm 已签发 `anonymousRecovery.recoveryCredential`，前端写入 `echo.auth.anonymous-recovery.v1`。「我」页绑定态在有恢复凭据时显示「回到未绑定的那份资料」。
