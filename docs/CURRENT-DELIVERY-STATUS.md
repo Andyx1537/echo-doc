@@ -1,6 +1,6 @@
 # 当前执行进展与两端架构对照
 
-更新时间：2026-09-08。回到用户确认的七个最小单元，不以局部测试代替整版完成。
+更新时间：2026-09-09。回到用户确认的七个最小单元，不以局部测试代替整版完成。
 
 ## 当前完成态
 
@@ -46,13 +46,13 @@
 | I05 | 真正宠物图片/漫画/视频生成；主体/素材/事实快照消费 | 未实现完整媒体链 / 生成单元 |
 | I06 | 选宠后追加素材入口、视频首传反馈 | 未闭环 / FE+BE |
 | I07 | 建档写成功但后续GET失败的恢复、幂等键复用 | 待核实与修复 / FE+BE |
-| I08 | 前后端功能分支合入develop及整版标签 | 进行中。阶段账本 `docs/handoff/I08-archive-integration.md`。后端已本地合入 develop `c4fbc69` 未推；前端 plaza 契约在 `frontend/plaza-card-contract@40b5fb9` 未推。不创建正式版本 Tag 冒称完成 |
+| I08 | 前后端功能分支合入develop及整版标签 | 合入已完成，未打 Tag。后端 `echo@c4fbc69`，前端 `echo-client@55053e5`。账本 `docs/handoff/I08-archive-integration.md`。测试夹具红灯不在公共区做 |
 
 ## 版本与证据
 
 - 文档之前基线：76f8a1d；本次文档以当前develop提交为准。
-- 后端：backend/private-onboarding-integration @ dc3d196（继承867d0a0）。
-- 前端：frontend/private-onboarding-integration @ e9cac7a（继承b669edd）。
+- 后端：`develop` @ `c4fbc69`（含手机号解析与私域建档）。
+- 前端：`develop` @ `55053e5`（含建档集成与 Plaza Card 对齐）。
 - schema：2026090702；开发API 18080、页面5180；真实PostgreSQL，短信固定9999；视觉/生成使用开发适配器，非真实模型效果验收。
 - 后端Onboarding专项27/27（含真PG2），前端现有165/165与build通过。前端测试数不表示165项均覆盖本轮UI。
 - QA核查：两拓扑对应一致；正常主路径证据来自主执行者浏览器，QA未独立重跑；仍须收尾复验，不签完整私域PASS。
