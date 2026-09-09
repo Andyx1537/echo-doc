@@ -46,7 +46,7 @@
 | I05 | 真正宠物图片/漫画/视频生成；主体/素材/事实快照消费 | 未实现完整媒体链 / 生成单元 |
 | I06 | 选宠后追加素材入口、视频首传反馈 | 未闭环 / FE+BE |
 | I07 | 建档写成功但后续GET失败的恢复、幂等键复用 | 待核实与修复 / FE+BE |
-| I08 | 前后端功能分支合入develop及整版标签 | 未完成；不创建正式版本Tag冒称完成 |
+| I08 | 前后端功能分支合入develop及整版标签 | 进行中。阶段账本 `docs/handoff/I08-archive-integration.md`。后端已本地合入 develop `c4fbc69` 未推；前端 plaza 契约在 `frontend/plaza-card-contract@40b5fb9` 未推。不创建正式版本 Tag 冒称完成 |
 
 ## 版本与证据
 

@@ -11,6 +11,8 @@ Apply this standard before technical implementation. Turn human intent into veri
 
 For the Echo project, treat `docs/skills/development-readiness/SKILL.md` as the only authoritative copy. All people, automation services, and editing tools must read this repository document. Treat any runtime-loaded copy as a replaceable cache, never as an editable source. Change only the repository copy through review, validation, commit, and remote archival. Do not introduce tool-specific paths, names, metadata, or undocumented professional variants into the shared contract.
 
+Implementation that may be continued by another agent follows the sibling skill `docs/skills/agent-handoff/SKILL.md`: split work into committed stages, check them off in `docs/handoff/<task-id>.md`, declare occupancy, and never leave uncommitted files as the only copy. This skill still owns product contracts and cascade delivery; handoff owns intra-implementation continuation.
+
 ## Run the preflight
 
 Before modifying files or external state:
@@ -229,6 +231,7 @@ Report:
 - tests and real-world checks run, with their results;
 - remaining risks, blocked decisions, and unrelated failures;
 - files, commits, migrations, or operational actions that matter to handoff.
+- if the task is unfinished, the updated `docs/handoff/<task-id>.md` stage ledger (see `agent-handoff`).
 
 Do not deploy, tag, migrate production data, rewrite shared history, or contact external parties unless the user authorized that action. Do not commit or push by default for ordinary tasks; however, follow an explicit user or project standing rule that requires confirmed product/development changes to be committed and pushed. Before committing, confirm the intended branch, exclude unrelated user changes, and verify the remote result before reporting archival.
 

@@ -16,18 +16,25 @@
 | Skill | 作用 | 权威入口 |
 |---|---|---|
 | `development-readiness` | 产品与技术修改前的基线比对、三方级联评估、前后端同步、验收、分支和交付标准 | `development-readiness/SKILL.md` |
+| `agent-handoff` | 实现阶段分块、勾选、提交、占用声明；换执行方时按同一开发流接手 | `agent-handoff/SKILL.md` |
 
 ## 分发结构
 
 ```text
 docs/skills/
 ├── INDEX.md
-└── development-readiness/
+├── development-readiness/
+│   ├── SKILL.md
+│   ├── references/
+│   │   └── cascade-delivery.md
+│   └── templates/
+│       └── delivery-manifest.md
+└── agent-handoff/
     ├── SKILL.md
-    ├── references/
-    │   └── cascade-delivery.md
     └── templates/
-        └── delivery-manifest.md
+        └── STAGE-LEDGER.md
 ```
+
+进行中的实现阶段账本在 `docs/handoff/`，不在本目录。产品切片账本仍在 `docs/delivery/`。
 
 专业人员、自动化服务和编辑工具只需要读取通用 `SKILL.md`。任何工具专属配置均不得进入本公共契约目录。仓库提交号应记录在交接信息中，以便确认各方使用的是哪一版。
