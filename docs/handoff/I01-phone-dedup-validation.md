@@ -32,9 +32,9 @@
 ## 下一块入口
 
 ```text
-仓库：echo / echo-client
-动作：用户点头后再把功能分支合入各自 develop
-禁止：打 Tag；改 BlockSilentFailureTest.java、WindowVisibilityTrimTest.java；宣称浏览器整链 PASS
+仓库：echo-doc
+动作：I01 隔离已关。唤醒入口走 I09，合入等 I09 做完再提。
+禁止：打 Tag；改 BlockSilentFailureTest.java、WindowVisibilityTrimTest.java
 ```
 
 ## 发现

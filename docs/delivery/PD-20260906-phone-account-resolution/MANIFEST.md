@@ -26,7 +26,8 @@
 - 产品主线步骤：任一受限操作的手机号登录边界；首个消费方是私域 Onboarding 生成前绑定墙。
 - 主责系统：身份系统；核心对象 `PhoneChallenge / PhoneResolution`。
 - 最小边界：接收当前匿名会话与服务端认可的 `continuation` 枚举，返回 `accountId/phoneBound/sessionToken/deviceCredential/returnToAllowed/nextAction`。
-- 非目标：不实现 Onboarding 页面或状态机；不迁移/合并匿名资料；不做作品、Plaza、评论；不实现“手动唤醒旧匿名账号”的账号选择器。
+- 非目标：不实现 Onboarding 页面或状态机；不迁移/合并匿名资料；不做作品、Plaza、评论。
+- 🔄 2026-09-09：原「不实现手动唤醒旧匿名账号」已由 `G-38/PH5` 作废；唤醒入口改由 `docs/handoff/I09-anonymous-recovery.md` 交付。
 
 ## 2. 四层差额
 

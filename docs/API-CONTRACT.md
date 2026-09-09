@@ -1377,6 +1377,7 @@ challenge、verify、confirm 均要求 `Idempotency-Key`。同一操作、同一
 - 已绑定账号只能通过手机号登录。需要唤醒另一个保留的未绑定匿名账号时，走受控“切换账号”流程，不把通用设备登录变成账号选择器。
 - 匿名 session token 与 device credential 均无自然到期或不活跃到期；服务端持久化有效/撤销状态。客户端卸载、清除本地数据或遗失凭据导致无法找回，但服务端不得因时间经过自动删除匿名账号或资料。
 - `switch_existing` 保留的 `recoveryCredential` 属于休眠恢复凭据；通用设备入口不得自动切回它，应返回 `device_credential_recovery_required`，由后续明确的账号切换流程消费。
+- 账号切换入口：`POST /auth/account/recovery/session { recoveryCredential }`，必须携带 `Idempotency-Key`。只接受休眠恢复凭据，不得携带 `accountId`。成功响应与设备会话相同：`{ accountId, phoneBound:false, sessionToken, deviceCredential, deviceCredentialAction }`，其中 `deviceCredentialAction=recovered`；原 `recoveryCredential` 不得再用于通用设备登录。失败至少包括 `device_credential_malformed`、`device_credential_recovery_required`（凭据不是可唤醒的休眠凭据）、`rate_limited`、`auth_persistence_unavailable`。唤醒后仍是匿名会话，只能走到手机确认。
 
 响应为 `{ accountId, phoneBound:false, sessionToken, deviceCredential, deviceCredentialAction }`，其中 action=`restored|issued|rotated_after_bind`。同一 `bootstrapNonce + Idempotency-Key` 并发请求最多创建一个匿名账号、一套有效凭据并重放同一结果；同键异载荷返回 `device_session_idempotency_conflict`。稳定错误包括 `device_credential_malformed`、`device_credential_recovery_required`、`device_session_idempotency_conflict`、`rate_limited`、`auth_persistence_unavailable`。格式合法但未知的凭据不得访问任何旧账号，可在频控内签发新匿名账号；已因绑定撤销的凭据只能原子创建新匿名账号并返回 `rotated_after_bind`，绝不能恢复已绑定账号。
 
