@@ -17,7 +17,9 @@
 | 资源 | 状态 |
 |---|---|
 | echo `backend/work-submission-slot` | 已推 `ae6631f` |
+| echo `backend/work-resubmit` | 已推 `9ddf557`（含上一支） |
 | echo-client `frontend/work-submission-slot` | 已推 `e8a75ae` |
+| echo-client `frontend/work-resubmit` | 已推 `6779c2d`（含上一支） |
 | `BlockSilentFailureTest.java`、`WindowVisibilityTrimTest.java` | 锁，不改 |
 | 5180 / 18080 | 他人占用，不碰 |
 
@@ -28,18 +30,20 @@
 | 1. 开账本 | `done` | `echo-doc@c253ac1` | | 产品已冻，不另拍板 |
 | 2. 后端：用户级唯一投稿名额 | `done` | `echo@ae6631f` | WorkSubmissionSlotTest 3/3 | pending 占用；二次 POST 拒绝 |
 | 3. 前端：作品墙读能力字段 | `done` | `echo-client@e8a75ae` | vitest 172/172；mock 占用/空闲两态已看过 | 只读 submissionCapability |
-| 4. 驳回修改重提 | `todo` | | | 同一 workId，新内容版本 |
+| 4. 驳回修改重提 | `done` | `echo@9ddf557` / `echo-client@6779c2d` | WorkResubmitTest 3/3；vitest 174/174；同一条改标题后再提已看过 | 草稿保持 rejected |
 | 5. 审核凭证复用 | `todo` | | | 内容变则失效 |
 
 ## 下一块入口
 
 ```text
 仓库：echo + echo-client
-动作：驳回后同一 workId 改完再提，新内容版本
+动作：内容变化后旧审核凭证失效，未满足条件不得公开
 禁止：占 5180/18080；改两份锁住的测试夹具；合 develop
 ```
 
 ## 发现
 
 - 名额检查在 insert 前；并发双发还要靠后续唯一约束，本块先锁单线程占用。
-- mock 种子仍给当前用户一条 `pending`，所以本地默认就是占用态；要验「还能发」得先把那条过完或改成不占用。
+- mock 种子改为当前用户一条 `rejected`：不占名额，才能同时验「还能发新的」和「同一条改完再提」。旧 localStorage 里若还是 `pending`，要清 `echo.mock.db.works` 才看得到新种子。
+- 本后端分支 schema 升到 `2026091401`（作品版本列）。未跑 schema.sql 的库对不上，不要拿别人的 18080 来验。
+- 内存态重提先改同一份对象再 CAS，不能再用改后的 status 去对 `rejected`。
