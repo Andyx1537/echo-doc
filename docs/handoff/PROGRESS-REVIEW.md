@@ -7,7 +7,7 @@
 公共工作区使用现有 `echo-doc/docs/`，不另建工具专属目录、规则副本或任务账本。
 
 - 总体状态：`docs/CURRENT-DELIVERY-STATUS.md`。
-- 当前实现与验收：`docs/handoff/` 对应未关闭阶段账本，目前为 `I09-anonymous-recovery.md`。
+- 当前实现与验收：`docs/handoff/` 对应未关闭阶段账本，目前为 `work-publication-review.md`；`private-domain-recovery.md` 尚未关闭，I09 已关闭。
 - 工作规则：`docs/skills/agent-handoff/SKILL.md`，产品开发仍遵循 `development-readiness`。
 - 两端架构：`docs/architecture/BACKEND-TOPOLOGY.md`、`FRONTEND-TOPOLOGY.md`。
 
@@ -28,3 +28,14 @@
 ## 首次登记
 
 2026-09-14：I09账本仍OPEN；后端6d2b1b3、前端5c4efde，Mock链通过，真PG与真接口验收待补，未合develop。下一阶段沿原I09账本推进，不另开实现分支。原账本登记的5180/18080及两份测试夹具限制保持。
+
+## 2026-09-14 12:28（Asia/Bangkok）定时检查
+
+公共文档快照：`39c7435`。仅阅读公共已提交账本及账本登记的git提交，不代跑测试，不介入实现或占用。
+
+- I09：账本已 CLOSED；记录隔离PG 14/14、真实HTTP 7/7与Mock整链通过；两端合入提交 `echo@5564fdc` / `echo-client@fafacb1` 已核对存在。先前“无库跳过”为历史证据，不能再当当前阻塞。
+- 私域恢复：`echo@defff3a` 为启动扫描后将遗留生成任务收成失败；账本报告专项12/12。`echo-client@bc68c42` 写后读失败复用幂等键、`6bc6585` 只重GET和切号空草稿，账本报告174/174及Mock验证。提交已核对；尚未合develop，不能称整版验收完成。本次未独立复跑。
+- 作品投稿：后端 `ae6631f`、前端 `e8a75ae` 已核对。账本报告后端3/3、前端172/172，作品墙已消费服务端submissionCapability；当前下一TODO为驳回同workId修改重提，其后为审核凭证复用。
+- 未完成提醒：账本明确投稿检查在insert前，尚未完成并发双发保护；已提交代码也显示先查询占用再插入。故“用户级唯一投稿名额 done”只能理解为首块顺序占用实现，不能作为完整G-36并发约束验收。实现方须将并发保护作为显式TODO及验收门，检查方不改其账本或代码。
+- 仍缺：作品驳回重提、审核凭证复用、投稿并发；私域恢复合入/联合验收；真实媒体与阿里云后置。Plaza Work读取、评论收藏、行为底座及整线验收仍未完成。
+- 暂无新增需要产品拍板的事项；上述为既定要求的实现和验收差额。当前检查继续，不暂停定时任务。
