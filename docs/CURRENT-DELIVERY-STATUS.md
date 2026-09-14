@@ -17,8 +17,8 @@
 | B03 生成建窗 | 生成查询、候选、授权、最终确认 | anchor/job/candidates、确认事务、petId=windowId |
 | B04 作品审核 | 发布页、作品墙、状态与管理入口 | work及目标审核凭证/单通道/重提 |
 | B05 Plaza | 公共瀑布流与详情导航 | 功能分支已改发 Work 公开投影；未合 develop |
-| B06 互动收藏 | 两层评论、登录展开、私有收藏 | 目标workId互动事实，当前旧留言不能替代 |
-| B07 行为 | 事件采集与主动反馈 | event/feedback/hypothesis/decision和证据表 |
+| B06 互动收藏 | 两层评论、登录展开、私有收藏 | 功能分支已接 workId 评论/收藏；未合 develop |
+| B07 行为 | 事件采集与主动反馈 | 批量收下已接；反馈/假设/决策未跑 |
 
 - [后端架构拓扑与数据承载](architecture/BACKEND-TOPOLOGY.md)：系统图、ER、真实PK/FK及逻辑关联、表内数据、接口写表、缺失。
 - [前端架构拓扑与操作流](architecture/FRONTEND-TOPOLOGY.md)：页面图、操作分支、展示字段、接口与状态来源、缺失。
@@ -30,9 +30,9 @@
 | 1 | private-onboarding-session | 已有实现；新号正常浏览器主链贯通。挂死收成失败、写后读失败、切号空草稿已锁 | 真媒体与短信后置；功能分支未合 develop |
 | 2 | phone-account-resolution | 固定9999开发增量QA PASS，真实新号绑定，HTTP已有号切换通过；切号不迁资料已由专项测试锁住 | I01/I09 已合 develop；阿里云后置 |
 | 3 | work-publication-review | 产品契约冻结；名额/墙/重提/凭证复用已锁功能分支 | 账本 CLOSED。未合 develop |
-| 4 | plaza-work-read | 广场已改读公开作品；匿名两小时一批约 30 条 | 账本 `handoff/plaza-work-read.md`。功能分支未合 develop |
-| 5 | work-comments-favorites | 两层/三加二/权限/计数分页/私有收藏已定 | 完整新Work互动前后端及验收 |
-| 6 | behavior-phase0-ledger | 字典/用途/保存规则与DDL已具备 | 采集、处理、用途隔离、清除作业运行证据 |
+| 4 | plaza-work-read | 广场已改读公开作品；匿名两小时一批约 30 条 | 账本 CLOSED。功能分支未合 develop |
+| 5 | work-comments-favorites | 详情三加二、展开登录、私有收藏 | 账本 CLOSED。`echo@2bf949a` / `echo-client@3e1dd90`。未合 develop |
+| 6 | behavior-phase0-ledger | 字典校验与批量收下已接；广场/详情静默上报 | 账本 OPEN。下一块：服务端成功事实与明确反馈 |
 | 7 | foundation-combination-e2e | 未完成 | 各单元通过后整线组合 |
 
 ## 精确缺失登记
@@ -55,6 +55,6 @@
 - 后端：`develop` @ `5564fdc`（含 I01 `20759ac`、I09 `6d2b1b3`）。
 - 前端：`develop` @ `fafacb1`（含 I01 `54298de`、I09 `5c4efde`）。
 - schema：2026090702；开发API 18080、页面5180；真实PostgreSQL，短信固定9999；视觉/生成使用开发适配器，非真实模型效果验收。
-- 本轮：私域可做块与作品投稿锁在功能分支。共鸣厅改读作品账本已关（`echo@36e8796` / `echo-client@a997d62`）。未合 develop，未打 Tag。
+- 本轮：评论收藏已关。行为账本已开，批量收下与静默浏览已交（`echo@51efd61` / `echo-client@3316017`）。未合 develop，未打 Tag。
 - QA核查：两拓扑对应一致；正常主路径证据来自主执行者浏览器，QA未独立重跑；仍须收尾复验，不签完整私域PASS。
-- 原“手机号接口404阻塞建档”已解除，旧账本该记录仅作历史；下一步是评论收藏，不重新讨论已定产品规则。
+- 原“手机号接口404阻塞建档”已解除，旧账本该记录仅作历史；当前实现账本 `handoff/behavior-phase0-ledger.md`。
