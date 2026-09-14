@@ -27,9 +27,9 @@
 
 | 顺序 | 已确认任务 | 当前结果 | 未完成/下一责任 |
 |---|---|---|---|
-| 1 | private-onboarding-session | 已有实现；新号正常浏览器主链贯通，后端27项、前端165项与构建通过 | 当前账本 `handoff/private-domain-recovery.md`：挂死收成失败、写后读失败、旧号重传；真媒体与短信后置 |
+| 1 | private-onboarding-session | 已有实现；新号正常浏览器主链贯通。挂死收成失败、写后读失败、切号空草稿已锁 | 真媒体与短信后置；功能分支未合 develop |
 | 2 | phone-account-resolution | 固定9999开发增量QA PASS，真实新号绑定，HTTP已有号切换通过；切号不迁资料已由专项测试锁住 | I01/I09 已合 develop；阿里云后置 |
-| 3 | work-publication-review | 产品契约冻结；已有基础Work上传/列表/软删 | 投稿名额、审核复用、修改重提完整实现与验收 |
+| 3 | work-publication-review | 产品契约冻结；已有基础Work上传/列表/软删 | 当前账本 `handoff/work-publication-review.md` |
 | 4 | plaza-work-read | 产品方向冻结 | 代码仍旧Card，需切Work公开读取及匿名批次 |
 | 5 | work-comments-favorites | 两层/三加二/权限/计数分页/私有收藏已定 | 完整新Work互动前后端及验收 |
 | 6 | behavior-phase0-ledger | 字典/用途/保存规则与DDL已具备 | 采集、处理、用途隔离、清除作业运行证据 |
@@ -40,7 +40,7 @@
 | 编号 | 缺失 | 状态/责任 |
 |---|---|---|
 | I01 | 已有手机号切换后新建档、重传、不迁移源资料 | 专项测试已锁。账本已关闭。已随 I09 合入 develop |
-| I02 | 生成查询失败后的重新查询交互 | 按钮已有。当前账本下一块要故障复验 |
+| I02 | 生成查询失败后的重新查询交互 | 只重 GET 已锁。`echo-client@6bc6585`。未合 develop |
 | I03 | 生成任务中断后的服务端交代 | 启动收成失败已推 `echo@defff3a`。未合 develop |
 | I04 | 开发候选错误显示内部评审JSON | 已关闭：BE修复、专项通过，更新后真实页面显示开发预览文案而非评分JSON |
 | I05 | 真正宠物图片/漫画/视频生成；主体/素材/事实快照消费 | 未实现完整媒体链 / 生成单元 |
@@ -55,6 +55,6 @@
 - 后端：`develop` @ `5564fdc`（含 I01 `20759ac`、I09 `6d2b1b3`）。
 - 前端：`develop` @ `fafacb1`（含 I01 `54298de`、I09 `5c4efde`）。
 - schema：2026090702；开发API 18080、页面5180；真实PostgreSQL，短信固定9999；视觉/生成使用开发适配器，非真实模型效果验收。
-- 本轮：I01/I09 已合两端 develop。当前实现账本改为 `handoff/private-domain-recovery.md`。未打 Tag。
+- 本轮：私域可做块已锁在功能分支。当前实现账本改为 `handoff/work-publication-review.md`。未打 Tag。
 - QA核查：两拓扑对应一致；正常主路径证据来自主执行者浏览器，QA未独立重跑；仍须收尾复验，不签完整私域PASS。
 - 原“手机号接口404阻塞建档”已解除，旧账本该记录仅作历史；下一步定位本页I01—I07，不重新讨论已定产品规则。

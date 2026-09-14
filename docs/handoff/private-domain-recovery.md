@@ -18,7 +18,7 @@
 | 资源 | 状态 |
 |---|---|
 | echo `backend/private-generation-recovery` | 已推 `defff3a` |
-| echo-client `frontend/onboarding-write-recovery` | 已推 `bc68c42` |
+| echo-client `frontend/onboarding-write-recovery` | 已推 `6bc6585` |
 | `BlockSilentFailureTest.java`、`WindowVisibilityTrimTest.java` | 锁，不改 |
 | 5180 / 18080 | 他人占用，不碰 |
 
@@ -29,16 +29,16 @@
 | 1. 开账本 | `done` | `echo-doc@9f70c4d` | | 私域先做；产品块后置 |
 | 2. 后端：进程挂死后收成失败 | `done` | `echo@defff3a` | OnboardingApiTest 12/12 | 启动扫描 `generating`/`refining` |
 | 3. 前端：写成功读失败复用钥匙 | `done` | `echo-client@bc68c42` | vitest 170/170 | 同键重放，不重做业务 |
-| 4. 生成查询失败只重 GET | `todo` | | | 按钮已有，要故障复验 |
-| 5. 旧号切走后重传不带原资料 | `todo` | | | 服务端已锁，要整链验 |
-| 6. 真模型出图 | `todo` | | | 独立媒体单元，本账本不接外网模型 |
+| 4. 生成查询失败只重 GET | `done` | `echo-client@6bc6585` | vitest 174/174 | 失败后只 GET，不重 POST 生成 |
+| 5. 旧号切走后重传不带原资料 | `done` | `echo-client@6bc6585` | mock 整链 + 后端专项已锁 | 切号后新草稿空，原答案仍留在匿名会话 |
+| 6. 真模型出图 | `blocked` | | | 独立媒体单元，本账本不接外网模型 |
 
 ## 下一块入口
 
 ```text
-仓库：echo-client
-动作：生成查询失败只重 GET 的故障复验；不要占 5180/18080
-禁止：改两份锁住的测试夹具；不要合 develop，等私域块验完
+仓库：echo-doc
+动作：私域可做块已齐。真出图后置。下一步开作品投稿账本，不要另拍板。
+禁止：占 5180/18080；改两份锁住的测试夹具；未验完不要合 develop
 ```
 
 ## 发现
