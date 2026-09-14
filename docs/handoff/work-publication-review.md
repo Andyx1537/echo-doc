@@ -1,25 +1,27 @@
 # 阶段账本 · work-publication-review
 
-状态：`OPEN`
+状态：`CLOSED`
 依据：`CURRENT-DELIVERY-STATUS` 作品单元；`DECISIONS` G-33 / G-36 / G-37
 更新：2026-09-14
 执行约定：`docs/skills/agent-handoff/SKILL.md`
 
 ## 概述
 
-- 这一份要交付的结果：每个用户同一时间只能有一条进行中的投稿；「我的作品墙」能看到占用和允许动作；驳回后同一作品可改再提。
+- 这一份已齐：同一时间只能有一条进行中的投稿；作品墙能看到占用和允许动作；驳回后同一条可改再提；改过就不能拿旧审核结论直接公开。
 - 不做：真短信、真出图、打 Tag、占 5180/18080、两份锁住的测试夹具、共鸣厅/评论（下一本账本）。
-- 权威来源：`API-CONTRACT` 19.10、`ACCEPTANCE` 投稿名额与驳回重提、`DECISIONS` G-33 / G-36。
-- 接手先读：本页未勾选的下一块。
+- 权威来源：`API-CONTRACT` 19.1 / 19.10、`DECISIONS` G-33 / G-36 / WP2 / WR3 / FC6。
+- 必做块勾完，占用已释。下一本是共鸣厅改成读作品，尚未开账本。
 
 ## 占用
 
 | 资源 | 状态 |
 |---|---|
-| echo `backend/work-submission-slot` | 已推 `ae6631f` |
-| echo `backend/work-resubmit` | 已推 `9ddf557`（含上一支） |
-| echo-client `frontend/work-submission-slot` | 已推 `e8a75ae` |
-| echo-client `frontend/work-resubmit` | 已推 `6779c2d`（含上一支） |
+| echo `backend/work-submission-slot` | 已推 `ae6631f`；占用已释 |
+| echo `backend/work-resubmit` | 已推 `9ddf557`；占用已释 |
+| echo `backend/work-review-evidence` | 已推 `bf59890`（含上两支）；占用已释 |
+| echo-client `frontend/work-submission-slot` | 已推 `e8a75ae`；占用已释 |
+| echo-client `frontend/work-resubmit` | 已推 `6779c2d`；占用已释 |
+| echo-client `frontend/work-review-evidence` | 已推 `8d0d522`（含上两支）；占用已释 |
 | `BlockSilentFailureTest.java`、`WindowVisibilityTrimTest.java` | 锁，不改 |
 | 5180 / 18080 | 他人占用，不碰 |
 
@@ -31,13 +33,13 @@
 | 2. 后端：用户级唯一投稿名额 | `done` | `echo@ae6631f` | WorkSubmissionSlotTest 3/3 | pending 占用；二次 POST 拒绝 |
 | 3. 前端：作品墙读能力字段 | `done` | `echo-client@e8a75ae` | vitest 172/172；mock 占用/空闲两态已看过 | 只读 submissionCapability |
 | 4. 驳回修改重提 | `done` | `echo@9ddf557` / `echo-client@6779c2d` | WorkResubmitTest 3/3；vitest 174/174；同一条改标题后再提已看过 | 草稿保持 rejected |
-| 5. 审核凭证复用 | `todo` | | | 内容变则失效 |
+| 5. 审核凭证复用 | `done` | `echo@bf59890` / `echo-client@8d0d522` | WorkReviewEvidenceTest 4/4；vitest 177/177；原样「已经在广场上了」、改标题「已提交」已看过 | 内容变则失效 |
 
 ## 下一块入口
 
 ```text
-仓库：echo + echo-client
-动作：内容变化后旧审核凭证失效，未满足条件不得公开
+下一本账本：plaza-work-read（尚未开）
+动作：共鸣厅改成读已公开作品，不再读卡
 禁止：占 5180/18080；改两份锁住的测试夹具；合 develop
 ```
 
@@ -45,5 +47,7 @@
 
 - 名额检查在 insert 前；并发双发还要靠后续唯一约束，本块先锁单线程占用。
 - mock 种子改为当前用户一条 `rejected`：不占名额，才能同时验「还能发新的」和「同一条改完再提」。旧 localStorage 里若还是 `pending`，要清 `echo.mock.db.works` 才看得到新种子。
-- 本后端分支 schema 升到 `2026091401`（作品版本列）。未跑 schema.sql 的库对不上，不要拿别人的 18080 来验。
+- 本后端分支 schema 升到 `2026091402`（作品版本列 + 公开审核凭证表）。未跑 schema.sql 的库对不上，不要拿别人的 18080 来验。
 - 内存态重提先改同一份对象再 CAS，不能再用改后的 status 去对 `rejected`。
+- 当前生成没有「允许公开」结论，无凭证按 `evidence_missing` 降级进完整审核，不会假装私域可送达等于可公开。
+- 对照入口 `?fromCard=card_reuse_ok` 是临时的。撤：删 App 里这段查询，以及 `worksMock` 里 `REUSE_DEMO_*` 常量。
