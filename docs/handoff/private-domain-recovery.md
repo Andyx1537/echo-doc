@@ -7,18 +7,18 @@
 
 ## 概述
 
-- 这一份要交付的结果：私域建档在生成挂死、写成功读失败、切到旧号重传时都能从服务端接着走，用户看到的是可重试或失败，不会一直转圈。
-- 不做：真短信/阿里云（最后接）、真模型出图/漫画/视频、建档内补传、打 Tag、两份锁住的测试夹具、占 5180/18080。
-- 作品 / 共鸣厅 / 评论收藏 / 行为：产品已冻，本账本私域块勾完后再逐个开，不另拍板。
+- 可做块已齐并合入 develop：挂死收成失败、写后读复用钥匙、生成只重 GET、切号空草稿。
+- 真出图仍 blocked，本账本不关。真短信、打 Tag、两份锁住的测试夹具、占 5180/18080 仍不做。
+- 作品 / 共鸣厅 / 评论收藏 / 行为账本均已关，并随整线合入 develop。
 - 权威来源：`API-CONTRACT` 建档状态机、`DECISIONS` G-38 生成中断、`FRONTEND-TOPOLOGY` 写后 GET 与重新查询。
-- 接手先读：本页未勾选的下一块。
+- 接手先读：块 6 真出图；其余开发在 develop 上做。
 
 ## 占用
 
 | 资源 | 状态 |
 |---|---|
-| echo `backend/private-generation-recovery` | 已推 `defff3a` |
-| echo-client `frontend/onboarding-write-recovery` | 已推 `6bc6585` |
+| echo `backend/private-generation-recovery` | 已合 develop @ `4b7b2f0`（功能头 `defff3a`）；占用已释 |
+| echo-client `frontend/onboarding-write-recovery` | 已合 develop @ `4c96d62`（功能头 `6bc6585`）；占用已释 |
 | `BlockSilentFailureTest.java`、`WindowVisibilityTrimTest.java` | 锁，不改 |
 | 5180 / 18080 | 他人占用，不碰 |
 
@@ -37,8 +37,8 @@
 
 ```text
 仓库：echo-doc
-动作：私域可做块已齐。真出图后置。下一步开作品投稿账本，不要另拍板。
-禁止：占 5180/18080；改两份锁住的测试夹具；未验完不要合 develop
+动作：可做块已合 develop。真出图仍 blocked，本账本不关。之后开发在 develop 上做。
+禁止：占 5180/18080；改两份锁住的测试夹具；打 Tag
 ```
 
 ## 发现
