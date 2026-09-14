@@ -2,7 +2,7 @@
 
 状态：`OPEN`
 依据：`CURRENT-DELIVERY-STATUS.md` I09；`DECISIONS` G-38/`PH5`
-更新：2026-09-10
+更新：2026-09-14
 执行约定：`docs/skills/agent-handoff/SKILL.md`
 
 ## 概述
@@ -27,14 +27,15 @@
 | 1. 落 G-38 并开账本 | `done` | 本提交 | 定案进 develop | PH5/ON1–ON3/GN1 |
 | 2. 后端：`POST /auth/account/recovery/session` | `done` | `echo@6d2b1b3` | 已编译；Auth PG 测无库 skip | 只收 recoveryCredential；签发匿名会话 |
 | 3. 前端：「我」页唤醒入口 | `done` | `echo-client@5c4efde` | vitest 167/167 | 用本地恢复凭据；切号同时收好建档钥匙 |
-| 4. 回填 I09 | `done` | `echo-doc` 本提交 | mock 重跑 PASS | 切号→我→唤醒→同一账号同一份四题绑定墙；不能生成。真 PG 未接；不合 develop |
+| 4. 回填 I09 | `done` | `echo-doc@d35841d` | mock 重跑 PASS | 切号→我→唤醒→同一账号同一份四题绑定墙；不能生成 |
+| 5. 隔离 PG 接真接口 | `done` | 本提交 | Auth PG 14/14 + HTTP 7/7 | 55432 装 schema `2026090702`；含唤醒口；验完已停库。不合 develop |
 
 ## 下一块入口
 
 ```text
-仓库：echo / echo-client
-动作：有隔离 PG 再接真接口；合入等做完再提，现在不要合 develop
-禁止：占用 5180/18080；打 Tag；改两份锁住的测试夹具
+仓库：echo-doc
+动作：合入等做完再提，现在不要合 develop；不要打 Tag
+禁止：占用 5180/18080；改两份锁住的测试夹具
 ```
 
 ## 发现
@@ -42,4 +43,4 @@
 - 通用 `POST /auth/device/session` 对 `recovery_only` 已返回 `device_credential_recovery_required`；缺的是专用消费口。
 - 切号 confirm 已签发 `anonymousRecovery.recoveryCredential`，前端写入 `echo.auth.anonymous-recovery.v1`。「我」页绑定态在有恢复凭据时显示「回到未绑定的那份资料」。
 - 2026-09-10 mock 重跑：唤醒回到原匿名账号 `account-714fcb07…`，建档钥匙自动指回原草稿，四题还在，只到绑定墙，没有「开始生成」。
-- 本机 5180/18080 属于他人工作树，本线用 5280 mock，未接真 PG。
+- 2026-09-14 隔离库 `127.0.0.1:55432` schema `2026090702`：`PgAuthServiceTest` 14/14、`PhoneAuthHttpGatewayTest` 7/7。专用恢复口回到源匿名账号，`phoneBound=false`，带 `accountId` 被拒。验完已停库，未占 18080/5180。
