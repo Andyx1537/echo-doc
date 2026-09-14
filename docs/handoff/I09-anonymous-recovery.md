@@ -1,6 +1,6 @@
 # 阶段账本 · I09-anonymous-recovery
 
-状态：`OPEN`
+状态：`CLOSED`
 依据：`CURRENT-DELIVERY-STATUS.md` I09；`DECISIONS` G-38/`PH5`
 更新：2026-09-14
 执行约定：`docs/skills/agent-handoff/SKILL.md`
@@ -8,16 +8,16 @@
 ## 概述
 
 - 这一份要交付的结果：切号后，用户能从「我」的账号区唤醒仍保留的匿名会话；唤醒后可继续上传和答题，只能走到手机确认。
-- 不做：阿里云、建档内补传、视频当肖像识别、真模型出图、合入 develop、打 Tag、两份锁住的测试夹具。
+- 已合入两端 `develop`。不做：阿里云、建档内补传、视频当肖像识别、真模型出图、打 Tag、两份锁住的测试夹具。
 - 权威来源：`API-CONTRACT §19.8–19.9`、`G-38/PH5`、`ACCEPTANCE TC-PH-03`。
-- 接手先读：本页未勾选的下一块。
+- 接手：本账本已关。公共区无未勾选实现块。
 
 ## 占用
 
 | 资源 | 状态 |
 |---|---|
-| echo `backend/i09-anonymous-recovery` | 已推 `6d2b1b3`，未合 develop |
-| echo-client `frontend/i09-anonymous-recovery` | 已推 `5c4efde`，未合 develop |
+| echo `backend/i09-anonymous-recovery` | 已合 `echo@5564fdc`，释放 |
+| echo-client `frontend/i09-anonymous-recovery` | 已合 `echo-client@fafacb1`，释放 |
 | `BlockSilentFailureTest.java`、`WindowVisibilityTrimTest.java` | 锁，不改 |
 
 ## 阶段
@@ -28,13 +28,14 @@
 | 2. 后端：`POST /auth/account/recovery/session` | `done` | `echo@6d2b1b3` | 已编译；Auth PG 测无库 skip | 只收 recoveryCredential；签发匿名会话 |
 | 3. 前端：「我」页唤醒入口 | `done` | `echo-client@5c4efde` | vitest 167/167 | 用本地恢复凭据；切号同时收好建档钥匙 |
 | 4. 回填 I09 | `done` | `echo-doc@d35841d` | mock 重跑 PASS | 切号→我→唤醒→同一账号同一份四题绑定墙；不能生成 |
-| 5. 隔离 PG 接真接口 | `done` | 本提交 | Auth PG 14/14 + HTTP 7/7 | 55432 装 schema `2026090702`；含唤醒口；验完已停库。不合 develop |
+| 5. 隔离 PG 接真接口 | `done` | `echo-doc@25972ca` | Auth PG 14/14 + HTTP 7/7 | 55432 装 schema `2026090702`；含唤醒口；验完已停库 |
+| 6. 合入 develop | `done` | `echo@5564fdc` / `echo-client@fafacb1` | 后端编译；前端 169/169 | 先合 I01 再合 I09；未打 Tag |
 
 ## 下一块入口
 
 ```text
 仓库：echo-doc
-动作：合入等做完再提，现在不要合 develop；不要打 Tag
+动作：I09 已关。不要打 Tag。不要开第 3/4 单元，除非公共账本改了当前 TODO。
 禁止：占用 5180/18080；改两份锁住的测试夹具
 ```
 

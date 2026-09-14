@@ -2,22 +2,22 @@
 
 状态：`CLOSED`
 依据：`CURRENT-DELIVERY-STATUS.md` I01；用户 2026-09-09：测试号 + `9999`，验格式/去重/绑定/切号/资料不迁。外接短信不做。
-更新：2026-09-09
+更新：2026-09-14
 执行约定：`docs/skills/agent-handoff/SKILL.md`
 
 ## 概述
 
 - 已交付：切号后不能带走匿名建档资料；格式/错码/去重用测试号锁在专项测试里。
 - 不做：阿里云/真短信、I02/I03/I07、作品/广场、占用栏里的两份测试夹具、浏览器整链 PASS。
-- 功能分支未合 `develop`。要合入另开一步，不要在本账本重开产品讨论。
+- 功能分支已随 I09 合入 `develop`（`echo@5564fdc` / `echo-client@fafacb1`）。不要在本账本重开产品讨论。
 - 权威来源：`API-CONTRACT §19.8`、`PD-20260906-phone-account-resolution`。
 
 ## 占用
 
 | 资源 | 状态 |
 |---|---|
-| echo `backend/i01-phone-dedup-validation` | 已推 `20759ac`，未合 develop |
-| echo-client `frontend/i01-phone-dedup-validation` | 已推 `54298de`，未合 develop |
+| echo `backend/i01-phone-dedup-validation` | 已合 `echo@5564fdc`，释放 |
+| echo-client `frontend/i01-phone-dedup-validation` | 已合 `echo-client@fafacb1`，释放 |
 | `BlockSilentFailureTest.java`、`WindowVisibilityTrimTest.java` | 锁，不改 |
 
 ## 阶段
@@ -33,7 +33,7 @@
 
 ```text
 仓库：echo-doc
-动作：I01 隔离已关。唤醒入口走 I09，合入等 I09 做完再提。
+动作：I01 已关。唤醒入口走 I09，I01/I09 均已合 develop。
 禁止：打 Tag；改 BlockSilentFailureTest.java、WindowVisibilityTrimTest.java
 ```
 
