@@ -33,7 +33,7 @@
 | 4 | plaza-work-read | 广场已改读公开作品；匿名两小时一批约 30 条 | 账本 CLOSED。功能分支未合 develop |
 | 5 | work-comments-favorites | 详情三加二、展开登录、私有收藏 | 账本 CLOSED。`echo@2bf949a` / `echo-client@3e1dd90`。未合 develop |
 | 6 | behavior-phase0-ledger | 收下、服务端成功事实、明确反馈、软清除 | 账本 CLOSED。`echo@8e0497d` / `echo-client@c92f94a`。未合 develop |
-| 7 | foundation-combination-e2e | 未完成 | 各单元通过后整线组合 |
+| 7 | foundation-combination-e2e | 广场到详情到评论收藏一条链已锁 | 账本 CLOSED。`echo@208fec3` / `echo-client@23e3a06`。未合 develop |
 
 ## 精确缺失登记
 
@@ -55,6 +55,6 @@
 - 后端：`develop` @ `5564fdc`（含 I01 `20759ac`、I09 `6d2b1b3`）。
 - 前端：`develop` @ `fafacb1`（含 I01 `54298de`、I09 `5c4efde`）。
 - schema：2026090702；开发API 18080、页面5180；真实PostgreSQL，短信固定9999；视觉/生成使用开发适配器，非真实模型效果验收。
-- 本轮：行为账本已关（`echo@8e0497d` / `echo-client@c92f94a`）。影子假设怎么算还没有冻结算法，没编打分。未合 develop，未打 Tag。
+- 本轮：整线组合账本已关（`echo@208fec3` / `echo-client@23e3a06`）。未合 develop，未打 Tag。
 - QA核查：两拓扑对应一致；正常主路径证据来自主执行者浏览器，QA未独立重跑；仍须收尾复验，不签完整私域PASS。
-- 原“手机号接口404阻塞建档”已解除，旧账本该记录仅作历史。七单元功能块已齐到行为；下一本是整线组合。
+- 原“手机号接口404阻塞建档”已解除，旧账本该记录仅作历史。七单元组合验证已齐，合 develop 与打 Tag 另说。
