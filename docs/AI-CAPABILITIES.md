@@ -46,7 +46,7 @@
 - `com.echo.infra.vision.IVisionClient` —— 肖像识别（A）。实现：`StubVisionClient`（桩）→ 待加 `ApiVisionClient`。
 
 ### 待建接口
-- `IImageGenClient` —— 定妆形象生成（B）。
+- `IImageGenClient` —— 定妆形象生成（B）。已接万相 `wanx2.1-imageedit` 图生图；`ECHO_IMGGEN_PROVIDER=wanx` 时启用。
 - `IVideoGenClient` —— 动态生成（C，可后置）。
 - `ISttClient` —— 语音转写（E）。
 - `IEmbeddingClient` —— 文本嵌入（J；也可并入 IVectorStore 的写入侧）。

@@ -301,6 +301,14 @@ ENTRYPOINT ["sh","-c","java -cp 'classes:libs/*' -Decho.http.port=8080 com.echo.
 | `ECHO_VISION_MODEL` | 多模态模型名 | `qwen-vl-plus` |
 | `ECHO_VISION_MAX_EDGE` | 送模型前图片缩放的最长边 px；调大更清晰但更慢（耗时与视觉 token 数正相关） | `768` |
 | `ECHO_VISION_STUB_MULTI` | `=1` 时建档识别桩返回多主体演示；否则始终单主体 | 关闭（单主体） |
+| `ECHO_IMGGEN_PROVIDER` | `wanx`\|`mock`。定妆图生图；`mock` 或不设钥匙时建档仍出渐变色块 | `mock` |
+| `ECHO_IMGGEN_API_KEY` | 出图钥匙；缺省复用 `ECHO_LLM_API_KEY` | 空 |
+| `ECHO_IMGGEN_BASE_URL` | 万相工作空间根。缺省：百炼专属域名取 host，否则 `dashscope.aliyuncs.com` | 按 LLM 推导 |
+| `ECHO_IMGGEN_MODEL` | 图生图模型 | `wanx2.1-imageedit` |
+| `ECHO_IMGGEN_FUNCTION` | 万相编辑功能 | `stylization_all` |
+| `ECHO_IMGGEN_PROMPT` | 风格提示 | `转换成法国绘本风格` |
+| `ECHO_IMGGEN_STRENGTH` | 改动幅度 0–1，越低越像原照 | `0.45` |
+| `ECHO_IMGGEN_COUNT` | 一次出几张（1–4） | `3` |
 
 **对象存储（素材上传，`POST /upload`）**
 

@@ -1,6 +1,6 @@
 # 阶段账本 · private-domain-recovery
 
-状态：`OPEN`
+状态：`CLOSED`
 依据：`CURRENT-DELIVERY-STATUS` 私域未完成项；`DECISIONS` G-38 生成中断由服务端交代
 更新：2026-09-14
 执行约定：`docs/skills/agent-handoff/SKILL.md`
@@ -8,10 +8,10 @@
 ## 概述
 
 - 可做块已齐并合入 develop：挂死收成失败、写后读复用钥匙、生成只重 GET、切号空草稿。
-- 真出图仍 blocked，本账本不关。真短信、打 Tag、两份锁住的测试夹具、占 5180/18080 仍不做。
+- 定妆真出图已接万相 img2img（同一把百炼钥匙）。漫画/视频、真短信、打 Tag、两份锁住的测试夹具、占 5180/18080 仍不做。
 - 作品 / 共鸣厅 / 评论收藏 / 行为账本均已关，并随整线合入 develop。
 - 权威来源：`API-CONTRACT` 建档状态机、`DECISIONS` G-38 生成中断、`FRONTEND-TOPOLOGY` 写后 GET 与重新查询。
-- 接手先读：块 6 真出图；其余开发在 develop 上做。
+- 接手先读：开 `ECHO_IMGGEN_PROVIDER=wanx` 后在建档页看三张定妆；漫画/视频另开。
 
 ## 占用
 
@@ -31,14 +31,14 @@
 | 3. 前端：写成功读失败复用钥匙 | `done` | `echo-client@bc68c42` | vitest 170/170 | 同键重放，不重做业务 |
 | 4. 生成查询失败只重 GET | `done` | `echo-client@6bc6585` | vitest 174/174 | 失败后只 GET，不重 POST 生成 |
 | 5. 旧号切走后重传不带原资料 | `done` | `echo-client@6bc6585` | mock 整链 + 后端专项已锁 | 切号后新草稿空，原答案仍留在匿名会话 |
-| 6. 真模型出图 | `blocked` | | | 独立媒体单元，本账本不接外网模型 |
+| 6. 真模型出图 | `done` | `echo@76b2d60` / `echo-client@f6bc539` | 万相 img2img 探针 + 专项 21/21 | 需 `ECHO_IMGGEN_PROVIDER=wanx`；漫画/视频不在本块 |
 
 ## 下一块入口
 
 ```text
 仓库：echo-doc
-动作：可做块已合 develop。真出图仍 blocked，本账本不关。之后开发在 develop 上做。
-禁止：占 5180/18080；改两份锁住的测试夹具；打 Tag
+动作：定妆出图已接。本账本可关；漫画/视频另开媒体账本。
+禁止：占 5180/18080；改两份锁住的测试夹具；打 Tag；把钥匙写进仓库
 ```
 
 ## 发现
