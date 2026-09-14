@@ -27,7 +27,7 @@
 
 | 顺序 | 已确认任务 | 当前结果 | 未完成/下一责任 |
 |---|---|---|---|
-| 1 | private-onboarding-session | 已有实现；新号正常浏览器主链贯通，后端27项、前端165项与构建通过 | 前端异常恢复、旧号重传联调；后端任务重启补偿；真实媒体独立单元 |
+| 1 | private-onboarding-session | 已有实现；新号正常浏览器主链贯通，后端27项、前端165项与构建通过 | 当前账本 `handoff/private-domain-recovery.md`：挂死收成失败、写后读失败、旧号重传；真媒体与短信后置 |
 | 2 | phone-account-resolution | 固定9999开发增量QA PASS，真实新号绑定，HTTP已有号切换通过；切号不迁资料已由专项测试锁住 | I01/I09 已合 develop；阿里云后置 |
 | 3 | work-publication-review | 产品契约冻结；已有基础Work上传/列表/软删 | 投稿名额、审核复用、修改重提完整实现与验收 |
 | 4 | plaza-work-read | 产品方向冻结 | 代码仍旧Card，需切Work公开读取及匿名批次 |
@@ -55,6 +55,6 @@
 - 后端：`develop` @ `5564fdc`（含 I01 `20759ac`、I09 `6d2b1b3`）。
 - 前端：`develop` @ `fafacb1`（含 I01 `54298de`、I09 `5c4efde`）。
 - schema：2026090702；开发API 18080、页面5180；真实PostgreSQL，短信固定9999；视觉/生成使用开发适配器，非真实模型效果验收。
-- 本轮：I01/I09 已合两端 develop 并推远端。合入后后端编译通过，前端 vitest 169/169。未打 Tag。
+- 本轮：I01/I09 已合两端 develop。当前实现账本改为 `handoff/private-domain-recovery.md`。未打 Tag。
 - QA核查：两拓扑对应一致；正常主路径证据来自主执行者浏览器，QA未独立重跑；仍须收尾复验，不签完整私域PASS。
 - 原“手机号接口404阻塞建档”已解除，旧账本该记录仅作历史；下一步定位本页I01—I07，不重新讨论已定产品规则。
