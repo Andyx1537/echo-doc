@@ -2,7 +2,7 @@
 
 状态：`CLOSED`
 依据：`CURRENT-DELIVERY-STATUS` 行为单元；`DECISIONS` G-30 / G-34 / G-37
-更新：2026-09-14
+更新：2026-09-15
 执行约定：`docs/skills/agent-handoff/SKILL.md`
 
 ## 概述
@@ -44,5 +44,5 @@
 - DDL 已有四类对象表。本账本验收走内存 Store。
 - 现有 `track()` 是旧漏斗 console，不能当 Phase 0 字典。
 - Phase 0 字典没有评论成功事件，所以评论不会被两端各记一次。
-- 游客点「我的收藏」现在会落成空页（接口 1002 被前端吞了）。不是本账本范围。
+- 游客点「我的收藏」曾把接口 1002 吞成空页。已修 `echo-client@78da741`：按 `code === 1002` 出绑定提示，成功后重拉；空列表只给已绑定且无收藏。不是本账本范围。
 - 切号（switch_existing）不记 `onboarding_binding_completed`，只记升级原号的绑定。

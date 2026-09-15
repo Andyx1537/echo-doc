@@ -2,7 +2,7 @@
 
 状态：`CLOSED`
 依据：`CURRENT-DELIVERY-STATUS` 评论收藏单元；`DECISIONS` G-31 / G-34 / G-35
-更新：2026-09-14
+更新：2026-09-15
 执行约定：`docs/skills/agent-handoff/SKILL.md`
 
 ## 概述
@@ -42,3 +42,4 @@
 - 现有窗留言不能替代作品评论。收藏不得出现在作品公开 DTO 的计数里。
 - schema 升到 `2026091403`（评论/收藏/互动幂等表）。未跑 schema.sql 的库对不上。Store 本账本验收走内存。
 - Continuation 类型只有 `none` | 建档，没改鉴权契约；`returnTo=workId+rootCommentId` 是前端状态。
+- 游客进收藏页曾把 1002 当成空列表。补修不在本账本重开：`echo-client@78da741`。
