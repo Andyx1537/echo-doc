@@ -93,7 +93,7 @@ erDiagram
 |---|---|---|
 | `t_onboarding_session` | PK onboardingId；accountId/status/currentStep/sessionVersion/时间独立列，payload 为 text JSON | 完整 `OnboardingAggregate`，是仓库恢复读取来源；含选中主体/候选、同意、生成任务、最终 pet/window ID |
 | `t_onboarding_subject` | 一会话一行，PK/FK onboardingId；payload 数组 | subjectId、assetId、modelType/species/confidence、boundingBox、userSelected、identityClusterId |
-| `t_onboarding_asset` | 一会话一行；payload 数组 | assetId/resourceId、image/video、slotIndex、selectedSubjectId、crop、qualityState/reason、identityState |
+| `t_onboarding_asset` | 一会话一行；payload 数组 | assetId/resourceId、mediaType（建档上传只收 image，video 拒 `asset_video_not_accepted`）、slotIndex、selectedSubjectId、crop、qualityState/reason、identityState |
 | `t_onboarding_answer` | 一会话一行；payload `{current,history}` | questionId、answerVersion、answerCodes、可选 freeText/source、supersedesId、回答与替换时间 |
 | `t_pet_profile_fact` | 一会话一行；payload 数组 | dimension/value、sourceType/sourceRefId、confidence、visibility、allowedUses、有效起点/替代时间 |
 | `t_generation_anchor` | 一会话一行；payload 数组 | sessionVersion，主体/素材/答案/事实快照，promptTemplateVersion、safetyDecision、创建时间 |
