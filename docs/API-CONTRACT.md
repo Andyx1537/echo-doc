@@ -1242,6 +1242,7 @@ assertThat(wall).doesNotContainKeys("count", "total", "rememberCount", "rank");
 > 本节确定对象和接口语义，不代表现有服务已完整实现。现状差距以
 > `PRODUCT-DECISION-WORK-PUBLICATION.md §9` 的 W-01—W-14 核查。
 > 匿名广场两小时一批约 30 条落 `t_anon_plaza_batch`，不得只活在进程内存里。
+> 广场 `reqId` 快照落 `t_feed_request`；无库时多实例仍会把合法上报判成 `unknown_req`。
 
 ### 19.1 创建作品
 
@@ -1284,6 +1285,7 @@ assertThat(wall).doesNotContainKeys("count", "total", "rememberCount", "rank");
 - 作品详情、作者页、搜索与分享都使用同一可见性函数：非作者只读 `public` 且未删除、未下架的作品。
 - 列表和详情显式下发 `sourceType` 与 `aiGenerated`；不得把 `sourceCardId` 暴露为陌生人可访问私域卡的入口。
 - 匿名游客的两小时一批约 30 条落 `t_anon_plaza_batch`（账号、作品 id 序列、开始时刻）；不能只活在进程内存里，否则重启或多实例会换批。
+- 广场下发的 `reqId` 快照落 `t_feed_request`；无库时仍是进程内存，多实例会把合法曝光上报判成 `unknown_req`。网格层曝光仍不记 `n`。
 
 ### 19.3 作品互动与消息
 

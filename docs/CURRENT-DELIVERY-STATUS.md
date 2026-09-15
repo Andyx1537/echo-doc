@@ -16,7 +16,7 @@
 | B02 建档 | 上传、选宠裁切、四题与总结 | onboarding_session和五张JSON投影、resource |
 | B03 生成建窗 | 生成查询、候选、授权、最终确认 | anchor/job/candidates、确认事务、petId=windowId |
 | B04 作品审核 | 发布页、作品墙、状态与管理入口 | work及目标审核凭证/单通道/重提 |
-| B05 Plaza | 公共瀑布流与详情导航 | 已合 develop：只发已公开作品，点进同一条详情 |
+| B05 Plaza | 公共瀑布流与详情导航 | 已合 develop：只发已公开作品，点进同一条详情；匿名批次与广场 reqId 快照已落库 |
 | B06 互动收藏 | 两层评论、登录展开、私有收藏 | 已合 develop：游客三加二，收藏无私有计数；游客进「我的收藏」按 1002 出绑定，不再当成空页 |
 | B07 行为 | 事件采集与主动反馈 | 已合 develop：收下、服务端记账、反馈与软清除 |
 
@@ -30,7 +30,7 @@
 | 1 | private-onboarding-session | 已有实现；新号正常浏览器主链贯通。挂死收成、写后读、切号空草稿已合 develop。定妆真出图已在独立联调页走出三张 | 漫画/视频、真短信后置 |
 | 2 | phone-account-resolution | 固定9999开发增量QA PASS，真实新号绑定，HTTP已有号切换通过；切号不迁资料已由专项测试锁住 | I01/I09 已合 develop；阿里云后置 |
 | 3 | work-publication-review | 名额/墙/重提/凭证复用已合 develop。并发双发唯一约束 `echo@0c5e9ce` | 账本 CLOSED |
-| 4 | plaza-work-read | 广场只读公开作品；匿名两小时一批约 30 条，批次已落库（`echo@f7726a6`） | 账本 CLOSED |
+| 4 | plaza-work-read | 广场只读公开作品；匿名两小时一批约 30 条，批次已落库。reqId 快照已落库（`echo@c9348a6`） | 账本 CLOSED |
 | 5 | work-comments-favorites | 详情三加二、展开登录、私有收藏。已合 develop。游客收藏入口 1002 已改成绑定提示（`echo-client@78da741`） | 账本 CLOSED |
 | 6 | behavior-phase0-ledger | 收下、服务端成功事实、明确反馈、软清除。已合 develop | 账本 CLOSED |
 | 7 | foundation-combination-e2e | 广场到详情到评论收藏一条链。已合 develop。评论/收藏已接 PG，隔离库组合 1/1 | 账本 CLOSED |
@@ -46,15 +46,15 @@
 | I05 | 真正宠物图片/漫画/视频生成；主体/素材/事实快照消费 | 定妆：万相 img2img 已浏览器走出三张（竖图须按图生图尺寸，不能走视觉 768 压缩）。漫画/视频仍未做 |
 | I06 | 选宠后追加素材入口、视频首传反馈 | 建档内不做（`ON1`/`ON2`）。补素材后置；选宠只收图片 |
 | I07 | 建档写成功但后续GET失败的恢复、幂等键复用 | 复用钥匙已合 develop（`echo-client@4c96d62`） |
-| I08 | 前后端功能分支合入develop及整版标签 | 已合 develop，未打 Tag。后端 `echo@f7726a6`，前端 `echo-client@78da741`。夹具红灯不在公共区做 |
+| I08 | 前后端功能分支合入develop及整版标签 | 已合 develop，未打 Tag。后端 `echo@c9348a6`，前端 `echo-client@78da741`。夹具红灯不在公共区做 |
 | I09 | 切号后受控唤醒旧匿名会话 | mock 整链 + 隔离 PG 真接口已过。已合 develop：`echo@5564fdc` / `echo-client@fafacb1`。账本 CLOSED |
 
 ## 版本与证据
 
 - 文档之前基线：76f8a1d；本次文档以当前develop提交为准。
-- 后端：`develop` @ `f7726a6`（匿名广场批次落库；评论收藏接 PG、投稿并发唯一索引仍在）。
+- 后端：`develop` @ `c9348a6`（广场 reqId 快照落库；匿名批次、评论收藏接 PG、投稿并发唯一索引仍在）。
 - 前端：`develop` @ `78da741`（游客收藏 1002 出绑定提示；有真图不再叠 emoji）。
-- schema：2026091405（匿名广场批次表）。9 月 8 日旧联调栈 5180/18080 已停；不要再当占用。短信固定9999。
-- 本轮：匿名广场批次落到 `t_anon_plaza_batch`（`echo@f7726a6`）。隔离 `55433` schema `2026091405` 上换 Store 实例两小时内不换批，验完已停库。不是浏览器整版 PASS。漫画/视频、真短信、打 Tag 仍后置。
+- schema：2026091406（广场 reqId 快照表）。9 月 8 日旧联调栈 5180/18080 已停；不要再当占用。短信固定9999。
+- 本轮：广场 `reqId` 快照落到 `t_feed_request`（`echo@c9348a6`）。隔离 `55433` schema `2026091406` 上换 Registry 实例仍能反查并校验上报，验完已停库。网格层仍不记曝光次数。不是浏览器整版 PASS。漫画/视频、真短信、打 Tag 仍后置。
 - QA核查：两拓扑对应一致；正常主路径证据来自主执行者浏览器，QA未独立重跑；仍须收尾复验，不签完整私域PASS。
 - 原“手机号接口404阻塞建档”已解除，旧账本该记录仅作历史。
