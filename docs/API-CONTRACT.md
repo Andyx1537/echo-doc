@@ -125,7 +125,7 @@
   "currentStep": "upload|subject_select|crop|questionnaire|summary|bind|generate|candidate_select|refine|confirm|done",
   "sessionVersion": 4,
   "lastOperation": "none|generate_failed|refine_failed|confirm_failed",
-  "allowedActions": ["upload_asset","select_subject","save_answer","bind_phone","generate","select_candidate","refine","confirm","abandon"],
+  "allowedActions": ["upload_asset","select_subject","save_answer","bind_phone","generate","select_candidate","refine","set_consent","confirm","abandon"],
   "selectedSubjectId": null,
   "selectedCandidateId": null,
   "generationJob": null
@@ -140,7 +140,7 @@
 - `POST /pet/onboarding/:id/subject/select`：入参 `{ subjectId, crop, expectedSessionVersion }`，返回 `{ snapshot, selectedSubject, quality }`；只能选择一个主体。
 - `PUT /pet/onboarding/:id/answers/:questionId`：入参 `{ answerCodes:string[], answerVersion, freeText?, freeTextSource?:"typed|voice_transcript", expectedSessionVersion }`，返回 `{ snapshot, answerId, supersedesId }`。服务端按题库版本校验单选/多选及数量；Q2/Q3 为 1～3 项，Q4 最多 2 项。`freeText` 仅在题目版本明确允许时接收，且不是完成阻塞项。
 - 稳定选项码：Q1=`home|adoption|family_friend|outdoors|clinic_rescue|online|unclear`；Q2=`tiny|timid|quiet|eye_contact|approached_quickly|exploring|tired|energetic|same_as_now|appearance_unclear`；Q3=`follows_me|waits_for_me|nuzzles|sleeps_in_spot|watches_window|runs_to_sound|plays_together|stays_quietly|food_motivated|explores|special_gesture`；Q4=`waits_at_door|sleeps_in_familiar_spot|goes_out_together|eats_beside_me|watches_me|being_petted|runs_over|ordinary_routine`。只有 Q3 选择 `special_gesture` 时允许 `freeText/freeTextSource`。
-- `PUT /pet/onboarding/:id/consent`：入参 `{ granted:boolean, policyVersion, expectedSessionVersion }`，返回 `{ snapshot, memoryUseConsent:{ granted,consentVersion,policyVersion,grantedAt?,withdrawnAt? } }`。授予后已有候选可进入 `ready_to_confirm`；确认前撤回时保留候选但回到 `candidate_ready` 并移除 `confirm` 能力。`confirmed` 后的授权管理属于独立隐私设置单元，本端点返回 `onboarding_invalid_state`，不得越权删除既有窗口。
+- `PUT /pet/onboarding/:id/consent`：入参 `{ granted:boolean, policyVersion, expectedSessionVersion }`，返回 `{ snapshot, memoryUseConsent:{ granted,consentVersion,policyVersion,grantedAt?,withdrawnAt? } }`。选完候选后快照下发 `set_consent`；授予后已有候选可进入 `ready_to_confirm`；确认前撤回时保留候选但回到 `candidate_ready` 并移除 `confirm` 能力。`confirmed` 后的授权管理属于独立隐私设置单元，本端点返回 `onboarding_invalid_state`，不得越权删除既有窗口。
 - `GET /pet/onboarding/:id`：返回最新 `snapshot`、素材摘要、当前有效 `answers:[{questionId,answerCodes,answerVersion,freeText?,freeTextSource?}]`、候选和 `memoryUseConsent:{granted,consentVersion,grantedAt}`；不得下发其他账号会话。
 - `POST /pet/onboarding/:id/generate`：要求手机号已绑定；入参 `{ expectedSessionVersion }`，返回 `202 { snapshot, generationJob:{ jobId,status:"queued|running",pollAfterMs:1500 } }`。相同幂等键不得重复生成。
 - `POST /pet/onboarding/:id/candidates/:candidateId/select`：返回进入 `ready_to_confirm` 的最新快照。
