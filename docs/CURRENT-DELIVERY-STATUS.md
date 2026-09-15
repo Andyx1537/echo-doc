@@ -33,7 +33,7 @@
 | 4 | plaza-work-read | 广场只读公开作品；匿名两小时一批约 30 条。已合 develop | 账本 CLOSED |
 | 5 | work-comments-favorites | 详情三加二、展开登录、私有收藏。已合 develop。游客收藏入口 1002 已改成绑定提示（`echo-client@78da741`） | 账本 CLOSED |
 | 6 | behavior-phase0-ledger | 收下、服务端成功事实、明确反馈、软清除。已合 develop | 账本 CLOSED |
-| 7 | foundation-combination-e2e | 广场到详情到评论收藏一条链。已合 develop | 账本 CLOSED |
+| 7 | foundation-combination-e2e | 广场到详情到评论收藏一条链。已合 develop。评论/收藏已接 PG，隔离库组合 1/1 | 账本 CLOSED |
 
 ## 精确缺失登记
 
@@ -46,15 +46,15 @@
 | I05 | 真正宠物图片/漫画/视频生成；主体/素材/事实快照消费 | 定妆：万相 img2img 已浏览器走出三张（竖图须按图生图尺寸，不能走视觉 768 压缩）。漫画/视频仍未做 |
 | I06 | 选宠后追加素材入口、视频首传反馈 | 建档内不做（`ON1`/`ON2`）。补素材后置；选宠只收图片 |
 | I07 | 建档写成功但后续GET失败的恢复、幂等键复用 | 复用钥匙已合 develop（`echo-client@4c96d62`） |
-| I08 | 前后端功能分支合入develop及整版标签 | 已合 develop，未打 Tag。后端 `echo@0c5e9ce`，前端 `echo-client@78da741`。夹具红灯不在公共区做 |
+| I08 | 前后端功能分支合入develop及整版标签 | 已合 develop，未打 Tag。后端 `echo@a7e8513`，前端 `echo-client@78da741`。夹具红灯不在公共区做 |
 | I09 | 切号后受控唤醒旧匿名会话 | mock 整链 + 隔离 PG 真接口已过。已合 develop：`echo@5564fdc` / `echo-client@fafacb1`。账本 CLOSED |
 
 ## 版本与证据
 
 - 文档之前基线：76f8a1d；本次文档以当前develop提交为准。
-- 后端：`develop` @ `0c5e9ce`（投稿并发唯一索引；竖图定妆与旁白前一提交仍在）。
+- 后端：`develop` @ `a7e8513`（评论收藏接 PG；投稿并发唯一索引仍在）。
 - 前端：`develop` @ `78da741`（游客收藏 1002 出绑定提示；有真图不再叠 emoji）。
 - schema：2026091404（投稿单通道部分唯一）。9 月 8 日旧联调栈 5180/18080 已停；不要再当占用。短信固定9999。
-- 本轮：旧 5180/18080 已停。投稿并发靠 `t_work_uk_author_inflight`（`echo@0c5e9ce`）。游客收藏绑定提示仍在前端 `78da741`。漫画/视频、真短信、打 Tag 仍后置。
+- 本轮：评论/收藏接到 PG（`echo@a7e8513`）；隔离 `55433` schema `2026091404` 上组合链换仓储实例仍同一条，验完已停库。不是浏览器整版 PASS。漫画/视频、真短信、打 Tag 仍后置。
 - QA核查：两拓扑对应一致；正常主路径证据来自主执行者浏览器，QA未独立重跑；仍须收尾复验，不签完整私域PASS。
 - 原“手机号接口404阻塞建档”已解除，旧账本该记录仅作历史。
