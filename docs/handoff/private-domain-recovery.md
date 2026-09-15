@@ -20,7 +20,7 @@
 | echo `backend/private-generation-recovery` | 已合 develop @ `4b7b2f0`（功能头 `defff3a`）；占用已释 |
 | echo-client `frontend/onboarding-write-recovery` | 已合 develop @ `4c96d62`（功能头 `6bc6585`）；占用已释 |
 | `BlockSilentFailureTest.java`、`WindowVisibilityTrimTest.java` | 锁，不改 |
-| 5180 / 18080 | 他人占用，不碰 |
+| 5180 / 18080 | 已停（9 月 8 日旧栈） |
 
 ## 阶段
 

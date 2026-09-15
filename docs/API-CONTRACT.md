@@ -1399,7 +1399,7 @@ device session 的含密响应同样只在首次请求创建后的 10 分钟内�
 ```
 
 - `POST /works` 与 `POST /works/:workId/resubmit` 均在服务端按用户维度原子校验单通道，不相信客户端 `canSubmitWork`。
-- 并发请求最多只能创建一条处理/审核链，失败请求不得产生作品、版本、审核工单或进度投影。
+- 并发请求最多只能创建一条处理/审核链，失败请求不得产生作品、版本、审核工单或进度投影。库侧靠部分唯一索引 `t_work_uk_author_inflight`（`authorId`，仅 `pending/uploading/submitting` 且未删）；先查再插不够。
 - 前端只在“我的作品墙”和单条作品详情展示状态与 `nextAction`，不建立独立审核进度中心。
 - `uploading/submitting/pending` 返回 `canSubmitWork=false` 并给出 `blockingWorkId/blockingStatus`。
 - `public/rejected/takendown/deleted/appealing` 不占新投稿名额；驳回作品本地编辑期间仍可开始新投稿。
