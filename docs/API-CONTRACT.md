@@ -125,7 +125,7 @@
   "currentStep": "upload|subject_select|crop|questionnaire|summary|bind|generate|candidate_select|refine|confirm|done",
   "sessionVersion": 4,
   "lastOperation": "none|generate_failed|refine_failed|confirm_failed",
-  "allowedActions": ["upload_asset","select_subject","save_answer","bind_phone","generate","select_candidate","refine","set_consent","confirm","abandon"],
+  "allowedActions": ["upload_asset","select_subject","save_answer","update_profile","bind_phone","generate","select_candidate","refine","set_consent","confirm","abandon"],
   "selectedSubjectId": null,
   "selectedCandidateId": null,
   "generationJob": null
@@ -135,7 +135,7 @@
 端点：
 
 - `POST /pet/onboarding`：入参 `{ flowVersion, questionnaireVersion, petName? }`，返回 `201 + snapshot`。`petName` 可选，缺省或清空时服务端规范化为“它”，不阻断后续流程。
-- `PATCH /pet/onboarding/:id/profile`：入参 `{ petName?, expectedSessionVersion }`，幂等/CAS 修改称呼并返回最新快照；称呼不是 Q1～Q4 答案，不得塞入答案码或模型摘要。
+- `PATCH /pet/onboarding/:id/profile`：入参 `{ petName?, expectedSessionVersion }`，幂等/CAS 修改称呼并返回最新快照。资料采集阶段快照下发 `update_profile`；称呼不是 Q1～Q4 答案，不得塞入答案码或模型摘要。
 - `POST /pet/onboarding/:id/assets`：建档专用 `multipart/form-data`，字段含 `file/mediaType/expectedSessionVersion`；服务端校验匿名会话归属，在同一事务预占素材槽位、保存资源元数据并挂入会话，返回 `{ snapshot, asset, subjectCandidates, quality }`。失败释放预占，孤立对象进入清理队列。不得要求先调用全局 `/upload`，也不得因此放开全局上传绑定门。
 - `POST /pet/onboarding/:id/subject/select`：入参 `{ subjectId, crop, expectedSessionVersion }`，返回 `{ snapshot, selectedSubject, quality }`；只能选择一个主体。
 - `PUT /pet/onboarding/:id/answers/:questionId`：入参 `{ answerCodes:string[], answerVersion, freeText?, freeTextSource?:"typed|voice_transcript", expectedSessionVersion }`，返回 `{ snapshot, answerId, supersedesId }`。服务端按题库版本校验单选/多选及数量；Q2/Q3 为 1～3 项，Q4 最多 2 项。`freeText` 仅在题目版本明确允许时接收，且不是完成阻塞项。
