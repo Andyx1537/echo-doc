@@ -127,7 +127,22 @@
 
 ---
 
-## 四、临时对比设施怎么撤
+## 四、广场点进去：详情 vs 全屏单卡（2026-09-16）
+
+同一条作品「它最后一个下午」、同一张封面、390 画框。左是点进去原先那页（图在上、评论在同一条滚动里），右是全屏单卡（封面铺满、想说的话是按钮、可上下翻）。
+
+| 文件 | 内容 |
+|---|---|
+| `plaza-tap-detail-vs-immersive.png` | 左详情 / 右全屏 |
+| `work-immersive-side-by-side.png` | 同上，另一张并排 |
+| `work-immersive-detail.png` | 只有详情 |
+| `work-immersive-fullscreen.png` | 只有全屏单卡 |
+
+全屏这一侧造了下一条，所以右上露出「下一条」。记 `n` 与左滑进主页都还没做，图上没有这两样。
+
+短命板：`?visual=work-immersive`。交付物是上面的 PNG，板子可删。
+
+## 五、临时对比设施怎么撤
 
 这次为出图加的东西，**全部集中在三处**，撤除不涉及任何生产行为：
 
@@ -151,4 +166,5 @@
 /?visual=stranger&plan=A             仅 A 案
 /?visual=stranger&plan=B             仅 B 案
 /?visual=stranger&plan=B&empty=0     B 案，连自拟的空态也不给
+/?visual=work-immersive              广场点进去：详情 vs 全屏单卡
 ```
