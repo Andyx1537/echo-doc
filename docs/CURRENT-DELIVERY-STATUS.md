@@ -29,7 +29,7 @@
 |---|---|---|---|
 | 1 | private-onboarding-session | 已有实现；新号正常浏览器主链贯通。挂死收成、写后读、切号空草稿已合 develop。定妆真出图已在独立联调页走出三张 | 漫画/视频、真短信后置 |
 | 2 | phone-account-resolution | 固定9999开发增量QA PASS，真实新号绑定，HTTP已有号切换通过；切号不迁资料已由专项测试锁住 | I01/I09 已合 develop；阿里云后置 |
-| 3 | work-publication-review | 名额/墙/重提/凭证复用已合 develop。并发双发唯一约束 `echo@0c5e9ce` | 账本 CLOSED |
+| 3 | work-publication-review | 名额/墙/重提/凭证复用已合 develop。并发双发唯一约束 `echo@0c5e9ce` | 人工通过/驳回：账本 `work-operator-moderation`，功能头 `echo@4611488` |
 | 4 | plaza-work-read | 广场只读公开作品；匿名两小时一批约 30 条，批次已落库。reqId 快照已落库（`echo@c9348a6`） | 账本 CLOSED |
 | 5 | work-comments-favorites | 详情三加二、展开登录、私有收藏。已合 develop。游客收藏入口 1002 已改成绑定提示（`echo-client@78da741`） | 账本 CLOSED |
 | 6 | behavior-phase0-ledger | 收下、服务端成功事实、明确反馈、软清除。已合 develop | 账本 CLOSED |
@@ -54,7 +54,7 @@
 - 文档之前基线：76f8a1d；本次文档以当前develop提交为准。
 - 后端：`develop` @ `42ed8ce`（资料采集下发 `update_profile`；授权 `set_consent`、建档拒视频、广场 reqId 快照仍在）。
 - 前端：`develop` @ `177bbcd`（称呼保存跟 `update_profile`；授权页跟 `set_consent`）。
-- schema：2026091406（广场 reqId 快照表）。9 月 8 日旧联调栈 5180/18080 已停；不要再当占用。短信固定9999。
-- 本轮：称呼能力门 + 两端拓扑按当前 develop 回写。`OnboardingApiTest` 15/15；vitest 17；mock 5176 第一题保存称呼可点并落成「麦麦」。不是浏览器整版 PASS。漫画/视频、真短信、打 Tag、全屏层仍后置。
+- schema：develop 仍是 2026091406。作品工单表在功能分支升到 2026091407，合入后才是基线。9 月 8 日旧联调栈 5180/18080 已停；不要再当占用。短信固定9999。
+- 本轮：作品人工审核通过/驳回已在功能分支 `echo@4611488`（未合 develop）。漫画/视频、真短信、打 Tag、全屏层仍后置。
 - QA核查：两拓扑对应一致；正常主路径证据来自主执行者浏览器，QA未独立重跑；仍须收尾复验，不签完整私域PASS。
 - 原“手机号接口404阻塞建档”已解除，旧账本该记录仅作历史。
