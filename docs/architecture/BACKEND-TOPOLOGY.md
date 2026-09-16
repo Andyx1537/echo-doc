@@ -38,7 +38,7 @@ flowchart LR
 | B01 身份 | accountId、是否绑定、凭据撤销、账号切换、续接决议 | PostgreSQL 身份服务、开发固定码、幂等及频控已实现 | 已有专项和绑定联调证据；真实短信后置 |
 | B02 建档 | 素材归属、单对象选择、质量门控、答案、事实、会话版本 | 持久会话、5 张 JSON 投影、上传只收 image、四题保存 | 投影不是逐对象独立关系表；补素材后置 |
 | B03 生成建窗 | 生成状态、候选、确认结果、唯一建窗 | 定妆可走万相图生图；启动扫描中断任务标失败 | 漫画/视频未做；进程内 Executor，重启不续跑任务 |
-| B04 作品审核 | Work 生命周期、审核复用、投稿名额、允许操作 | pending 占用、凭证复用、驳回同条重提、`t_work_uk_author_inflight` | 人工审核台未做 |
+| B04 作品审核 | Work 生命周期、审核复用、投稿名额、允许操作 | pending 占用、凭证复用、驳回同条重提、`t_work_uk_author_inflight`；自制上传落 `t_work_moderation`，运营通过/驳回带 CAS | 下架/恢复/申诉与完整后台页未做 |
 | B05 Plaza | 可见性、排序分页、匿名批次、作者作品墙 | `/plaza` 发公开 Work；匿名批次与 reqId 快照落库 | 网格不记 `n`；全屏层未做；无 WorkStore 时仍发卡 |
 | B06 互动收藏 | 两层评论、热/新排序、删除计数、治理、私有收藏 | `WorkSocialApi` 接 PostgreSQL | 热门精确权重未冻；公开 DTO 无收藏计数 |
 | B07 行为 | 原始事实、显式反馈、推断、动作按用途隔离 | 批量收下、服务端成功事实、反馈、开关与软清除 | 影子假设未进排序或生成 |
@@ -151,6 +151,7 @@ erDiagram
   t_account ||--o{ t_work : "FK authorId"
   t_memory_card o|--o{ t_work : "FK sourceCardId 可空"
   t_memory_card ||--o{ t_moderation : "FK cardId 旧审核"
+  t_work ||--o{ t_work_moderation : "FK workId 作品工单"
   t_memory_card ||--o{ t_resonance : "FK cardId 旧互动"
   t_account ||--o{ t_behavior_event : "FK accountId"
   t_account ||--o{ t_explicit_feedback : "FK accountId"
@@ -177,7 +178,7 @@ erDiagram
 | BE-G03 | anchor 存四类快照，但 LLM 适配器仅消费 answerSnapshot 与 adjustment | 后续 Prompt 单元把授权主体/素材/事实如何消费、留痕和返回写成契约 |
 | BE-G04 | generation/refine 使用进程内 Executor | 启动扫描中断任务标失败已有（`recoverInterruptedJobs`）；重启不续跑任务，不能靠登录 token 到期处理 |
 | BE-G05 | petId = windowId；当前复用账号首 pet | 在未来多窗口单元明确身份分离；本轮不得将一窗一宠误写为独立 Window 表已存在 |
-| BE-G06 | Work 投稿名额、重提、凭证、并发唯一约束已合 | 人工审核台仍未做 |
+| BE-G06 | Work 投稿名额、重提、凭证、并发唯一约束、运营通过/驳回已合 | 下架/恢复/申诉与完整后台页仍未做 |
 | BE-G07 | 有 WorkStore 时 `/plaza` 发公开作品；评论收藏已接 PG | 无 WorkStore 装配时仍发卡或空页；不得拿旧 Card 共鸣测试抵扣 |
 | BE-G08 | B07 Phase 0 收下/反馈/软清除已有 | 影子假设未进排序或生成 |
 
