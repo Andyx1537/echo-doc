@@ -29,7 +29,7 @@
 |---|---|---|---|
 | 1 | private-onboarding-session | 已有实现；新号正常浏览器主链贯通。挂死收成、写后读、切号空草稿已合 develop。定妆真出图已在独立联调页走出三张 | 漫画/视频、真短信后置 |
 | 2 | phone-account-resolution | 固定9999开发增量QA PASS，真实新号绑定，HTTP已有号切换通过；切号不迁资料已由专项测试锁住 | I01/I09 已合 develop；阿里云后置 |
-| 3 | work-publication-review | 名额/墙/重提/凭证复用已合 develop。并发双发唯一约束 `echo@0c5e9ce`。人工通过/驳回已合 `echo@ed46982` | 下架/申诉/后台页仍后置 |
+| 3 | work-publication-review | 名额/墙/重提/凭证复用已合 develop。并发双发唯一约束 `echo@0c5e9ce`。人工通过/驳回已合 `echo@ed46982`。下架/恢复已合 `echo@ad088ef` | 申诉/后台页仍后置 |
 | 4 | plaza-work-read | 广场只读公开作品；匿名两小时一批约 30 条，批次已落库。reqId 快照已落库（`echo@c9348a6`） | 账本 CLOSED |
 | 5 | work-comments-favorites | 详情三加二、展开登录、私有收藏。已合 develop。游客收藏入口 1002 已改成绑定提示（`echo-client@78da741`） | 账本 CLOSED |
 | 6 | behavior-phase0-ledger | 收下、服务端成功事实、明确反馈、软清除。已合 develop | 账本 CLOSED |
@@ -52,9 +52,9 @@
 ## 版本与证据
 
 - 文档之前基线：76f8a1d；本次文档以当前develop提交为准。
-- 后端：`develop` @ `ed46982`（作品人工通过/驳回；功能头 `4611488`。资料采集 `update_profile`、授权 `set_consent`、建档拒视频仍在）。
+- 后端：`develop` @ `ad088ef`（作品下架/恢复；功能头 `f0bb0b7`。通过/驳回仍在）。
 - 前端：`develop` @ `177bbcd`（称呼保存跟 `update_profile`；授权页跟 `set_consent`）。
-- schema：2026091407（作品审核工单表）。9 月 8 日旧联调栈 5180/18080 已停；不要再当占用。短信固定9999。
-- 本轮：作品人工通过/驳回已合 develop（`echo@ed46982`）。漫画/视频、真短信、打 Tag、全屏层、下架/申诉台仍后置。
+- schema：2026091408（工单态含 `takendown`）。9 月 8 日旧联调栈 5180/18080 已停；不要再当占用。短信固定9999。
+- 本轮：作品下架/恢复已合 develop（`echo@ad088ef`）。漫画/视频、真短信、打 Tag、全屏层、申诉台仍后置。
 - QA核查：两拓扑对应一致；正常主路径证据来自主执行者浏览器，QA未独立重跑；仍须收尾复验，不签完整私域PASS。
 - 原“手机号接口404阻塞建档”已解除，旧账本该记录仅作历史。
