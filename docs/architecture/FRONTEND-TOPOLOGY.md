@@ -74,7 +74,7 @@ flowchart TD
 | B03 候选 | imageUrl或渐变占位、signature、选中/细化 | POST `/candidates/{candidateId}/select`、`/refine` | 定妆已接万相图生图；漫画/视频仍未做。渐变占位不能冒称媒体完成 |
 | B03 授权/确认 | 本次用途授权、选中图、建立窗口 | PUT `/consent`；POST `/confirm`，candidateId/consentVersion/expectedSessionVersion | 后端版本校验、幂等建窗；授权页跟 `set_consent`；确认跟 `confirm` |
 | B04 发布页 | 素材、标题正文、可见性、提交成功、名额等待 | `/upload` → POST `/works` | 读 `submissionCapability`；并发双发靠作者占用名额唯一约束 |
-| B04 作品墙 | 自己作品封面、AI标识、状态标签、翻页、点进详情 | GET `/users/{id}/works` | 点进 `WorkDetailScreen`；驳回可改再提 |
+| B04 作品墙 | 自己作品封面、AI标识、状态标签、翻页、点进详情 | GET `/users/{id}/works`；驳回/下架 GET `/works/{id}/moderation`，可申则 POST `/works/{id}/appeal` | 点进 `WorkDetailScreen`；驳回可改再提；「看看为什么」只在可申前露出 |
 | B05 广场 | 公开作品瀑布，点进同一条作品详情 | GET `/plaza` → `Work`；`WorkDetailScreen` | 匿名两小时一批约 30 条；网格曝光不记 `n`；全屏层未做 |
 | B06 评论收藏 | 热门一级 3 条，每条 2 回复，绑定后展开；私有收藏 | Work 评论/收藏接口与详情页 | 游客进收藏按 1002 出绑定；公开 DTO 无收藏计数 |
 | B07 行为 | 静默上报受控事件；开关与软清除 | `POST /behavior-events/batch`；广场 `work_impression` | 影子假设未进排序；建档页未走 Phase 0 字典 |
