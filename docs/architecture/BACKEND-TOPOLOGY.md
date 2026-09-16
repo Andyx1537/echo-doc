@@ -165,7 +165,7 @@ erDiagram
   t_adaptation_decision ||--o{ t_decision_hypothesis : "FK decisionId"
 ```
 
-`t_work.sourceCardId` 对未软删 Work 有局部唯一索引：一张来源卡同时最多一个未删除作品；自上传允许 NULL。`mediaKey/posterKey` 是资源索引的逻辑关系而非 SQL FK。Work 保存 title/body/topicIds、mediaType/width/height/durationMs、aiGenerated、originType、status、visibility、发布审核时间和软删信息。正文属于 Work；Card 保持私域来源身份。现在存在 `pending` 不证明 Work 审核迁移已执行，旧 `t_moderation.cardId` 不能自动审核 Work。
+`t_work.sourceCardId` 对未软删 Work 有局部唯一索引：一张来源卡同时最多一个未删除作品；自上传允许 NULL。`mediaKey/posterKey` 是资源索引的逻辑关系而非 SQL FK。Work 保存 title/body/topicIds、mediaType/width/height/durationMs、aiGenerated、originType、status、visibility、发布审核时间和软删信息。正文属于 Work；Card 保持私域来源身份。自制上传 `pending` 落 `t_work_moderation`；旧 `t_moderation.cardId` 不能审核 Work。运营通过后 `status=public` 且 `reviewedAt` 只写一次。
 
 行为四类主键分别是 eventId/feedbackId/hypothesisId/decisionId。`contextJson` 承载事件上下文，`parametersJson` 承载动作参数，证据连接表负责可追溯关系。`scope/purposeCode` 区分 ui_adaptation/public_recommendation/private_generation；另有 `t_adaptation_preference` 和 `t_adaptation_profile_clear` 记录偏好与清除批次。尚需证明采集入口、算法执行、线上消费和保存/清除作业，不能仅凭建表宣称“画像系统完成”。
 
