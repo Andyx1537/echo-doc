@@ -24,7 +24,7 @@ flowchart TD
   B02 -.-> B07
 ```
 
-实线是已有代码入口/调用；虚线是已定目标、尚未完整实现。当前 `/plaza` 下发公开 `Work`，点进全屏单卡，左滑进作者主页，主页墙读公开作品；从主页再进全屏或评论不卸掉主页；想说的话进同一条详情。私人回忆卡继续保留私域职责。全屏层不记 `n`。
+实线是已有代码入口/调用；虚线是已定目标、尚未完整实现。当前 `/plaza` 下发公开 `Work`，点进全屏单卡，左滑进作者主页，主页墙读公开作品；从主页再进全屏或评论不卸掉主页；广场全屏进评论不卸掉全屏；想说的话进同一条详情。私人回忆卡继续保留私域职责。全屏层不记 `n`。
 
 ## 2. 当前私域最小闭环
 
@@ -75,7 +75,7 @@ flowchart TD
 | B03 授权/确认 | 本次用途授权、选中图、建立窗口 | PUT `/consent`；POST `/confirm`，candidateId/consentVersion/expectedSessionVersion | 后端版本校验、幂等建窗；授权页跟 `set_consent`；确认跟 `confirm` |
 | B04 发布页 | 素材、标题正文、可见性、提交成功、名额等待 | `/upload` → POST `/works` | 读 `submissionCapability`；并发双发靠作者占用名额唯一约束 |
 | B04 作品墙 | 自己作品封面、AI标识、状态标签、翻页、点进详情 | GET `/users/{id}/works`；驳回/下架 GET `/works/{id}/moderation`，可申则 POST `/works/{id}/appeal` | 点进 `WorkDetailScreen`；驳回可改再提；「看看为什么」只在可申前露出 |
-| B05 广场 | 公开作品瀑布，点进全屏单卡，左滑进作者主页 | GET `/plaza` → `Work`；主页墙 GET `/users/{id}/works`；`WorkImmersiveScreen`，想说的话进 `WorkDetailScreen`；主页进全屏或评论时主页藏在下面 | 匿名两小时一批约 30 条；网格与全屏都不记 `n` |
+| B05 广场 | 公开作品瀑布，点进全屏单卡，左滑进作者主页 | GET `/plaza` → `Work`；主页墙 GET `/users/{id}/works`；`WorkImmersiveScreen`，想说的话进 `WorkDetailScreen`；主页进全屏或评论时主页藏在下面；广场全屏进评论时全屏藏在下面 | 匿名两小时一批约 30 条；网格与全屏都不记 `n` |
 | B06 评论收藏 | 热门一级 3 条，每条 2 回复，绑定后展开；私有收藏 | Work 评论/收藏接口与详情页 | 游客进收藏按 1002 出绑定；公开 DTO 无收藏计数 |
 | B07 行为 | 静默上报受控事件；开关与软清除 | `POST /behavior-events/batch`；广场 `work_impression` | 影子假设未进排序；建档页未走 Phase 0 字典 |
 
@@ -89,7 +89,7 @@ flowchart TD
 | FE-04 | 候选/细化等跟 `allowedActions` | 2026-09-16 已落地：上传/选宠/答题/称呼/绑定/生成/候选/细化/授权/确认跟服务端能力走，仍以后端拒绝为最后权威 |
 | FE-05 | 通用request每次调用新建幂等键；写成功但refreshAfter GET失败后用户重试不保证同键 | 2026-09-15 已落地：写后读失败复用同一把钥匙（`echo-client@4c96d62`） |
 | FE-06 | 刷新恢复只存一个onboardingId；普通离开后回App启动不会自动进入建档 | 现有行为为再次点击建档后恢复；若产品要启动直接恢复须另定，不应隐含承诺 |
-| FE-07 | Work列表无详情点击处理，Plaza旧链并存，WorkStatus缺uploading/submitting、无提交能力字段 | 2026-09-16 已落地：作品墙点进同一条详情；广场发公开 Work；`submissionCapability` 已读。广场点进全屏、左滑进作者主页、主页墙读作品、主页进全屏或评论不卸挂已做，仍不记 `n` |
+| FE-07 | Work列表无详情点击处理，Plaza旧链并存，WorkStatus缺uploading/submitting、无提交能力字段 | 2026-09-16 已落地：作品墙点进同一条详情；广场发公开 Work；`submissionCapability` 已读。广场点进全屏、左滑进作者主页、主页墙读作品、主页进全屏或评论不卸挂、广场全屏进评论不卸挂已做，仍不记 `n` |
 | FE-08 | 新号绑定→续建窗以及重新打开恢复第四题已验证；已有号切换→重传、生成中断网恢复仍待验 | 组合验收固定前后端提交/运行开关/素材/账号并保存真实请求响应与页面证据后才关闭 |
 
 ## 5. 代码检索入口
