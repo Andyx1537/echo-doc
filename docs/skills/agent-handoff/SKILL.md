@@ -24,6 +24,7 @@ description: Treat the workspace as a shared public space. On entry, only summar
 - 占用栏锁住的路径、分支检出、未提交文件，视为自留地。不读、不改、不 `reset`、不抢检出。
 - 未提交不算交付。进度只认账本和 git。
 - 产品切片仍走 `development-readiness`。分支仍走 `BRANCHING-WORKFLOW.md`。
+- 图像、截图、比稿、视频，以及任何会拖垮 CPU 的预览，一律系统 Chrome，禁止塞进 Cursor 对话或内置浏览框。备忘：`docs/MEMO-preview-to-external-browser.md`。
 
 ## 阶段账本
 

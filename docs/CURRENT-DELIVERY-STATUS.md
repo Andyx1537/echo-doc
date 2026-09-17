@@ -56,5 +56,6 @@
 - 前端：`develop` @ `82ebbd7`（我的作品 / 收藏进详情不卸挂；功能头 `bdd89f1`）。
 - schema：2026091409（工单含 `appealing`；`appealAt` 只写一次）。9 月 8 日旧联调栈 5180/18080 已停；不要再当占用。短信固定9999。
 - 本轮：我的作品 / 收藏进详情不卸挂已合 develop（`echo-client@82ebbd7`），不记 `n`。漫画/视频、真短信、打 Tag、完整后台页仍后置。
+- 工作备忘（2026-09-17）：图像和吃 CPU 的预览一律系统 Chrome，禁止塞进 Cursor 对话或内置浏览框。见 [MEMO-preview-to-external-browser.md](MEMO-preview-to-external-browser.md)。
 - QA核查：两拓扑对应一致；正常主路径证据来自主执行者浏览器，QA未独立重跑；仍须收尾复验，不签完整私域PASS。
 - 原“手机号接口404阻塞建档”已解除，旧账本该记录仅作历史。
