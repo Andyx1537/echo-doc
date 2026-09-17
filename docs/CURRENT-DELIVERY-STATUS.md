@@ -29,7 +29,7 @@
 |---|---|---|---|
 | 1 | private-onboarding-session | 已有实现；新号正常浏览器主链贯通。挂死收成、写后读、切号空草稿已合 develop。定妆真出图已在独立联调页走出三张 | 漫画/视频、真短信后置 |
 | 2 | phone-account-resolution | 固定9999开发增量QA PASS，真实新号绑定，HTTP已有号切换通过；切号不迁资料已由专项测试锁住 | I01/I09 已合 develop；阿里云后置 |
-| 3 | work-publication-review | 名额/墙/重提/凭证复用已合 develop。并发双发唯一约束 `echo@0c5e9ce`。人工通过/驳回已合 `echo@ed46982`。下架/恢复已合 `echo@ad088ef`。作者申诉一次与主管维持/推翻已合 `echo@cab832a`。C 端「看看为什么」已合 `echo-client@7decd24`。作品运营台待审/申诉已合 `echo-client@a35bf1b`（`?ops=works`） | 回忆卡队列、举报、开关、下架入口仍后置 |
+| 3 | work-publication-review | 名额/墙/重提/凭证复用已合 develop。并发双发唯一约束 `echo@0c5e9ce`。人工通过/驳回已合 `echo@ed46982`。下架/恢复已合 `echo@ad088ef`。作者申诉一次与主管维持/推翻已合 `echo@cab832a`。C 端「看看为什么」已合 `echo-client@7decd24`。作品运营台待审/申诉已合 `echo-client@a35bf1b`。已公开下架/已下架恢复已合 `echo@ee7c29f` / `echo-client@7e4d3ba`（`?ops=works`） | 回忆卡队列、举报、开关仍后置 |
 | 4 | plaza-work-read | 广场只读公开作品；匿名两小时一批约 30 条，批次已落库。reqId 快照已落库（`echo@c9348a6`）。点网格进全屏已合 `echo-client@c1bf7c9`。左滑进作者主页已合 `echo-client@515c240`。主页墙改读作品已合 `echo-client@f20e8c7`。主页进全屏不卸挂已合 `echo-client@05ffe53`。主页全屏进评论不卸挂已合 `echo-client@a027592`。广场全屏进评论不卸挂已合 `echo-client@59fea15`。网格进全屏记 n 已合 `echo@22a190d` / `echo-client@dfc48cc`。作者主页进全屏记 n 已合 `echo@56542d7` / `echo-client@d1ec754` | 账本 CLOSED |
 | 5 | work-comments-favorites | 详情三加二、展开登录、私有收藏。已合 develop。游客收藏入口 1002 已改成绑定提示（`echo-client@78da741`）。我的作品 / 收藏进详情不卸挂已合 `echo-client@82ebbd7` | 账本 CLOSED |
 | 6 | behavior-phase0-ledger | 收下、服务端成功事实、明确反馈、软清除。已合 develop | 账本 CLOSED |
@@ -52,10 +52,10 @@
 ## 版本与证据
 
 - 文档之前基线：76f8a1d；本次文档以当前develop提交为准。
-- 后端：`develop` @ `56542d7`（作者主页全屏记 n；功能头 `afaecfe`）。
-- 前端：`develop` @ `a35bf1b`（作品运营台待审/申诉；功能头 `98b30aa`）。
+- 后端：`develop` @ `ee7c29f`（作品队列已公开/已下架；功能头 `fb1e31c`）。
+- 前端：`develop` @ `7e4d3ba`（运营台下架入口；功能头 `e611ffb`）。
 - schema：2026091409（工单含 `appealing`；`appealAt` 只写一次）。9 月 8 日旧联调栈 5180/18080 已停；不要再当占用。短信固定9999。
-- 本轮：作品运营台待审/申诉已合 develop（`echo-client@a35bf1b`）。系统 Chrome 打开 `http://127.0.0.1:5188/?ops=works`。漫画/视频、真短信、打 Tag、回忆卡队列仍后置。
+- 本轮：作品运营台已公开可下架、已下架可再放回已合 develop（`echo@ee7c29f` / `echo-client@7e4d3ba`）。系统 Chrome 打开 `http://127.0.0.1:5189/?ops=works`。漫画/视频、真短信、打 Tag、回忆卡队列仍后置。
 - 工作备忘（2026-09-17）：图像和吃 CPU 的预览一律系统 Chrome，禁止塞进 Cursor 对话或内置浏览框。见 [MEMO-preview-to-external-browser.md](MEMO-preview-to-external-browser.md)。
 - QA核查：两拓扑对应一致；正常主路径证据来自主执行者浏览器，QA未独立重跑；仍须收尾复验，不签完整私域PASS。
 - 原“手机号接口404阻塞建档”已解除，旧账本该记录仅作历史。
