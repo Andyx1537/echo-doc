@@ -2,13 +2,13 @@
 
 状态：`CLOSED`
 依据：`OPS-CANDIDATE-PERSIST`；`CURRENT-DELIVERY-STATUS` B03
-更新：2026-09-17 · 已合 `echo@6cc7d2a`
+更新：2026-09-17 · 重开可读已合 `echo@a45ee24`
 执行约定：`docs/skills/agent-handoff/SKILL.md`
 
 ## 概述
 
 - 定妆候选落到本方存储，带隐式标识；没编码就失败。
-- 已合 develop：`echo@6cc7d2a`（功能头 `62a8ff2`）。
+- 已合 develop：`echo@6cc7d2a`（功能头 `62a8ff2`）。重开可读专项 `echo@a45ee24`（功能头 `7d4138b`）。
 - 不做：漫画/视频、编造编码、阿里云桶、占 5180/18080、两份锁住夹具。
 
 ## 占用
@@ -27,6 +27,7 @@
 | 1. 体系落盘 | `done` | 本提交 | | `OPS-CANDIDATE-PERSIST.md` |
 | 2. persist 不再回供应商链 | `done` | `echo@62a8ff2` | `OnboardingImageGenTest` 6/6 | 未配编码失败；有编码落到 `/api/v1/files/` |
 | 3. 合入 develop 并回填 | `done` | `echo@6cc7d2a` | origin/develop = `6cc7d2a` | |
+| 4. 换仓储实例仍可读 | `done` | `echo@7d4138b` / develop `a45ee24` | 同目录新 `LocalDiskStorage` 读回字节与标识 | 真万相重开仍要编码 |
 
 ## 下一块入口
 

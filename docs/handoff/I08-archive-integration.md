@@ -2,7 +2,7 @@
 
 状态：`OPEN`（必做合入已完成；第 7 块仍锁，不关闭）
 依据：`docs/CURRENT-DELIVERY-STATUS.md` I08
-更新：2026-09-09
+更新：2026-09-17 · 独立核对：合入块仍完成；第 7 块仍锁，公共区未读未改
 执行约定：`docs/skills/agent-handoff/SKILL.md`
 
 ## 概述
