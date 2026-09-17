@@ -905,7 +905,7 @@ echo-export-<petId>-<yyyyMMdd>.zip
   ], "nextCursor": null } }
 ```
 - 默认排序 = **待处理 + 高风险优先**（`SPEC-admin-console §4.3`）。
-- `slaDueAt` 由服务端按 `SPEC-publish-and-ops §2.4` 算（人工队列 ≤4h、高风险 ≤1h），**前端不自算**。
+- `slaDueAt` 由服务端按 `SPEC-publish-and-ops §2.4` 算（人工队列 ≤4h、高风险 ≤1h），**前端不自算**。`?targetType=work` 同样下发这两字段；作品工单没有风险档，一律按 4h。
 - `originType` 只读下发，供审核员知晓这是官方号内容；🔴 **不提供修改入口**（M-B）。
 
 #### GET /admin/moderation/:id — 单条详情

@@ -2,23 +2,23 @@
 
 状态：`CLOSED`
 依据：`OPS-CONTENT-CONSOLE`；`CURRENT-DELIVERY-STATUS` B04
-更新：2026-09-17 · R4 已合 `echo-client@f45eabd`
+更新：2026-09-17 · R5 已合 `echo@68b7086` / `echo-client@b3035d7`
 执行约定：`docs/skills/agent-handoff/SKILL.md`
 
 ## 概述
 
 - 内容运营收成一套台：作品 / 回忆卡 / 开关；举报标未开。离开手机框。
-- 已合 develop：`echo@206c1ab` / `echo-client@f45eabd`（功能头 `2fb9fa2`）。
-- R4：超时只信服务端 `slaBreached`。
+- 已合 develop：`echo@68b7086` / `echo-client@b3035d7`（功能头 `71e8e12` / `acc176d`）。
+- R4 / R5：超时只信服务端 `slaBreached`。作品无风险档，按 4 小时。
 - 不做：看板、TOTP、客服、收入、漫画/视频、真短信、打 Tag、占 5180/18080、两份锁住夹具。
 
 ## 占用
 
 | 资源 | 状态 |
 |---|---|
-| echo `backend/ops-content-console` | 已合 develop `206c1ab`；占用已释 |
-| echo-client `frontend/ops-card-sla` | 已合 develop `f45eabd`；占用已释 |
-| echo-doc `docs/ops-card-sla` | 合入后释放 |
+| echo `backend/ops-work-sla` | 已合 develop `68b7086`；占用已释 |
+| echo-client `frontend/ops-work-sla` | 已合 develop `b3035d7`；占用已释 |
+| echo-doc `docs/ops-work-sla` | 合入后释放 |
 | `BlockSilentFailureTest.java`、`WindowVisibilityTrimTest.java` | 锁，不改 |
 | 5180 / 18080 | 不占 |
 
@@ -31,11 +31,12 @@
 | 3. 合入 develop 并回填 | `done` | `echo@206c1ab` / `echo-client@94d1f00` | | |
 | 4. R3 回忆卡下架 | `done` | `echo-client@15c003f` / develop `9cc1f07` | Chrome：已处置公开卡「先收起来」后变已下架，无再上架 | |
 | 5. R4 SLA 展示 | `done` | `echo-client@2fb9fa2` / develop `f45eabd` | mock：待审一条 `slaBreached=true`，已处置没有 | 前端不算时差 |
+| 6. R5 作品队列 SLA | `done` | `echo@71e8e12` / `echo-client@acc176d` / develop `68b7086` · `b3035d7` | 后端 11/11；前端 mock 6/6；Chrome 待审「门口那双鞋还在」写已超时 | 作品无风险档，按 4h |
 
 ## 下一块入口
 
 ```text
-动作：本切片已关。看板 / TOTP / 客服 / 收入 / 举报提交另开账本。
+动作：本切片已关。看板 / TOTP / 客服 / 收入 / 举报提交 / 建档后补素材 / 漫画视频另开账本。
 禁止：占 5180/18080；改两份锁住夹具；打 Tag；给回忆卡加运营直接恢复；前端自算超时
 ```
 
@@ -43,4 +44,4 @@
 
 - 开关只有 PATCH，没有 GET，台里读不到当前档。GET 必须注册在 `/admin/moderation/:id` 前面，否则 `settings` 会被当成工单 id。
 - 回忆卡 `takendown` 不在运营允许集里，不能像作品那样再上架；只能等作者申诉后推翻回待审。
-- 作品队列目前不下发 `slaBreached`，本轮只在回忆卡栏展示。
+- 作品工单没有 `autoRiskLevel`，SLA 一律 4 小时，不能照抄回忆卡的高风险 1 小时。
