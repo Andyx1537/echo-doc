@@ -162,7 +162,17 @@
 
 短命板：`?visual=author-home-hold`。交付物是这张 PNG，板子可删。
 
-## 七、临时对比设施怎么撤
+## 七、评论回来再回主页：卸掉再挂 vs 主页还挂着（2026-09-16）
+
+同一人「林」、同一批公开作品、390 画框。左是评论后再回主页卸掉重挂（回顶），右是主页还挂着（停在墙中间）。
+
+| 文件 | 内容 |
+|---|---|
+| `profile-comments-hold-vs-remount.png` | 左回顶 / 右停在原处 |
+
+短命板：`?visual=profile-comments-hold`。交付物是这张 PNG，板子可删。
+
+## 八、临时对比设施怎么撤
 
 这次为出图加的东西，**全部集中在三处**，撤除不涉及任何生产行为：
 
@@ -189,4 +199,5 @@
 /?visual=work-immersive              广场点进去：详情 vs 全屏单卡
 /?visual=author-home                 作者主页：还在读窗 vs 改读作品
 /?visual=author-home-hold            从墙上回来：卸掉再挂 vs 主页还挂着
+/?visual=profile-comments-hold       评论回来再回主页：卸掉再挂 vs 主页还挂着
 ```

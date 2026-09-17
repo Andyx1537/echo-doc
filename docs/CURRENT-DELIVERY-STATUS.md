@@ -16,7 +16,7 @@
 | B02 建档 | 上传、选宠裁切、四题与总结 | onboarding_session和五张JSON投影、resource |
 | B03 生成建窗 | 生成查询、候选、授权、最终确认 | anchor/job/candidates、确认事务、petId=windowId |
 | B04 作品审核 | 发布页、作品墙、状态与管理入口 | work及目标审核凭证/单通道/重提 |
-| B05 Plaza | 公共瀑布流、全屏单卡与作者主页 | 已合 develop：只发已公开作品，点进全屏单卡，左滑进作者主页，主页墙读公开作品；从主页再进全屏不卸掉主页；想说的话进同一条详情；匿名批次与广场 reqId 快照已落库 |
+| B05 Plaza | 公共瀑布流、全屏单卡与作者主页 | 已合 develop：只发已公开作品，点进全屏单卡，左滑进作者主页，主页墙读公开作品；从主页再进全屏或评论不卸掉主页；想说的话进同一条详情；匿名批次与广场 reqId 快照已落库 |
 | B06 互动收藏 | 两层评论、登录展开、私有收藏 | 已合 develop：游客三加二，收藏无私有计数；游客进「我的收藏」按 1002 出绑定，不再当成空页 |
 | B07 行为 | 事件采集与主动反馈 | 已合 develop：收下、服务端记账、反馈与软清除 |
 
@@ -30,7 +30,7 @@
 | 1 | private-onboarding-session | 已有实现；新号正常浏览器主链贯通。挂死收成、写后读、切号空草稿已合 develop。定妆真出图已在独立联调页走出三张 | 漫画/视频、真短信后置 |
 | 2 | phone-account-resolution | 固定9999开发增量QA PASS，真实新号绑定，HTTP已有号切换通过；切号不迁资料已由专项测试锁住 | I01/I09 已合 develop；阿里云后置 |
 | 3 | work-publication-review | 名额/墙/重提/凭证复用已合 develop。并发双发唯一约束 `echo@0c5e9ce`。人工通过/驳回已合 `echo@ed46982`。下架/恢复已合 `echo@ad088ef`。作者申诉一次与主管维持/推翻已合 `echo@cab832a`。C 端「看看为什么」已合 `echo-client@7decd24` | 完整后台页仍后置 |
-| 4 | plaza-work-read | 广场只读公开作品；匿名两小时一批约 30 条，批次已落库。reqId 快照已落库（`echo@c9348a6`）。点网格进全屏已合 `echo-client@c1bf7c9`。左滑进作者主页已合 `echo-client@515c240`。主页墙改读作品已合 `echo-client@f20e8c7`。主页进全屏不卸挂已合 `echo-client@05ffe53` | 账本 CLOSED；全屏不记 `n` |
+| 4 | plaza-work-read | 广场只读公开作品；匿名两小时一批约 30 条，批次已落库。reqId 快照已落库（`echo@c9348a6`）。点网格进全屏已合 `echo-client@c1bf7c9`。左滑进作者主页已合 `echo-client@515c240`。主页墙改读作品已合 `echo-client@f20e8c7`。主页进全屏不卸挂已合 `echo-client@05ffe53`。主页全屏进评论不卸挂已合 `echo-client@a027592` | 账本 CLOSED；全屏不记 `n` |
 | 5 | work-comments-favorites | 详情三加二、展开登录、私有收藏。已合 develop。游客收藏入口 1002 已改成绑定提示（`echo-client@78da741`） | 账本 CLOSED |
 | 6 | behavior-phase0-ledger | 收下、服务端成功事实、明确反馈、软清除。已合 develop | 账本 CLOSED |
 | 7 | foundation-combination-e2e | 广场到详情到评论收藏一条链。已合 develop。评论/收藏已接 PG，隔离库组合 1/1 | 账本 CLOSED |
@@ -53,8 +53,8 @@
 
 - 文档之前基线：76f8a1d；本次文档以当前develop提交为准。
 - 后端：`develop` @ `cab832a`（作品申诉；功能头 `5de226d`。通过/驳回/下架仍在）。
-- 前端：`develop` @ `05ffe53`（主页进全屏不卸挂；功能头 `9dfdb48`）。
+- 前端：`develop` @ `a027592`（主页全屏进评论不卸挂；功能头 `8cacb61`）。
 - schema：2026091409（工单含 `appealing`；`appealAt` 只写一次）。9 月 8 日旧联调栈 5180/18080 已停；不要再当占用。短信固定9999。
-- 本轮：主页进全屏不卸挂已合 develop（`echo-client@05ffe53`），不记 `n`。漫画/视频、真短信、打 Tag、完整后台页仍后置。
+- 本轮：主页全屏进评论不卸挂已合 develop（`echo-client@a027592`），不记 `n`。漫画/视频、真短信、打 Tag、完整后台页仍后置。
 - QA核查：两拓扑对应一致；正常主路径证据来自主执行者浏览器，QA未独立重跑；仍须收尾复验，不签完整私域PASS。
 - 原“手机号接口404阻塞建档”已解除，旧账本该记录仅作历史。
