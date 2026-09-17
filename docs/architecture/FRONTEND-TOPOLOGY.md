@@ -76,7 +76,7 @@ flowchart TD
 | B04 发布页 | 素材、标题正文、可见性、提交成功、名额等待 | `/upload` → POST `/works` | 读 `submissionCapability`；并发双发靠作者占用名额唯一约束 |
 | B04 作品墙 | 自己作品封面、AI标识、状态标签、翻页、点进详情 | GET `/users/{id}/works`；驳回/下架 GET `/works/{id}/moderation`，可申则 POST `/works/{id}/appeal` | 点进 `WorkDetailScreen`；驳回可改再提；「看看为什么」只在可申前露出 |
 | B05 广场 | 公开作品瀑布，点进全屏单卡，左滑进作者主页 | GET `/plaza` → `Work`；主页墙 GET `/users/{id}/works`；`WorkImmersiveScreen`，想说的话进 `WorkDetailScreen`；主页进全屏或评论时主页藏在下面；广场全屏进评论时全屏藏在下面 | 匿名两小时一批约 30 条；网格与全屏都不记 `n` |
-| B06 评论收藏 | 热门一级 3 条，每条 2 回复，绑定后展开；私有收藏 | Work 评论/收藏接口与详情页 | 游客进收藏按 1002 出绑定；公开 DTO 无收藏计数 |
+| B06 评论收藏 | 热门一级 3 条，每条 2 回复，绑定后展开；私有收藏 | Work 评论/收藏接口与详情页；我的作品 / 收藏进详情时墙藏在下面 | 游客进收藏按 1002 出绑定；公开 DTO 无收藏计数 |
 | B07 行为 | 静默上报受控事件；开关与软清除 | `POST /behavior-events/batch`；广场 `work_impression` | 影子假设未进排序；建档页未走 Phase 0 字典 |
 
 ## 4. 已发现的差额与验收缺口
