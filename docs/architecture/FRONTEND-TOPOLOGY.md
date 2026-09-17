@@ -71,7 +71,7 @@ flowchart TD
 | B02 四题 | 初见地点、初见特征、生活习惯、首幅场景；可改答案 | PUT `/answers/q1..q4`；PATCH `/profile` | answerCodes/answerVersion，服务端持久化并推进状态；问卷文案/选项目前在前端常量 |
 | B02 总结/绑定 | 四题摘要、回改、绑定提示 | 登录 continuation=private_onboarding_generation；成功再 GET | 身份刷新必须早于原会话 GET；切旧号不迁移原匿名内容 |
 | B03 生成 | 提交、生成中、可暂离 | POST `/generate`；轮询 GET | jobId/status/pollAfterMs/lastOperation由后端给；失败数据保留 |
-| B03 候选 | imageUrl或渐变占位、signature、选中/细化 | POST `/candidates/{candidateId}/select`、`/refine` | 定妆已接万相图生图；漫画/视频仍未做。渐变占位不能冒称媒体完成 |
+| B03 候选 | imageUrl或渐变占位、signature、选中/细化 | POST `/candidates/{candidateId}/select`、`/refine` | 定妆已接万相图生图；展示地址须为本方 `/files/`。漫画/视频仍未做。渐变占位不能冒称媒体完成 |
 | B03 授权/确认 | 本次用途授权、选中图、建立窗口 | PUT `/consent`；POST `/confirm`，candidateId/consentVersion/expectedSessionVersion | 后端版本校验、幂等建窗；授权页跟 `set_consent`；确认跟 `confirm` |
 | B04 发布页 | 素材、标题正文、可见性、提交成功、名额等待 | `/upload` → POST `/works` | 读 `submissionCapability`；并发双发靠作者占用名额唯一约束 |
 | B04 作品墙 | 自己作品封面、AI标识、状态标签、翻页、点进详情 | GET `/users/{id}/works`；驳回/下架 GET `/works/{id}/moderation`，可申则 POST `/works/{id}/appeal` | 点进 `WorkDetailScreen`；驳回可改再提；「看看为什么」只在可申前露出 |
